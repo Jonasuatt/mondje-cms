@@ -242,40 +242,34 @@ async function pageAccueil() {
       </div>
     </div>
 
-    <div class="colonnes" style="margin-top:20px">
-      <div>
-        <h2>Par secteur d'activité</h2>
-        ${parType.map(([nom, n]) => `
-          <div class="carte">
-            <div class="rangee"><span class="nom">${esc(nom)}</span><span class="nom">${n}</span></div>
-            <div style="margin-top:8px">${barre(n / sommetType)}</div>
-          </div>`).join('') || '<p class="info">Aucun commerce ouvert.</p>'}
+    <h2 style="margin-top:24px">Par secteur d'activité</h2>
+    ${parType.map(([nom, n]) => `
+      <div class="carte">
+        <div class="rangee"><span class="nom">${esc(nom)}</span><span class="nom">${n}</span></div>
+        <div style="margin-top:8px">${barre(n / sommetType)}</div>
+      </div>`).join('') || '<p class="info">Aucun commerce ouvert.</p>'}
 
-        <h2 style="margin-top:24px">Par ville</h2>
-        ${parVille.map(([nom, n]) => `
-          <div class="carte">
-            <div class="rangee"><span class="nom">${esc(nom)}</span><span class="nom">${n}</span></div>
-            <div style="margin-top:8px">${barre(n / sommetVille)}</div>
-          </div>`).join('')}
-      </div>
+    <h2 style="margin-top:24px">Par ville</h2>
+    ${parVille.map(([nom, n]) => `
+      <div class="carte">
+        <div class="rangee"><span class="nom">${esc(nom)}</span><span class="nom">${n}</span></div>
+        <div style="margin-top:8px">${barre(n / sommetVille)}</div>
+      </div>`).join('')}
 
-      <div>
-        <h2>Où sont nos abonnés</h2>
-        <div class="carte-ci" id="carteCI">
-          <img src="carte-ci.jpg" alt="Carte de la Côte d'Ivoire" />
+    <h2 style="margin-top:24px">Où sont nos abonnés</h2>
+    <div class="carte-ci" id="carteCI">
+      <img src="carte-ci.jpg" alt="Carte de la Côte d'Ivoire" />
+    </div>
+
+    <h2 style="margin-top:24px">Recette encaissée</h2>
+    ${(recettes.data ?? []).map((r) => `
+      <div class="carte">
+        <div class="rangee">
+          <span class="nom">${esc(r.mois)}</span>
+          <span class="nom">${fcfa(r.total)}</span>
         </div>
-
-        <h2 style="margin-top:24px">Recette encaissée</h2>
-        ${(recettes.data ?? []).map((r) => `
-          <div class="carte">
-            <div class="rangee">
-              <span class="nom">${esc(r.mois)}</span>
-              <span class="nom">${fcfa(r.total)}</span>
-            </div>
-            <div class="info">${r.nb_commerces} commerce(s) · ${r.nb_paiements} versement(s)</div>
-          </div>`).join('') || '<p class="info">Aucun versement enregistré.</p>'}
-      </div>
-    </div>`;
+        <div class="info">${r.nb_commerces} commerce(s) · ${r.nb_paiements} versement(s)</div>
+      </div>`).join('') || '<p class="info">Aucun versement enregistré.</p>'}`;
 
   poserPoints(parVille);
 }
