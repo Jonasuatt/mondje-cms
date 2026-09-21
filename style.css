@@ -148,30 +148,6 @@ td.n, th.n { text-align: right; white-space: nowrap; }
 .bulle.nous { background: var(--accent); color: #10131a; align-self: flex-end; }
 .bulle .info { color: inherit; opacity: .7; }
 
-/* --- Panneau latéral ----------------------------------------------------- */
-.panneau { position: fixed; inset: 0; z-index: 10; }
-.panneau-fond { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
-.panneau-corps {
-  position: absolute; top: 0; right: 0; bottom: 0; width: min(560px, 100%);
-  background: var(--fond); border-left: 1px solid var(--bord);
-  padding: 20px 24px 48px; overflow-y: auto;
-}
-.panneau-entete { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.panneau-entete h2 { margin: 0; font-size: 20px; flex: 1; }
-
-/* Sur un grand écran, la fiche ne recouvre pas la liste : elle prend sa place
-   à droite et le tableau se resserre. On garde ainsi sous les yeux la ligne
-   qu'on est en train de traiter, et on passe d'une fiche à l'autre sans
-   fermer. Sous 1000 pixels il n'y a pas la place : la fiche repasse par-dessus,
-   avec son fond sombre. */
-@media (min-width: 1001px) {
-  .panneau { left: auto; width: 620px; }
-  .panneau-fond { display: none; }
-  .panneau-corps { border-left: 2px solid var(--bord); }
-  body.avec-panneau .contenu { margin-right: 640px; }
-  body.avec-panneau table { font-size: 14px; }
-}
-
 /* Le menu reste sur le côté, même sur un écran étroit : c'est la colonne de
    gauche qu'on apprend, pas une rangée qui se replie différemment selon la
    largeur de la fenêtre. Il maigrit au lieu de passer en haut. */

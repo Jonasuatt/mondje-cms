@@ -76,24 +76,19 @@ function echoue(e) {
   alert(e?.message ?? 'Opération impossible. Vérifie ta connexion.');
 }
 
-// --- Panneau latéral -------------------------------------------------------
+// --- Fiches ----------------------------------------------------------------
+//
+// Une fiche prend toute la page, comme dans l'application du téléphone : on
+// traite un dossier, on ne le lit pas dans un coin pendant que la liste
+// continue de réclamer l'attention. « Retour » ramène à la liste.
 
 function ouvrirPanneau(titre, html) {
-  $('#titrePanneau').textContent = titre;
-  $('#corpsPanneau').innerHTML = html;
-  $('#panneau').classList.remove('cache');
-  // Sur grand écran, la liste se resserre au lieu de disparaître dessous.
-  document.body.classList.add('avec-panneau');
+  $('#titrePage').textContent = titre;
+  $('#actionsPage').innerHTML = '<button class="bouton sombre" id="retourListe">Retour</button>';
+  $('#page').innerHTML = html;
+  $('#retourListe').addEventListener('click', () => aller(pageCourante));
+  window.scrollTo(0, 0);
 }
-
-function fermerPanneau() {
-  $('#panneau').classList.add('cache');
-  document.body.classList.remove('avec-panneau');
-}
-
-$('#panneau').addEventListener('click', (e) => {
-  if (e.target.dataset.fermer) fermerPanneau();
-});
 
 // --- Session ---------------------------------------------------------------
 
@@ -173,7 +168,6 @@ async function aller(cle) {
   $('#titrePage').textContent = PAGES[cle].titre;
   $('#actionsPage').innerHTML = '';
   $('#page').innerHTML = '<p class="info">Chargement…</p>';
-  fermerPanneau();
   try {
     await PAGES[cle].rendre();
   } catch (e) {
@@ -382,7 +376,6 @@ function ficheDemande(d) {
         navigator.clipboard.writeText(message);
         $('#copier').textContent = 'Message copié';
       });
-      aller('dossiers');
     } catch (err) {
       echoue(err);
       e.target.disabled = false;
@@ -396,7 +389,6 @@ function ficheDemande(d) {
     const { error } = await bd.from('demande_ouverture')
       .update({ statut: 'refusee', motif_refus: motif }).eq('id', d.id);
     if (error) { echoue(error); e.target.disabled = false; return; }
-    fermerPanneau();
     aller('dossiers');
   });
 }
@@ -575,7 +567,6 @@ async function ficheCommerce(c) {
       p_motif: suspendre ? 'Suspension depuis le CMS' : null,
     });
     if (error) { echoue(error); ev.target.disabled = false; return; }
-    fermerPanneau();
     aller('commerces');
   });
 }
@@ -766,7 +757,6 @@ function ficheProduit(p) {
       ev.target.disabled = false;
       return;
     }
-    fermerPanneau();
     aller('catalogue');
   });
 
@@ -775,7 +765,6 @@ function ficheProduit(p) {
       if (!confirm(`« ${p.nom} » ne sera plus proposé aux commerces. Ceux qui l'ont déjà le gardent. Confirmer ?`)) return;
       const { error } = await bd.from('catalogue_produit').update({ actif: false }).eq('id', p.id);
       if (error) return echoue(error);
-      fermerPanneau();
       aller('catalogue');
     });
   }
@@ -871,7 +860,6 @@ function accepterProposition(p) {
       statut: 'acceptee', traitee_par: moi.user.id,
       traitee_le: new Date().toISOString(), catalogue_produit_id: data.id,
     }).eq('id', p.id);
-    fermerPanneau();
     aller('propositions');
   });
 }
