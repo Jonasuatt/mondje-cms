@@ -56,9 +56,25 @@ rien — c'est le serveur qui décide, pour le téléphone comme pour le navigat
 Un compte de commerçant qui se connecterait ici ne verrait rien : la base ne
 lui rend aucune ligne. Le CMS le lui dit et le déconnecte.
 
-## Mettre le CMS en ligne
+## En ligne
 
-Il n'est pas publié : il tourne sur l'ordinateur de celui qui le lance. Pour y
-accéder depuis ailleurs, il faudra l'héberger (un espace de stockage public
-Supabase, Netlify, Cloudflare Pages…) — à décider, parce que l'adresse sera
-alors accessible à tous, même si la connexion reste exigée.
+<https://jonasuatt.github.io/mondje-cms/>
+
+Publié par GitHub Pages depuis le dépôt public `Jonasuatt/mondje-cms`, qui ne
+contient que ce dossier. Pour republier après une modification, depuis la
+racine du dépôt :
+
+```bash
+git subtree push --prefix=cms public main
+```
+
+(La première fois : `git remote add public https://github.com/Jonasuatt/mondje-cms.git`.)
+Compter une à deux minutes avant que GitHub serve la nouvelle version.
+
+Le code du CMS est donc public. Les données ne le sont pas : la page n'a aucun
+pouvoir propre, et ne contient que l'adresse du projet Supabase et la clé
+publiable — les deux déjà présentes dans l'APK distribué aux commerçants. Tout
+le reste dépend des règles RLS et d'une connexion.
+
+Supabase Storage a été essayé et écarté : il renvoie les fichiers HTML en
+`text/plain`, volontairement, pour qu'on n'héberge pas de site chez lui.
