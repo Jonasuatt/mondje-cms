@@ -159,9 +159,20 @@ td.n, th.n { text-align: right; white-space: nowrap; }
 .panneau-entete { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .panneau-entete h2 { margin: 0; font-size: 20px; flex: 1; }
 
-@media (max-width: 900px) {
-  .app { grid-template-columns: 1fr; }
-  .menu { position: static; height: auto; flex-direction: column; }
-  .menu nav { flex-direction: row; flex-wrap: wrap; }
+/* Le menu reste sur le côté, même sur un écran étroit : c'est la colonne de
+   gauche qu'on apprend, pas une rangée qui se replie différemment selon la
+   largeur de la fenêtre. Il maigrit au lieu de passer en haut. */
+@media (max-width: 1000px) {
+  .app { grid-template-columns: 180px 1fr; }
+  .menu { padding: 14px 10px; }
+  .marque { font-size: 17px; }
+  .onglet { padding: 9px 10px; font-size: 14px; }
+  .contenu { padding: 18px 16px 48px; }
   .colonnes { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .app { grid-template-columns: 148px 1fr; }
+  .onglet { font-size: 13px; padding: 8px; }
+  .ligne-champs { grid-template-columns: 1fr; }
 }
