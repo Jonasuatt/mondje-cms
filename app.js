@@ -1123,7 +1123,7 @@ async function pageEquipe() {
 
 function tableau(colonnes, lignes, vide) {
   if (!lignes.length) return `<p class="info">${esc(vide)}</p>`;
-  return `<table>
+  return `<div class="tableau"><table>
     <thead><tr>${colonnes.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead>
     <tbody>
       ${lignes.map((l) => `
@@ -1131,7 +1131,7 @@ function tableau(colonnes, lignes, vide) {
           ${l.cellules.map((c) => `<td>${c}</td>`).join('')}
         </tr>`).join('')}
     </tbody>
-  </table>`;
+  </table></div>`;
 }
 
 const brancherLignes = (ouvrir) =>
