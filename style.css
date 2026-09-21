@@ -128,11 +128,6 @@ td.n, th.n { text-align: right; white-space: nowrap; }
 .barre span { display: block; height: 100%; background: var(--accent); }
 
 .rangee { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
-.colonnes {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 20px; align-items: start;
-}
-
 /* Un tableau large defile dans sa boite, il ne pousse pas la page. */
 .tableau { overflow-x: auto; }
 
@@ -157,12 +152,6 @@ td.n, th.n { text-align: right; white-space: nowrap; }
 /* Le menu reste sur le côté, même sur un écran étroit : c'est la colonne de
    gauche qu'on apprend, pas une rangée qui se replie différemment selon la
    largeur de la fenêtre. Il maigrit au lieu de passer en haut. */
-/* Deux colonnes cote a cote demandent de la place : en dessous, elles se
-   suivent. */
-@media (max-width: 1200px) {
-  .colonnes { grid-template-columns: minmax(0, 1fr); }
-}
-
 @media (max-width: 1000px) {
   .app { grid-template-columns: 180px 1fr; }
   .menu { padding: 14px 10px; }

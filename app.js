@@ -989,13 +989,11 @@ async function pageEquipe() {
   const superAdmin = moi.role === 'super_admin';
 
   $('#page').innerHTML = `
-    <div class="colonnes">
-      <div>
-        <h2>Formules d'abonnement</h2>
-        <p class="info">
-          Le prix s'applique aux prochains paiements ; ceux déjà encaissés
-          gardent leur montant.
-        </p>
+    <h2>Formules d'abonnement</h2>
+    <p class="info">
+      Le prix s'applique aux prochains paiements ; ceux déjà encaissés gardent
+      leur montant.
+    </p>
         ${(formules.data ?? []).map((f) => `
           <div class="carte">
             <div class="rangee">
@@ -1011,10 +1009,8 @@ async function pageEquipe() {
               ${f.max_comptes ? ` · jusqu'à ${f.max_comptes} comptes` : ' · comptes sans limite'}
             </div>
           </div>`).join('')}
-      </div>
 
-      <div>
-        <h2>Comptes de l'équipe</h2>
+    <h2 style="margin-top:24px">Comptes de l'équipe</h2>
         ${(comptes.data ?? []).map((c) => `
           <div class="carte ${c.actif ? '' : 'danger'}">
             <div class="rangee">
@@ -1046,9 +1042,7 @@ async function pageEquipe() {
         <label style="margin-top:16px">Nouveau mot de passe
           <input id="monMotDePasse" type="password" placeholder="10 caractères au moins" />
         </label>
-        <button class="bouton sombre" id="changerMotDePasse">Changer mon mot de passe</button>
-      </div>
-    </div>`;
+    <button class="bouton sombre" id="changerMotDePasse">Changer mon mot de passe</button>`;
 
   $$('[data-enregistrer]').forEach((b) => b.addEventListener('click', async () => {
     const code = b.dataset.enregistrer;
