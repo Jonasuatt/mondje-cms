@@ -1,0 +1,64 @@
+# Espace équipe Mon Djê — version web
+
+Le même espace équipe que dans l'application, sur grand écran : demandes
+d'ouverture, commerces, abonnements, catalogue, produits proposés, messages,
+journal des interventions, comptes de l'équipe.
+
+Ce qu'il apporte par rapport au téléphone : **un clavier**. Saisir trois cents
+produits au catalogue au pouce n'était pas raisonnable.
+
+## Ouvrir le CMS sur cet ordinateur
+
+Depuis la racine du dépôt :
+
+```bash
+npx --yes serve -l 4173 cms
+```
+
+Puis ouvrir <http://localhost:4173> dans un navigateur, et se connecter avec un
+compte de l'équipe (la même adresse et le même mot de passe que dans
+l'application).
+
+## Ce qu'il contient
+
+| Fichier | Rôle |
+|---|---|
+| `index.html` | la page, et le formulaire de connexion |
+| `app.js` | tout le reste : navigation, pages, écritures |
+| `style.css` | les couleurs de Mon Djê |
+| `villes.js` | positions des villes sur la carte, **régénéré**, ne pas modifier à la main |
+| `carte-ci.jpg` | la carte de Côte d'Ivoire, réduite à 180 Ko |
+| `vendor/supabase.js` | la bibliothèque Supabase, livrée avec le CMS |
+
+Aucune chaîne de compilation, aucun `node_modules` : des fichiers que le
+navigateur ouvre tels quels. C'est volontaire — un outil interne qui demande
+une compilation avant chaque correction ne se corrige plus.
+
+La bibliothèque Supabase est **livrée avec le CMS** plutôt que chargée depuis
+un CDN : une coupure ou une compromission chez un tiers n'ouvre pas nos
+comptes.
+
+## Après avoir ajouté une ville à la carte
+
+Les positions vivent dans `maquis/src/carte.ts`, qui reste la seule liste tenue
+à jour. Ensuite, depuis la racine :
+
+```bash
+python cms/regenerer-villes.py
+```
+
+## Les droits
+
+Le CMS n'a aucun pouvoir propre : il parle à la même base, avec les mêmes
+règles. Masquer un bouton ici n'interdit rien, et en afficher un n'autorise
+rien — c'est le serveur qui décide, pour le téléphone comme pour le navigateur.
+
+Un compte de commerçant qui se connecterait ici ne verrait rien : la base ne
+lui rend aucune ligne. Le CMS le lui dit et le déconnecte.
+
+## Mettre le CMS en ligne
+
+Il n'est pas publié : il tourne sur l'ordinateur de celui qui le lance. Pour y
+accéder depuis ailleurs, il faudra l'héberger (un espace de stockage public
+Supabase, Netlify, Cloudflare Pages…) — à décider, parce que l'adresse sera
+alors accessible à tous, même si la connexion reste exigée.
