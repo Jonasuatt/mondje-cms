@@ -82,8 +82,14 @@ function ouvrirPanneau(titre, html) {
   $('#titrePanneau').textContent = titre;
   $('#corpsPanneau').innerHTML = html;
   $('#panneau').classList.remove('cache');
+  // Sur grand écran, la liste se resserre au lieu de disparaître dessous.
+  document.body.classList.add('avec-panneau');
 }
-const fermerPanneau = () => $('#panneau').classList.add('cache');
+
+function fermerPanneau() {
+  $('#panneau').classList.add('cache');
+  document.body.classList.remove('avec-panneau');
+}
 
 $('#panneau').addEventListener('click', (e) => {
   if (e.target.dataset.fermer) fermerPanneau();
