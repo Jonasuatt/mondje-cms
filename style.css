@@ -27,6 +27,18 @@ body {
 .connexion-carte { width: min(420px, 100%); }
 .connexion-carte h1 { margin: 0; font-size: 28px; }
 
+/* Le globe est bleu nuit : sur le fond sombre du CMS il se perdrait, d'où la
+   pastille claire — la même que celle de l'icône du téléphone. */
+.connexion-carte .logo,
+.marque img {
+  background: #e6f4fe;
+  border-radius: 50%;
+  padding: 6px;
+}
+.connexion-carte .logo { display: block; margin: 0 auto 12px; }
+.marque { display: flex; align-items: center; gap: 10px; }
+.marque img { padding: 4px; }
+
 /* --- Charpente ----------------------------------------------------------- */
 .app { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; }
 
