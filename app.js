@@ -406,10 +406,18 @@ function ficheDemande(d) {
 
 // --- Commerces -------------------------------------------------------------
 
+// Depuis que l'acceptation des conditions garde son auteur, deux chemins
+// relient structure et membre. Il faut donc nommer celui qu'on veut, sinon
+// PostgREST refuse la jointure.
+//
+// Et le refus se lisait nulle part : l'erreur était jetée à la poubelle, la
+// liste s'affichait vide, et on cherchait une panne de données. Une requête
+// qui échoue doit le dire.
 async function pageCommerces() {
-  const { data } = await bd.from('structure')
-    .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre(id, nom, code_employe, roles, actif)')
+  const { data, error } = await bd.from('structure')
+    .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
     .order('nom');
+  if (error) throw error;
   const commerces = data ?? [];
 
   $('#page').innerHTML = tableau(
@@ -655,7 +663,7 @@ async function pageAbonnements() {
 
   brancherLignes(async (id) => {
     const { data: c } = await bd.from('structure')
-      .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre(id, nom, code_employe, roles, actif)')
+      .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
       .eq('id', id).single();
     ficheCommerce(c);
   });
