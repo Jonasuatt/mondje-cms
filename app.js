@@ -77,6 +77,16 @@ function echoue(e) {
   alert(e?.message ?? 'Opération impossible. Vérifie ta connexion.');
 }
 
+// Les fonctions serveur répondent leur motif en français dans le corps ; la
+// bibliothèque Supabase, elle, ne remonte que « non-2xx status code ». Sans
+// cette lecture, un refus devient une énigme.
+async function appelerFonction(nom, corps) {
+  const { data, error } = await bd.functions.invoke(nom, { body: corps });
+  if (!error) return data;
+  const detail = await error.context?.json?.().catch(() => null);
+  throw new Error(detail?.erreur ?? error.message ?? 'Erreur du serveur');
+}
+
 // --- Fiches ----------------------------------------------------------------
 //
 // Une fiche prend toute la page, comme dans l'application du téléphone : on
@@ -544,10 +554,8 @@ async function ficheCommerce(c) {
                  + `L'intervention est enregistrée au journal. Continuer ?`)) return;
     b.disabled = true;
     try {
-      const { data, error } = await bd.functions.invoke('reinitialiser-code', {
-        body: { structure_id: c.id, membre_id: b.dataset.recoder },
-      });
-      if (error) throw error;
+      const data = await appelerFonction('reinitialiser-code',
+        { structure_id: c.id, membre_id: b.dataset.recoder });
       montrerCode(c, data);
     } catch (e) {
       echoue(e);
@@ -1097,10 +1105,8 @@ async function pageEquipe() {
       ? 'Ce compte ne pourra plus se connecter, et sa session ouverte se ferme. Confirmer ?'
       : 'Rendre l’accès à ce compte ?')) return;
     try {
-      const { error } = await bd.functions.invoke('gerer-equipe', {
-        body: { action: actif ? 'desactiver' : 'reactiver', user_id: b.dataset.bloquer },
-      });
-      if (error) throw error;
+      await appelerFonction('gerer-equipe',
+        { action: actif ? 'desactiver' : 'reactiver', user_id: b.dataset.bloquer });
       aller('equipe');
     } catch (e) { echoue(e); }
   }));
@@ -1115,10 +1121,8 @@ async function pageEquipe() {
       }
       ev.target.disabled = true;
       try {
-        const { error } = await bd.functions.invoke('gerer-equipe', {
-          body: { action: 'creer', nom, email, mot_de_passe: motDePasse },
-        });
-        if (error) throw error;
+        await appelerFonction('gerer-equipe',
+          { action: 'creer', nom, email, mot_de_passe: motDePasse });
         alert(`Compte créé. ${nom} se connecte avec ${email} et ce mot de passe ; demande-lui de le changer.`);
         aller('equipe');
       } catch (e) {
@@ -1251,10 +1255,7 @@ async function ficheCarte(c) {
                  + `L’entrée portera le nom de Mon Djê. Confirmer ?`)) return;
     bouton.disabled = true;
     try {
-      const { error } = await bd.functions.invoke('charger-stock-commerce', {
-        body: { structure_id: c.id, entrees },
-      });
-      if (error) throw error;
+      await appelerFonction('charger-stock-commerce', { structure_id: c.id, entrees });
       ficheCarte(c);
     } catch (e) {
       echoue(e);
@@ -1352,10 +1353,10 @@ async function ficheCatalogueCommerce(c) {
     if (!produits.length) return alert('Saisis au moins un prix.');
     ev.target.disabled = true;
     try {
-      const { error } = await bd.functions.invoke('ajouter-produits-commerce', {
-        body: { structure_id: c.id, produits },
-      });
-      if (error) throw error;
+      const r = await appelerFonction('ajouter-produits-commerce', { structure_id: c.id, produits });
+      alert(`${r.ajoutes} produit(s) ajouté(s) à la carte de ${c.nom}.`
+            + (r.ignores ? `\n${r.ignores} déjà présent(s), laissé(s) tels quels.` : '')
+            + (r.sans_prix ? `\n${r.sans_prix} sans prix : invendables tant que le propriétaire n’a pas fixé le sien.` : ''));
       ficheCarte(c);
     } catch (e) {
       echoue(e);
