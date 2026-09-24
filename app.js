@@ -57,7 +57,7 @@ const ACTIONS = {
   commerce_reactive: 'Commerce rouvert',
   formule_changee: 'Formule changée',
   abonnement_encaisse: 'Abonnement encaissé',
-  reinitialisation_code: 'Code du propriétaire réinitialisé',
+  reinitialisation_code: 'Code secret réinitialisé',
   admin_cree: 'Compte d’équipe créé',
   admin_desactive: 'Accès d’un administrateur bloqué',
   admin_reactive: 'Accès d’un administrateur rendu',
@@ -397,7 +397,7 @@ function ficheDemande(d) {
 
 async function pageCommerces() {
   const { data } = await bd.from('structure')
-    .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre(nom, code_employe, roles, actif)')
+    .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre(id, nom, code_employe, roles, actif)')
     .order('nom');
   const commerces = data ?? [];
 
@@ -442,12 +442,19 @@ async function ficheCommerce(c) {
     </div>
 
     <h3>Comptes</h3>
+    <p class="info">
+      Mon Djê ne garde aucun code secret : c'est ce qui permet au commerçant de
+      dire « seule ma caissière a pu saisir cette vente ». Quand quelqu'un perd
+      le sien, on en tire un nouveau — l'ancien meurt aussitôt.
+    </p>
     ${c.membre.slice().sort((a, b) => a.code_employe - b.code_employe).map((m) => `
       <div class="carte" style="${m.actif ? '' : 'opacity:.5'}">
         <div class="rangee">
           <span class="nom">${String(m.code_employe).padStart(2, '0')} · ${esc(m.nom)}</span>
           <span class="info">${esc(m.roles.join(', '))}${m.actif ? '' : ' · désactivé'}</span>
         </div>
+        ${m.actif ? `<button class="bouton sombre petit" data-recoder="${esc(m.id)}"
+          data-nom="${esc(m.nom)}" style="margin-top:8px">Nouveau code secret</button>` : ''}
       </div>`).join('')}
 
     <h3>Abonnement</h3>
@@ -519,6 +526,22 @@ async function ficheCommerce(c) {
         : 'Ce commerce est suspendu : son équipe ne peut pas se connecter.'}
     </p>
   `);
+
+  $$('[data-recoder]').forEach((b) => b.addEventListener('click', async () => {
+    if (!confirm(`${b.dataset.nom} recevra un nouveau code secret, et l'ancien ne marchera plus. `
+                 + `L'intervention est enregistrée au journal. Continuer ?`)) return;
+    b.disabled = true;
+    try {
+      const { data, error } = await bd.functions.invoke('reinitialiser-code', {
+        body: { structure_id: c.id, membre_id: b.dataset.recoder },
+      });
+      if (error) throw error;
+      montrerCode(c, data);
+    } catch (e) {
+      echoue(e);
+      b.disabled = false;
+    }
+  }));
 
   $('#formule').addEventListener('change', async (ev) => {
     const { error } = await bd.rpc('admin_changer_formule', {
@@ -596,7 +619,7 @@ async function pageAbonnements() {
 
   brancherLignes(async (id) => {
     const { data: c } = await bd.from('structure')
-      .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre(nom, code_employe, roles, actif)')
+      .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre(id, nom, code_employe, roles, actif)')
       .eq('id', id).single();
     ficheCommerce(c);
   });
@@ -1042,6 +1065,7 @@ async function pageEquipe() {
         <label style="margin-top:16px">Nouveau mot de passe
           <input id="monMotDePasse" type="password" placeholder="10 caractères au moins" />
         </label>
+        <button type="button" class="lien voir" data-voir="monMotDePasse">Voir</button>
     <button class="bouton sombre" id="changerMotDePasse">Changer mon mot de passe</button>`;
 
   $$('[data-enregistrer]').forEach((b) => b.addEventListener('click', async () => {
@@ -1128,8 +1152,79 @@ function tableau(colonnes, lignes, vide) {
   </table></div>`;
 }
 
+// Un mot de passe tape a l'aveugle se tape de travers. Un seul ecouteur pour
+// toute la page : les champs naissent et meurent au fil des ecrans.
+document.addEventListener('click', (ev) => {
+  const bouton = ev.target.closest('[data-voir]');
+  if (!bouton) return;
+  const champ = document.getElementById(bouton.dataset.voir);
+  if (!champ) return;
+  const cache = champ.type === 'password';
+  champ.type = cache ? 'text' : 'password';
+  bouton.textContent = cache ? 'Cacher' : 'Voir';
+});
+
 const brancherLignes = (ouvrir) =>
   $$('tr[data-id]').forEach((tr) => tr.addEventListener('click', () => ouvrir(tr.dataset.id)));
+
+// Un code neuf ne s'affiche qu'une fois : il n'est écrit nulle part, ni chez
+// nous ni dans la base. Cette page est le seul endroit où on le voit, d'où le
+// message tout prêt à envoyer au commerçant avant de quitter l'écran.
+function montrerCode(commerce, r) {
+  const message =
+    `${r.membre}, ton code secret Mon Djê pour « ${r.structure} » a été réinitialisé.
+
+`
+    + `• Code commerce : ${r.code_commerce}
+`
+    + `• N° d'employé : ${r.code_employe}
+`
+    + `• Nouveau code secret : ${r.code_secret}
+
+`
+    + `Ton ancien code ne marche plus. Change celui-ci dès ta connexion `
+    + `(Profil → Changer mon code secret).
+`
+    + `Si tu n'as rien demandé, préviens-nous tout de suite.`;
+  const numero = numeroWhatsApp(r.telephone ?? commerce.telephone);
+
+  ouvrirPanneau('Nouveau code secret', `
+    <div class="carte accent">
+      ${champLecture('Personne', `${r.membre} · ${r.structure}`)}
+      ${champLecture('Code commerce', r.code_commerce)}
+      ${champLecture("N° d'employé", r.code_employe)}
+      ${champLecture('Code secret', r.code_secret)}
+      <p class="info">
+        Ce code ne se réaffichera jamais. Envoie-le maintenant ; s'il se perd,
+        il faudra en tirer un autre.
+      </p>
+    </div>
+    ${numero
+      ? `<a class="bouton ok" style="display:inline-block;text-decoration:none"
+           href="https://wa.me/${numero}?text=${encodeURIComponent(message)}"
+           target="_blank" rel="noopener">Envoyer par WhatsApp</a>`
+      : '<p class="info">Ce commerce n’a pas de numéro WhatsApp enregistré.</p>'}
+    <button class="bouton sombre" id="copier">Copier le message</button>
+  `);
+
+  $('#copier').addEventListener('click', async (ev) => {
+    try {
+      await navigator.clipboard.writeText(message);
+      ev.target.textContent = 'Message copié';
+    } catch {
+      ev.target.textContent = 'Copie refusée par le navigateur';
+    }
+  });
+}
+
+// Wave, WhatsApp et les autres veulent le numéro au format international ;
+// les commerces saisissent « 0505522776 ».
+function numeroWhatsApp(tel) {
+  const chiffres = String(tel ?? '').replace(/\D/g, '');
+  if (chiffres.length === 10 && chiffres.startsWith('0')) return `225${chiffres}`;
+  if (chiffres.length === 13 && chiffres.startsWith('225')) return chiffres;
+  return chiffres.length >= 8 ? chiffres : '';
+}
 
 const champLecture = (libelle, valeur) => valeur
   ? `<div class="info">${esc(libelle)}</div><div class="nom" style="margin-bottom:10px">${esc(valeur)}</div>`

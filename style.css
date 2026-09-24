@@ -177,3 +177,6 @@ td.n, th.n { text-align: right; white-space: nowrap; }
   .onglet { font-size: 13px; padding: 8px; }
   .ligne-champs { grid-template-columns: 1fr; }
 }
+
+/* Relire un mot de passe avant de l’envoyer. */
+.voir { padding: 0; margin: -4px 0 12px; font-size: 13px; }
