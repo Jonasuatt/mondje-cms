@@ -1191,7 +1191,7 @@ const brancherLignes = (ouvrir) =>
 
 async function ficheCarte(c) {
   const [produits, stock, rubriques] = await Promise.all([
-    bd.from('produit').select('id, nom, prix_vente, unite, actif, categorie')
+    bd.from('produit').select('id, nom, prix_vente, prix_achat, unite, actif, categorie')
       .eq('structure_id', c.id).order('nom'),
     bd.from('stock_actuel').select('produit_id, quantite').eq('structure_id', c.id),
     bd.from('categorie_catalogue').select('code, libelle, rang').order('rang'),
@@ -1217,19 +1217,22 @@ async function ficheCarte(c) {
          </p>
          <div class="tableau"><table>
            <thead><tr>
-             <th>Produit</th><th class="n">Prix</th><th class="n">En stock</th>
+             <th>Produit</th><th class="n">Achat</th><th class="n">Vente</th>
+             <th class="n">Marge</th><th class="n">En stock</th>
              <th class="n">Entrée à saisir</th>
            </tr></thead>
            <tbody>
            ${liste.map((p) => {
              const r = libelle.get(p.categorie) ?? 'Sans rubrique';
              const entete = r !== rubriqueCourante
-               ? `<tr><td colspan="4" class="info" style="padding-top:14px">${esc(r)}</td></tr>` : '';
+               ? `<tr><td colspan="6" class="info" style="padding-top:14px">${esc(r)}</td></tr>` : '';
              rubriqueCourante = r;
              return entete + `<tr>
                <td>${esc(p.nom)}${p.actif ? '' : ' <span class="info">· retiré de la carte</span>'}
                    <div class="info">${esc(p.unite)}</div></td>
+               <td class="n">${p.prix_achat == null ? '<span class="info">—</span>' : fcfa(p.prix_achat)}</td>
                <td class="n">${p.prix_vente ? fcfa(p.prix_vente) : '<span class="etiquette accent">prix à saisir</span>'}</td>
+               <td class="n">${marge(p)}</td>
                <td class="n">${quantites.get(p.id) ?? 0}</td>
                <td class="n"><input data-entree="${esc(p.id)}" type="number" min="1"
                      style="width:110px;text-align:right" /></td>
@@ -1264,6 +1267,15 @@ async function ficheCarte(c) {
   });
 }
 
+// Ce qui reste au commerçant sur chaque vente. Muet tant que le prix d'achat
+// manque : un chiffre faux vaut moins que pas de chiffre.
+function marge(p) {
+  if (p.prix_achat == null || !p.prix_vente) return '<span class="info">—</span>';
+  const gain = p.prix_vente - p.prix_achat;
+  const part = Math.round((gain / p.prix_vente) * 100);
+  return `${fcfa(gain)} <span class="info">${part} %</span>`;
+}
+
 // Le catalogue, filtré par rubrique : deux cent cinquante lignes d'un coup ne
 // se lisent pas, même sur grand écran.
 async function ficheCatalogueCommerce(c) {
@@ -1288,7 +1300,9 @@ async function ficheCatalogueCommerce(c) {
   ouvrirPanneau(c.nom + ' — ajouter des produits', `
     <button class="bouton sombre" id="retourCarte">Retour à la carte</button>
     <p class="info">
-      Saisis un prix en face des produits qu'il vend. Sans prix, le produit
+      Le prix d'achat est facultatif : sans lui, pas de marge ni d'argent
+      immobilisé, mais le produit se vend quand même.
+      Saisis un prix de vente en face des produits qu'il vend. Sans prix, le produit
       arrive sur sa carte mais reste invendable tant qu'il n'a pas fixé le sien :
       un article à 0 F ne doit jamais partir en caisse.
     </p>
@@ -1309,6 +1323,7 @@ async function ficheCatalogueCommerce(c) {
   // Les prix saisis survivent au changement de filtre : on les garde ici, pas
   // dans le HTML qu'on redessine.
   const prix = new Map();
+  const achats = new Map();
 
   const dessiner = () => {
     const r = $('#filtreRubrique').value;
@@ -1321,13 +1336,16 @@ async function ficheCatalogueCommerce(c) {
       : `<div class="tableau"><table><tbody>${vus.slice(0, 400).map((a) => {
           const lib = a.categorie_catalogue?.libelle ?? a.categorie;
           const entete = lib !== courante
-            ? `<tr><td colspan="2" class="info" style="padding-top:14px">${esc(lib)}</td></tr>` : '';
+            ? `<tr><td colspan="3" class="info" style="padding-top:14px">${esc(lib)}</td></tr>` : '';
           courante = lib;
           return entete + `<tr>
             <td>${esc(nomComplet(a))}<div class="info">${esc(a.unite)}</div></td>
+            <td class="n"><input data-achat="${esc(a.id)}" type="number" min="0"
+                  placeholder="Achat" value="${esc(achats.get(a.id) ?? '')}"
+                  style="width:100px;text-align:right" /></td>
             <td class="n"><input data-prix="${esc(a.id)}" type="number" min="0"
-                  placeholder="Prix" value="${esc(prix.get(a.id) ?? '')}"
-                  style="width:110px;text-align:right" /></td>
+                  placeholder="Vente" value="${esc(prix.get(a.id) ?? '')}"
+                  style="width:100px;text-align:right" /></td>
           </tr>`;
         }).join('')}</tbody></table></div>`
         + (vus.length > 400 ? '<p class="info">Affichage limité à 400 lignes : affine la recherche.</p>' : '');
@@ -1339,16 +1357,25 @@ async function ficheCatalogueCommerce(c) {
   $('#retourCarte').addEventListener('click', () => ficheCarte(c));
 
   function garderPrix() {
-    $$('[data-prix]').forEach((i) => {
-      if (i.value.trim()) prix.set(i.dataset.prix, i.value.trim());
-      else prix.delete(i.dataset.prix);
+    const noter = (carte, attribut) => $$(`[data-${attribut}]`).forEach((i) => {
+      if (i.value.trim()) carte.set(i.dataset[attribut], i.value.trim());
+      else carte.delete(i.dataset[attribut]);
     });
+    noter(prix, 'prix');
+    noter(achats, 'achat');
   }
 
   $('#ajouterLesProduits').addEventListener('click', async (ev) => {
     garderPrix();
     const produits = [...prix.entries()]
-      .map(([catalogue_id, v]) => ({ catalogue_id, prix: parseInt(v, 10) }))
+      .map(([catalogue_id, v]) => {
+        const achat = parseInt(achats.get(catalogue_id), 10);
+        return {
+          catalogue_id,
+          prix: parseInt(v, 10),
+          ...(Number.isInteger(achat) ? { prix_achat: achat } : {}),
+        };
+      })
       .filter((p) => Number.isInteger(p.prix) && p.prix >= 0);
     if (!produits.length) return alert('Saisis au moins un prix.');
     ev.target.disabled = true;
