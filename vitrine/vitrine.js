@@ -23,7 +23,9 @@ function numeroWhatsApp(tel) {
   return chiffres.length >= 8 ? chiffres : '';
 }
 
-const lieu = (c) => [c.quartier, c.commune, c.ville].filter(Boolean).join(' · ');
+// Beaucoup de villes de l'intérieur n'ont qu'une commune, qui porte leur nom :
+// « Bouaké · Bouaké » ferait négligé sur la page d'un commerçant.
+const lieu = (c) => [...new Set([c.quartier, c.commune, c.ville].filter(Boolean))].join(' · ');
 
 function afficher(html) {
   document.getElementById('vitrine').innerHTML = html;
