@@ -105,17 +105,25 @@ function ouvrirPanneau(titre, html) {
 
 let moi = null;   // { user, nom, role }
 
+// Toujours la même main derrière le même clavier : l'adresse revient d'une
+// fois sur l'autre. Le mot de passe, lui, ne reste jamais nulle part.
+const ADRESSE_RETENUE = 'mondje_adresse';
+$('#email').value = localStorage.getItem(ADRESSE_RETENUE) ?? '';
+if ($('#email').value) $('#motDePasse').focus();
+
 $('#formConnexion').addEventListener('submit', async (e) => {
   e.preventDefault();
   $('#erreurConnexion').textContent = '';
+  const adresse = $('#email').value.trim();
   const { error } = await bd.auth.signInWithPassword({
-    email: $('#email').value.trim(),
+    email: adresse,
     password: $('#motDePasse').value,
   });
   if (error) {
     $('#erreurConnexion').textContent = 'Adresse ou mot de passe incorrect.';
     return;
   }
+  localStorage.setItem(ADRESSE_RETENUE, adresse);
   demarrer();
 });
 
