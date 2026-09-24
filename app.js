@@ -468,6 +468,20 @@ async function ficheCommerce(c) {
           data-nom="${esc(m.nom)}" style="margin-top:8px">Nouveau code secret</button>` : ''}
       </div>`).join('')}
 
+    <div class="carte ${e?.cgu_version === CGU_COURANTE ? '' : 'accent'}">
+      <div class="info">Conditions d'utilisation</div>
+      <div class="nom">${e?.cgu_version
+        ? (e.cgu_version === CGU_COURANTE
+            ? `À jour · acceptées le ${jour(e.cgu_acceptee_le)}`
+            : `Version ${esc(e.cgu_version)} — pas encore la dernière`)
+        : 'Jamais acceptées'}</div>
+      ${e?.cgu_version === CGU_COURANTE ? '' : `<p class="info">
+        Ce commerce n'a pas accepté les articles sur ce que l'équipe peut voir,
+        sur nos conseils et sur sa page publique. Le rappel s'affiche sur son
+        écran d'accueil ; s'il tarde, appelle-le.
+      </p>`}
+    </div>
+
     <h3>Son commerce au jour le jour</h3>
     <button class="bouton sombre" id="voirCarte">Carte et stock</button>
     <button class="bouton sombre" id="voirActivite">Historique de l'activité</button>
@@ -1199,6 +1213,10 @@ const JOURS = { 1: 'la journée', 7: 'la semaine', 30: 'le mois' };
 // La gravité vient du serveur : elle décide de la couleur du cadre, ici comme
 // sur le téléphone du commerçant.
 const GRAVITE = { urgent: 'danger', attention: 'accent', info: '' };
+
+// La version que porte l'application aujourd'hui. À changer ici en même temps
+// que dans maquis/src/cgu.ts : le CMS ne fait que constater l'écart.
+const CGU_COURANTE = '2026-09-b-provisoire';
 
 async function ficheRapport(c, jours = 7) {
   const { data: r, error } = await bd.rpc('rapport_commerce',
