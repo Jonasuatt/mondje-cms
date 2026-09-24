@@ -1196,14 +1196,16 @@ const brancherLignes = (ouvrir) =>
 
 const JOURS = { 1: 'la journée', 7: 'la semaine', 30: 'le mois' };
 
+// La gravité vient du serveur : elle décide de la couleur du cadre, ici comme
+// sur le téléphone du commerçant.
+const GRAVITE = { urgent: 'danger', attention: 'accent', info: '' };
+
 async function ficheRapport(c, jours = 7) {
   const { data: r, error } = await bd.rpc('rapport_commerce',
     { p_structure: c.id, p_jours: jours });
   if (error) return echoue(error);
 
   const dortTotal = r.dormants.reduce((n, d) => n + d.valeur, 0);
-  const prixAchatManquant = r.dormants.some((d) => !d.au_prix_achat)
-    || r.meilleurs.some((m) => m.marge == null);
   const margeTotale = r.meilleurs.every((m) => m.marge != null)
     ? r.meilleurs.reduce((n, m) => n + m.marge, 0) : null;
 
@@ -1237,8 +1239,11 @@ async function ficheRapport(c, jours = 7) {
     </div>
 
     <h3>Ce qu’il faut faire</h3>
-    ${conseils(r, dortTotal, prixAchatManquant, jours).map((t) =>
-      `<div class="carte"><p>${t}</p></div>`).join('')
+    ${(r.conseils ?? []).map((c) =>
+      `<div class="carte ${GRAVITE[c.gravite] ?? ''}">
+         <div class="nom">${esc(c.titre)}</div>
+         <p class="info">${esc(c.texte)}</p>
+       </div>`).join('')
       || '<p class="info">Rien à signaler sur cette période.</p>'}
 
     <h3>Ce qui se vend</h3>
@@ -1316,92 +1321,6 @@ function tenue(x, jours) {
   const parJour = x.vendus / jours;
   const reste = Math.floor(x.quantite / parJour);
   return reste <= 0 ? 'Moins d’un jour' : `Environ ${reste} jour(s)`;
-}
-
-// Les conseils. Chacun s'appuie sur un chiffre visible juste au-dessus.
-function conseils(r, dortTotal, prixAchatManquant, jours) {
-  const liste = [];
-
-  if ((r.non_remis.montant ?? 0) > 0) {
-    liste.push(`<b>${fcfa(r.non_remis.montant)}</b> encaissés par
-      ${r.non_remis.vendeurs} vendeur(s) ne sont pas encore arrivés à la caisse.
-      C'est de l'argent qui dort dans une poche. Fais remettre avant la fermeture.`);
-  }
-
-  if (dortTotal > 0 && r.ventes.total > 0 && dortTotal > r.ventes.total) {
-    liste.push(`Tu as <b>${fcfa(dortTotal)}</b> de marchandise qui n'a rien
-      rapporté sur la période, contre <b>${fcfa(r.ventes.total)}</b> encaissés.
-      Plus d'argent dort qu'il n'en rentre : avant de recommander, écoule ce qui
-      est déjà en rayon.`);
-  }
-
-  const pire = r.dormants[0];
-  if (pire && pire.jours_sans_vente >= 14) {
-    liste.push(`<b>${esc(pire.nom)}</b> : ${pire.quantite} en rayon, aucune
-      vente depuis ${pire.jours_sans_vente} jours, ${fcfa(pire.valeur)} retenus.
-      Baisse le prix, mets-le en avant, ou arrête d'en commander — il ne se
-      vendra pas tout seul.`);
-  }
-
-  const urgent = r.ruptures.filter((x) => x.quantite <= 0 && x.vendus > 0);
-  if (urgent.length) {
-    liste.push(`<b>${urgent.length} produit(s) à zéro</b> alors qu'ils se
-      vendaient : ${urgent.slice(0, 3).map((x) => esc(x.nom)).join(', ')}.
-      Un client qui ne trouve pas repart, et souvent il ne revient pas le
-      lendemain. C'est la perte la plus chère et la plus invisible.`);
-  }
-
-  const bientot = r.ruptures.filter((x) => x.quantite > 0 && x.vendus > 0)
-    .map((x) => ({ ...x, reste: Math.floor(x.quantite / (x.vendus / jours)) }))
-    .filter((x) => x.reste <= 3);
-  if (bientot.length) {
-    const p = bientot[0];
-    liste.push(`<b>${esc(p.nom)}</b> : ${p.vendus} vendus en ${jours} jour(s),
-      il en reste ${p.quantite}. À ce rythme tu tiens environ ${p.reste} jour(s).
-      Commande maintenant, pas quand ce sera vide.`);
-  }
-
-  if (r.heures.length >= 2) {
-    const forte = r.heures.reduce((a, b) => (b.montant > a.montant ? b : a));
-    const faible = r.heures.reduce((a, b) => (b.montant < a.montant ? b : a));
-    liste.push(`Ton heure la plus forte est <b>${String(forte.heure).padStart(2, '0')} h</b>
-      (${fcfa(forte.montant)}), la plus faible ${String(faible.heure).padStart(2, '0')} h
-      (${fcfa(faible.montant)}). Mets ton meilleur personnel sur l'heure forte,
-      et garde les rangements et l'inventaire pour l'heure creuse.`);
-  }
-
-  const total = r.annulations.reduce((n, a) => n + a.nombre, 0);
-  if (total >= 3 && r.annulations[0].nombre / total > 0.6) {
-    liste.push(`Sur ${total} commandes annulées, ${r.annulations[0].nombre}
-      viennent de <b>${esc(r.annulations[0].qui)}</b>. Une annulation n'est pas
-      une faute — leur concentration sur une personne mérite une question.`);
-  }
-
-  if (r.ecarts.length) {
-    const somme = r.ecarts.reduce((n, e) => n + e.ecart, 0);
-    liste.push(`<b>${r.ecarts.length} écart(s) de caisse</b> sur la période,
-      pour ${fcfa(somme)} au total. Reprends-les un par un avec ton caissier
-      pendant que tout le monde s'en souvient.`);
-  }
-
-  if (prixAchatManquant) {
-    liste.push(`Les prix d'achat manquent sur une partie de tes produits. Sans
-      eux, on compte ta marchandise au prix de vente — donc on surestime
-      l'argent immobilisé, et ta marge reste inconnue. C'est le renseignement
-      qui rend ce rapport vraiment juste.`);
-  }
-
-  if (r.meilleurs.length && r.ventes.total > 0) {
-    const un = r.meilleurs[0];
-    const part = Math.round((un.montant / r.ventes.total) * 100);
-    if (part >= 40) {
-      liste.push(`<b>${esc(un.nom)}</b> pèse ${part} % de ton chiffre. C'est ta
-        force, et c'est aussi ton risque : une rupture ou une hausse chez ton
-        fournisseur te touche de plein fouet. Ne le laisse jamais manquer.`);
-    }
-  }
-
-  return liste;
 }
 
 // --- Carte et stock d'un commerce -------------------------------------------
