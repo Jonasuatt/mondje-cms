@@ -58,6 +58,7 @@ const ACTIONS = {
   formule_changee: 'Formule changée',
   abonnement_encaisse: 'Abonnement encaissé',
   reinitialisation_code: 'Code secret réinitialisé',
+  stock_charge: 'Stock chargé par Mon Djê',
   admin_cree: 'Compte d’équipe créé',
   admin_desactive: 'Accès d’un administrateur bloqué',
   admin_reactive: 'Accès d’un administrateur rendu',
@@ -457,6 +458,14 @@ async function ficheCommerce(c) {
           data-nom="${esc(m.nom)}" style="margin-top:8px">Nouveau code secret</button>` : ''}
       </div>`).join('')}
 
+    <h3>Son commerce au jour le jour</h3>
+    <button class="bouton sombre" id="voirCarte">Carte et stock</button>
+    <button class="bouton sombre" id="voirActivite">Historique de l'activité</button>
+    <p class="info">
+      Nous pouvons charger ses produits et son stock à sa demande. Une entrée
+      saisie ici porte le nom de Mon Djê, jamais le sien.
+    </p>
+
     <h3>Abonnement</h3>
     <div class="carte">
       <div class="rangee">
@@ -526,6 +535,9 @@ async function ficheCommerce(c) {
         : 'Ce commerce est suspendu : son équipe ne peut pas se connecter.'}
     </p>
   `);
+
+  $('#voirCarte').addEventListener('click', () => ficheCarte(c));
+  $('#voirActivite').addEventListener('click', () => ficheActivite(c));
 
   $$('[data-recoder]').forEach((b) => b.addEventListener('click', async () => {
     if (!confirm(`${b.dataset.nom} recevra un nouveau code secret, et l'ancien ne marchera plus. `
@@ -1166,6 +1178,243 @@ document.addEventListener('click', (ev) => {
 
 const brancherLignes = (ouvrir) =>
   $$('tr[data-id]').forEach((tr) => tr.addEventListener('click', () => ouvrir(tr.dataset.id)));
+
+// --- Carte et stock d'un commerce -------------------------------------------
+//
+// Charger trois cents articles au pouce sur un téléphone n'est pas raisonnable :
+// c'est exactement ce que le clavier apporte. Le commerçant qui nous le demande
+// gagne une soirée, et nous gagnons un client qui démarre vraiment.
+
+async function ficheCarte(c) {
+  const [produits, stock, rubriques] = await Promise.all([
+    bd.from('produit').select('id, nom, prix_vente, unite, actif, categorie')
+      .eq('structure_id', c.id).order('nom'),
+    bd.from('stock_actuel').select('produit_id, quantite').eq('structure_id', c.id),
+    bd.from('categorie_catalogue').select('code, libelle, rang').order('rang'),
+  ]);
+
+  const quantites = new Map((stock.data ?? []).map((l) => [l.produit_id, l.quantite]));
+  const libelle = new Map((rubriques.data ?? []).map((r) => [r.code, r.libelle]));
+  const rang = new Map((rubriques.data ?? []).map((r) => [r.code, r.rang]));
+  const liste = (produits.data ?? []).slice().sort((a, b) =>
+    (rang.get(a.categorie) ?? 1e9) - (rang.get(b.categorie) ?? 1e9)
+    || String(a.nom).localeCompare(b.nom));
+
+  let rubriqueCourante = null;
+  ouvrirPanneau(c.nom + ' — carte et stock', `
+    <button class="bouton sombre" id="retourFiche">Retour à la fiche</button>
+    <button class="bouton" id="ajouterCatalogue">Ajouter des produits du catalogue</button>
+
+    ${liste.length === 0
+      ? '<p class="info">Ce commerce n’a aucun produit. Commence par le catalogue.</p>'
+      : `<p class="info">
+           Saisis une quantité en face des produits livrés, puis enregistre. Les
+           champs laissés vides ne bougent rien.
+         </p>
+         <div class="tableau"><table>
+           <thead><tr>
+             <th>Produit</th><th class="n">Prix</th><th class="n">En stock</th>
+             <th class="n">Entrée à saisir</th>
+           </tr></thead>
+           <tbody>
+           ${liste.map((p) => {
+             const r = libelle.get(p.categorie) ?? 'Sans rubrique';
+             const entete = r !== rubriqueCourante
+               ? `<tr><td colspan="4" class="info" style="padding-top:14px">${esc(r)}</td></tr>` : '';
+             rubriqueCourante = r;
+             return entete + `<tr>
+               <td>${esc(p.nom)}${p.actif ? '' : ' <span class="info">· retiré de la carte</span>'}
+                   <div class="info">${esc(p.unite)}</div></td>
+               <td class="n">${p.prix_vente ? fcfa(p.prix_vente) : '<span class="etiquette accent">prix à saisir</span>'}</td>
+               <td class="n">${quantites.get(p.id) ?? 0}</td>
+               <td class="n"><input data-entree="${esc(p.id)}" type="number" min="1"
+                     style="width:110px;text-align:right" /></td>
+             </tr>`;
+           }).join('')}
+           </tbody>
+         </table></div>
+         <button class="bouton ok" id="enregistrerEntrees">Enregistrer les entrées</button>`}
+  `);
+
+  $('#retourFiche').addEventListener('click', () => ficheCommerce(c));
+  $('#ajouterCatalogue').addEventListener('click', () => ficheCatalogueCommerce(c));
+
+  const bouton = $('#enregistrerEntrees');
+  if (!bouton) return;
+  bouton.addEventListener('click', async () => {
+    const entrees = $$('[data-entree]')
+      .map((i) => ({ produit_id: i.dataset.entree, quantite: parseInt(i.value, 10) }))
+      .filter((e) => Number.isInteger(e.quantite) && e.quantite > 0);
+    if (!entrees.length) return alert('Aucune quantité saisie.');
+    const total = entrees.reduce((n, e) => n + e.quantite, 0);
+    if (!confirm(`${entrees.length} produit(s), ${total} unité(s) ajoutées au stock de ${c.nom}. `
+                 + `L’entrée portera le nom de Mon Djê. Confirmer ?`)) return;
+    bouton.disabled = true;
+    try {
+      const { error } = await bd.functions.invoke('charger-stock-commerce', {
+        body: { structure_id: c.id, entrees },
+      });
+      if (error) throw error;
+      ficheCarte(c);
+    } catch (e) {
+      echoue(e);
+      bouton.disabled = false;
+    }
+  });
+}
+
+// Le catalogue, filtré par rubrique : deux cent cinquante lignes d'un coup ne
+// se lisent pas, même sur grand écran.
+async function ficheCatalogueCommerce(c) {
+  const activite = c.type_commerce === 'restauration' ? 'bar_maquis' : 'boutique';
+  const [articles, deja] = await Promise.all([
+    bd.from('catalogue_produit')
+      .select('id, nom, contenance, categorie, unite, categorie_catalogue (libelle, rang)')
+      .eq('actif', true).contains('activites', [activite]).order('nom'),
+    bd.from('produit').select('nom').eq('structure_id', c.id),
+  ]);
+
+  const nomComplet = (a) => (a.contenance ? a.nom + ' ' + a.contenance : a.nom);
+  const pris = new Set((deja.data ?? []).map((p) => String(p.nom).trim().toLowerCase()));
+  const libres = (articles.data ?? [])
+    .filter((a) => !pris.has(nomComplet(a).trim().toLowerCase()))
+    .sort((x, y) => (x.categorie_catalogue?.rang ?? 1e9) - (y.categorie_catalogue?.rang ?? 1e9)
+      || nomComplet(x).localeCompare(nomComplet(y)));
+
+  const desRubriques = [...new Map(libres.map((a) =>
+    [a.categorie, a.categorie_catalogue?.libelle ?? a.categorie])).entries()];
+
+  ouvrirPanneau(c.nom + ' — ajouter des produits', `
+    <button class="bouton sombre" id="retourCarte">Retour à la carte</button>
+    <p class="info">
+      Saisis un prix en face des produits qu'il vend. Sans prix, le produit
+      arrive sur sa carte mais reste invendable tant qu'il n'a pas fixé le sien :
+      un article à 0 F ne doit jamais partir en caisse.
+    </p>
+    <div class="ligne-champs">
+      <label>Rubrique
+        <select id="filtreRubrique">
+          <option value="">Toutes les rubriques</option>
+          ${desRubriques.map(([code, lib]) =>
+            `<option value="${esc(code)}">${esc(lib)}</option>`).join('')}
+        </select>
+      </label>
+      <label>Chercher<input id="filtreNom" placeholder="Nom du produit" /></label>
+    </div>
+    <div id="listeCatalogue"></div>
+    <button class="bouton ok" id="ajouterLesProduits">Ajouter les produits</button>
+  `);
+
+  // Les prix saisis survivent au changement de filtre : on les garde ici, pas
+  // dans le HTML qu'on redessine.
+  const prix = new Map();
+
+  const dessiner = () => {
+    const r = $('#filtreRubrique').value;
+    const mot = $('#filtreNom').value.trim().toLowerCase();
+    const vus = libres.filter((a) =>
+      (!r || a.categorie === r) && (!mot || nomComplet(a).toLowerCase().includes(mot)));
+    let courante = null;
+    $('#listeCatalogue').innerHTML = vus.length === 0
+      ? '<p class="info">Rien à ajouter ici : tout est déjà sur sa carte.</p>'
+      : `<div class="tableau"><table><tbody>${vus.slice(0, 400).map((a) => {
+          const lib = a.categorie_catalogue?.libelle ?? a.categorie;
+          const entete = lib !== courante
+            ? `<tr><td colspan="2" class="info" style="padding-top:14px">${esc(lib)}</td></tr>` : '';
+          courante = lib;
+          return entete + `<tr>
+            <td>${esc(nomComplet(a))}<div class="info">${esc(a.unite)}</div></td>
+            <td class="n"><input data-prix="${esc(a.id)}" type="number" min="0"
+                  placeholder="Prix" value="${esc(prix.get(a.id) ?? '')}"
+                  style="width:110px;text-align:right" /></td>
+          </tr>`;
+        }).join('')}</tbody></table></div>`
+        + (vus.length > 400 ? '<p class="info">Affichage limité à 400 lignes : affine la recherche.</p>' : '');
+  };
+
+  dessiner();
+  $('#filtreRubrique').addEventListener('change', () => { garderPrix(); dessiner(); });
+  $('#filtreNom').addEventListener('input', () => { garderPrix(); dessiner(); });
+  $('#retourCarte').addEventListener('click', () => ficheCarte(c));
+
+  function garderPrix() {
+    $$('[data-prix]').forEach((i) => {
+      if (i.value.trim()) prix.set(i.dataset.prix, i.value.trim());
+      else prix.delete(i.dataset.prix);
+    });
+  }
+
+  $('#ajouterLesProduits').addEventListener('click', async (ev) => {
+    garderPrix();
+    const produits = [...prix.entries()]
+      .map(([catalogue_id, v]) => ({ catalogue_id, prix: parseInt(v, 10) }))
+      .filter((p) => Number.isInteger(p.prix) && p.prix >= 0);
+    if (!produits.length) return alert('Saisis au moins un prix.');
+    ev.target.disabled = true;
+    try {
+      const { error } = await bd.functions.invoke('ajouter-produits-commerce', {
+        body: { structure_id: c.id, produits },
+      });
+      if (error) throw error;
+      ficheCarte(c);
+    } catch (e) {
+      echoue(e);
+      ev.target.disabled = false;
+    }
+  });
+}
+
+// --- L'activité d'un commerce ----------------------------------------------
+
+const GENRES = {
+  encaissement: 'Encaissement', paiement_declare: 'Paiement déclaré',
+  contestation: 'Contestation', paiement_annule: 'Paiement annulé',
+  commande_annulee: 'Commande annulée',
+  stock_entree: 'Entrée de stock', stock_perte: 'Perte',
+  stock_ajustement: 'Ajustement', stock_retour: 'Retour',
+  caisse_ouverte: 'Caisse ouverte', caisse_fermee: 'Caisse fermée',
+  intervention: 'Intervention Mon Djê',
+};
+
+async function ficheActivite(c) {
+  const { data, error } = await bd.from('activite_commerce')
+    .select('*').eq('structure_id', c.id).order('quand', { ascending: false }).limit(300);
+  if (error) return echoue(error);
+
+  ouvrirPanneau(c.nom + ' — historique', `
+    <button class="bouton sombre" id="retourFiche2">Retour à la fiche</button>
+    <label>N'afficher que
+      <select id="filtreGenre">
+        <option value="">Tout</option>
+        ${Object.entries(GENRES).map(([g, l]) =>
+          `<option value="${g}">${esc(l)}</option>`).join('')}
+      </select>
+    </label>
+    <div id="frise"></div>
+  `);
+
+  const dessiner = () => {
+    const g = $('#filtreGenre').value;
+    const vus = (data ?? []).filter((l) => !g || l.genre === g);
+    $('#frise').innerHTML = vus.length === 0
+      ? '<p class="info">Rien à montrer.</p>'
+      : `<div class="tableau"><table>
+           <thead><tr><th>Quand</th><th>Quoi</th><th>Qui</th><th>Détail</th><th class="n">Montant</th></tr></thead>
+           <tbody>${vus.map((l) => `<tr>
+             <td>${quand(l.quand)}</td>
+             <td>${esc(GENRES[l.genre] ?? l.genre)}</td>
+             <td>${esc(l.qui)}</td>
+             <td>${esc(ACTIONS[l.resume] ?? l.resume)}</td>
+             <td class="n">${l.montant == null ? '' : fcfa(l.montant)}</td>
+           </tr>`).join('')}</tbody>
+         </table></div>
+         <p class="info">${vus.length} évènement(s), du plus récent au plus ancien.</p>`;
+  };
+
+  dessiner();
+  $('#filtreGenre').addEventListener('change', dessiner);
+  $('#retourFiche2').addEventListener('click', () => ficheCommerce(c));
+}
 
 // Un code neuf ne s'affiche qu'une fois : il n'est écrit nulle part, ni chez
 // nous ni dans la base. Cette page est le seul endroit où on le voit, d'où le
