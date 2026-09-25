@@ -46,6 +46,7 @@ function introuvable() {
 function annonce(c) {
   if (!c.annonce_texte && !c.annonce_affiche_chemin) return '';
   return `
+    <h2 class="titre-bloc">Événement à l'affiche</h2>
     <div class="annonce">
       ${c.annonce_affiche_chemin
         ? `<img src="${esc(SEAU_LOGO + c.annonce_affiche_chemin)}" alt="Annonce" />` : ''}
@@ -59,6 +60,7 @@ function annonce(c) {
 function galerie(photos) {
   if (photos.length === 0) return '';
   return `
+    <h2 class="titre-bloc">Galerie du jour</h2>
     <div class="photos">
       ${photos.map((p) => `
         <figure class="photo">
@@ -128,5 +130,28 @@ async function demarrer() {
 
     ${pied()}`);
 }
+
+// Une affiche porte un numéro de téléphone et une date : sur un téléphone, à
+// la taille où elle s'affiche, personne ne les lit. Un toucher l'ouvre en
+// grand, un autre la referme — pas de bibliothèque pour ça.
+const loupe = document.getElementById('loupe');
+
+function ouvrirLoupe(img) {
+  document.getElementById('loupeImage').src = img.src;
+  const legende = img.closest('figure')?.querySelector('figcaption')?.textContent ?? '';
+  document.getElementById('loupeLegende').textContent = legende;
+  loupe.classList.remove('cache');
+}
+
+const fermerLoupe = () => loupe.classList.add('cache');
+
+document.addEventListener('click', (ev) => {
+  const image = ev.target.closest('.annonce img, .photo img');
+  if (image) return ouvrirLoupe(image);
+  if (loupe.contains(ev.target)) fermerLoupe();
+});
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape') fermerLoupe();
+});
 
 demarrer().catch(introuvable);

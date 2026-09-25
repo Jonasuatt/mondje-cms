@@ -24,6 +24,31 @@
       padding: 15px; border-radius: 12px; margin-bottom: 10px; font-size: 17px;
     }
     .appel.tel { background: #f4a300; color: #10131a; }
+    /* Chaque bloc dit ce qu'il est. Sans titre, l'affiche d'un concert et la
+       photo d'un plat se ressemblent : le client ne sait pas ce qu'il regarde. */
+    .titre-bloc {
+      margin: 22px 0 8px; font-size: 15px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .04em; color: #10131a;
+    }
+
+    /* Une affiche porte du texte — un numéro, une date, un prix. Sur un
+       téléphone, elle n'est lisible qu'en grand. */
+    .annonce img, .photo img { cursor: zoom-in; }
+    .loupe {
+      position: fixed; inset: 0; z-index: 50; display: flex;
+      align-items: center; justify-content: center;
+      background: rgba(6, 9, 15, .92); padding: 16px;
+    }
+    .loupe img { max-width: 100%; max-height: 88vh; border-radius: 8px; }
+    .loupe figcaption {
+      color: #f5f7fb; text-align: center; margin-top: 12px; font-size: 16px;
+    }
+    .loupe .fermer {
+      position: absolute; top: 10px; right: 14px; color: #f5f7fb;
+      font-size: 34px; line-height: 1; background: none; border: 0; padding: 8px;
+    }
+    .cache { display: none; }
+
     /* L'annonce du commerce. Elle se voit sans crier : une bordure et un fond
        chaud suffisent sur une page par ailleurs blanche. */
     .annonce {
@@ -61,6 +86,14 @@
 <body>
   <!-- La page d'un commerce, lisible sans compte. Elle ne montre que ce que le
        propriétaire a ouvert : sa page entière, et ses prix séparément. -->
+  <div class="loupe cache" id="loupe">
+    <button class="fermer" id="fermerLoupe" aria-label="Fermer">&times;</button>
+    <figure style="margin:0">
+      <img id="loupeImage" alt="" />
+      <figcaption id="loupeLegende"></figcaption>
+    </figure>
+  </div>
+
   <div class="vitrine" id="vitrine">
     <p class="attente">Un instant…</p>
   </div>
