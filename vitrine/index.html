@@ -65,6 +65,9 @@
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0 6px;
     }
     .photo {
+      /* Un <figure> porte 40 px de marge de chaque cote par defaut : sans ce
+         zero, la carte ne remplit pas sa colonne. */
+      margin: 0;
       background: #fff; border: 1px solid #e2e6ef; border-radius: 10px; overflow: hidden;
     }
     .photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
