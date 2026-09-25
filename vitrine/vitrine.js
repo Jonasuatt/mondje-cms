@@ -41,6 +41,18 @@ function introuvable() {
     ${pied()}`);
 }
 
+// Ce que le commerce a voulu dire aujourd'hui : une phrase, une affiche, ou
+// les deux. La vue ne la rend plus passé sa date, donc rien à vérifier ici.
+function annonce(c) {
+  if (!c.annonce_texte && !c.annonce_affiche_chemin) return '';
+  return `
+    <div class="annonce">
+      ${c.annonce_affiche_chemin
+        ? `<img src="${esc(SEAU_LOGO + c.annonce_affiche_chemin)}" alt="Annonce" />` : ''}
+      ${c.annonce_texte ? `<p>${esc(c.annonce_texte)}</p>` : ''}
+    </div>`;
+}
+
 const pied = () => `
   <p class="pied">
     <img src="../logo-mondje.png" alt="" />
@@ -77,6 +89,8 @@ async function demarrer() {
       Écrire sur WhatsApp</a>` : ''}
     ${c.telephone ? `<a class="appel tel" href="tel:${esc(c.telephone)}">
       Appeler ${esc(c.telephone)}</a>` : ''}
+
+    ${annonce(c)}
 
     ${articles.length === 0
       ? '<p class="lieu" style="margin-top:24px">La liste des produits arrive bientôt.</p>'
