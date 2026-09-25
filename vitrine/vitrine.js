@@ -135,12 +135,14 @@ async function demarrer() {
 // la taille où elle s'affiche, personne ne les lit. Un toucher l'ouvre en
 // grand, un autre la referme — pas de bibliothèque pour ça.
 const loupe = document.getElementById('loupe');
+let ouverteA = 0;
 
 function ouvrirLoupe(img) {
   document.getElementById('loupeImage').src = img.src;
   const legende = img.closest('figure')?.querySelector('figcaption')?.textContent ?? '';
   document.getElementById('loupeLegende').textContent = legende;
   loupe.classList.remove('cache');
+  ouverteA = Date.now();
 }
 
 const fermerLoupe = () => loupe.classList.add('cache');
@@ -148,7 +150,10 @@ const fermerLoupe = () => loupe.classList.add('cache');
 document.addEventListener('click', (ev) => {
   const image = ev.target.closest('.annonce img, .photo img');
   if (image) return ouvrirLoupe(image);
-  if (loupe.contains(ev.target)) fermerLoupe();
+  // Sur un telephone, le toucher declenche un clic fantome quelques dizaines de
+  // millisecondes plus tard. La loupe est deja ouverte a ce moment-la, et le
+  // clic retombe dessus : elle se refermait aussitot.
+  if (loupe.contains(ev.target) && Date.now() - ouverteA > 400) fermerLoupe();
 });
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape') fermerLoupe();
