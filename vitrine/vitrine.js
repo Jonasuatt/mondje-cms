@@ -53,6 +53,21 @@ function annonce(c) {
     </div>`;
 }
 
+// Ce que le commerce sert, en images. La légende est facultative : une photo
+// de poisson braisé se passe de commentaire, mais « Poulet braisé, 3000 F le
+// demi » en dit plus qu'une ligne de carte.
+function galerie(photos) {
+  if (photos.length === 0) return '';
+  return `
+    <div class="photos">
+      ${photos.map((p) => `
+        <figure class="photo">
+          <img src="${esc(SEAU_LOGO + p.chemin)}" alt="${esc(p.legende ?? '')}" loading="lazy" />
+          ${p.legende ? `<figcaption>${esc(p.legende)}</figcaption>` : ''}
+        </figure>`).join('')}
+    </div>`;
+}
+
 const pied = () => `
   <p class="pied">
     <img src="../logo-mondje.png" alt="" />
@@ -63,10 +78,12 @@ async function demarrer() {
   const code = new URLSearchParams(location.search).get('c');
   if (!code) return introuvable();
 
-  const [commerce, produits] = await Promise.all([
+  const [commerce, produits, images] = await Promise.all([
     bd.from('vitrine_commerce').select('*').eq('code', code.toUpperCase()).maybeSingle(),
     bd.from('vitrine_produit').select('*').eq('code', code.toUpperCase())
       .order('rang').order('nom'),
+    bd.from('vitrine_photo').select('*').eq('code', code.toUpperCase())
+      .order('rang').order('cree_le'),
   ]);
 
   const c = commerce.data;
@@ -91,6 +108,7 @@ async function demarrer() {
       Appeler ${esc(c.telephone)}</a>` : ''}
 
     ${annonce(c)}
+    ${galerie(images.data ?? [])}
 
     ${articles.length === 0
       ? '<p class="lieu" style="margin-top:24px">La liste des produits arrive bientôt.</p>'
