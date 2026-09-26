@@ -1232,7 +1232,7 @@ const GRAVITE = { urgent: 'danger', attention: 'accent', info: '' };
 
 // La version que porte l'application aujourd'hui. À changer ici en même temps
 // que dans maquis/src/cgu.ts : le CMS ne fait que constater l'écart.
-const CGU_COURANTE = '2026-09-c';
+const CGU_COURANTE = '2026-09-d';
 
 async function ficheRapport(c, jours = 7) {
   const { data: r, error } = await bd.rpc('rapport_commerce',
