@@ -41,6 +41,10 @@ function compter(evenement) {
 // Une visite par onglet : recharger la page ne la recompte pas. L'onglet retient
 // seulement « déjà compté » — rien de ce qui l'identifie ne part.
 function compterVisite() {
+  // Le drapeau ne se pose que si la visite part vraiment : un aperçu ou un robot
+  // qui le poserait sans rien envoyer ferait croire, dans le même onglet, que la
+  // vraie visite suivante est déjà comptée.
+  if (apercu || robot || !parametres.get('c')) return;
   try {
     const cle = `vu_${parametres.get('c')}`;
     if (sessionStorage.getItem(cle)) return;
