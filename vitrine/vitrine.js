@@ -10,6 +10,45 @@ const SEAU_LOGO = `${URL_SUPABASE}/storage/v1/object/public/logo-commerce/`;
 
 const bd = supabase.createClient(URL_SUPABASE, CLE_PUBLIQUE);
 
+// --- Le compteur ------------------------------------------------------------------
+//
+// Ni cookie, ni adresse IP, ni identifiant : on ne sait pas QUI est venu, on sait
+// COMBIEN de fois. La base ne garde qu'un total par jour et par commerce.
+//
+// Ne comptent pas : le propriétaire qui regarde sa propre page (le lien de
+// l'application porte « apercu »), et les robots — un aperçu de lien WhatsApp ne
+// lance pas de JavaScript, mais un moteur de recherche, si.
+const parametres = new URLSearchParams(location.search);
+const apercu = parametres.has('apercu');
+const robot = navigator.webdriver
+  || /bot|crawl|spider|preview|headless|lighthouse/i.test(navigator.userAgent);
+
+// « keepalive » : le clic sur WhatsApp ou sur le numéro quitte la page aussitôt, et
+// la requête doit partir quand même.
+function compter(evenement) {
+  const code = parametres.get('c');
+  if (apercu || robot || !code) return;
+  try {
+    fetch(`${URL_SUPABASE}/rest/v1/rpc/compter_vitrine`, {
+      method: 'POST',
+      keepalive: true,
+      headers: { apikey: CLE_PUBLIQUE, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_code: code, p_evenement: evenement }),
+    }).catch(() => {});
+  } catch { /* un compteur ne doit jamais gêner la page */ }
+}
+
+// Une visite par onglet : recharger la page ne la recompte pas. L'onglet retient
+// seulement « déjà compté » — rien de ce qui l'identifie ne part.
+function compterVisite() {
+  try {
+    const cle = `vu_${parametres.get('c')}`;
+    if (sessionStorage.getItem(cle)) return;
+    sessionStorage.setItem(cle, '1');
+  } catch { /* navigation privée : on compte à chaque ouverture, faute de mieux */ }
+  compter('visite');
+}
+
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -73,7 +112,8 @@ function galerie(photos) {
 const pied = () => `
   <p class="pied">
     <img src="../logo-mondje.png" alt="" />
-    Page tenue à jour par Mon Djê, d'après le stock réel du commerce.
+    Page tenue à jour par Mon Djê, d'après le stock réel du commerce.<br />
+    <small>Les visites sont comptées, sans cookie et sans rien savoir de vous.</small>
   </p>`;
 
 async function demarrer() {
@@ -129,6 +169,8 @@ async function demarrer() {
         }).join('')}
 
     ${pied()}`);
+
+  compterVisite();
 }
 
 // Une affiche porte un numéro de téléphone et une date : sur un téléphone, à
@@ -157,6 +199,13 @@ document.addEventListener('click', (ev) => {
 });
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape') fermerLoupe();
+});
+
+// Ce qui compte vraiment : une page qu'on ouvre ne rapporte rien, une page dont on
+// touche le numéro, si.
+document.addEventListener('click', (ev) => {
+  const lien = ev.target.closest('a.appel');
+  if (lien) compter(lien.classList.contains('tel') ? 'appel' : 'whatsapp');
 });
 
 demarrer().catch(introuvable);

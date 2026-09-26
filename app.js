@@ -448,15 +448,20 @@ async function pageCommerces() {
 }
 
 async function ficheCommerce(c) {
-  const [etat, formules, paiements, interventions] = await Promise.all([
+  const il_y_a_30 = new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10);
+  const [etat, formules, paiements, interventions, visites] = await Promise.all([
     bd.from('abonnement_etat').select('*').eq('structure_id', c.id).maybeSingle(),
     bd.from('formule_abonnement').select('*').eq('actif', true).order('rang'),
     bd.from('abonnement_paiement').select('*').eq('structure_id', c.id)
       .order('cree_le', { ascending: false }).limit(12),
     bd.from('journal_lisible').select('*').eq('structure_id', c.id)
       .order('cree_le', { ascending: false }).limit(30),
+    bd.from('vitrine_stat').select('visites, whatsapp, appels')
+      .eq('structure_id', c.id).gte('jour', il_y_a_30),
   ]);
   const e = etat.data;
+  const audience = (visites.data ?? []).reduce(
+    (t, j) => ({ v: t.v + j.visites, w: t.w + j.whatsapp, a: t.a + j.appels }), { v: 0, w: 0, a: 0 });
 
   ouvrirPanneau(c.nom, `
     <div class="carte ${c.actif ? '' : 'danger'}">
@@ -466,6 +471,8 @@ async function ficheCommerce(c) {
       ${champLecture('WhatsApp', c.telephone)}
       ${champLecture('Téléphone fixe', c.telephone_fixe)}
       ${champLecture('Ouvert le', jour(c.cree_le))}
+      ${champLecture('Page publique (30 jours)',
+        `${audience.v} visite(s) · ${audience.w} WhatsApp · ${audience.a} appel(s)`)}
     </div>
 
     <h3>Comptes</h3>
