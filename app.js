@@ -1577,7 +1577,7 @@ async function ficheCatalogueCommerce(c) {
 
 const GENRES = {
   encaissement: 'Encaissement', paiement_declare: 'Paiement déclaré',
-  contestation: 'Contestation', paiement_annule: 'Paiement annulé',
+  contestation: 'Contestation', paiement_annule: 'Paiement annulé', correction: 'Paiement corrigé',
   commande_annulee: 'Commande annulée',
   stock_entree: 'Entrée de stock', stock_perte: 'Perte',
   stock_ajustement: 'Ajustement', stock_retour: 'Retour',
