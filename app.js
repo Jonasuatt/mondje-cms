@@ -346,6 +346,7 @@ function ficheDemande(d) {
     ${champLecture('WhatsApp', d.telephone)}
     ${champLecture('E-mail', d.email)}
     ${champLecture('Message', d.message)}
+    ${d.parrain_nom ? champLecture('Parrainé par', `${d.parrain_nom} (code ${d.code_parrain}) — un mois offert à son premier paiement`) : ''}
     ${champLecture('Conditions acceptées', `version ${d.cgu_version}, le ${jour(d.cree_le)}`)}
     ${d.motif_refus ? champLecture('Motif du refus', d.motif_refus) : ''}
     ${enAttente ? `
