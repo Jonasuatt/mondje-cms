@@ -30,7 +30,13 @@ const quand = (iso) => new Date(iso).toLocaleString('fr-FR',
 
 const TYPE_COMMERCE = {
   restauration: 'Restauration (tables)',
+  boutique: 'Boutique',
+  marche: 'Marché',
   vente_directe: 'Vente directe',
+};
+
+const TAILLE_BOUTIQUE = {
+  petite: 'Petite surface', moyenne: 'Surface moyenne', grande: 'Grande surface',
 };
 
 const ACTIVITES = {
@@ -341,6 +347,7 @@ function ficheDemande(d) {
   const enAttente = d.statut === 'en_attente';
   ouvrirPanneau(d.nom_commerce, `
     ${champLecture('Type', TYPE_COMMERCE[d.type_commerce] ?? d.type_commerce)}
+    ${d.taille_boutique ? champLecture('Taille', TAILLE_BOUTIQUE[d.taille_boutique] ?? d.taille_boutique) : ''}
     ${champLecture('Ville', d.commune ? `${d.ville} — ${d.commune}` : d.ville)}
     ${champLecture('Propriétaire', d.nom_proprietaire)}
     ${champLecture('WhatsApp', d.telephone)}
@@ -424,7 +431,7 @@ function ficheDemande(d) {
 // qui échoue doit le dire.
 async function pageCommerces() {
   const { data, error } = await bd.from('structure')
-    .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
+    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
     .order('nom');
   if (error) throw error;
   const commerces = data ?? [];
@@ -468,6 +475,7 @@ async function ficheCommerce(c) {
     <div class="carte ${c.actif ? '' : 'danger'}">
       ${champLecture('Code commerce', c.code)}
       ${champLecture('Type', TYPE_COMMERCE[c.type_commerce] ?? c.type_commerce)}
+      ${c.taille_boutique ? champLecture('Taille', TAILLE_BOUTIQUE[c.taille_boutique] ?? c.taille_boutique) : ''}
       ${champLecture('Ville', c.commune ? `${c.ville} — ${c.commune}` : c.ville)}
       ${champLecture('WhatsApp', c.telephone)}
       ${champLecture('Téléphone fixe', c.telephone_fixe)}
@@ -679,7 +687,7 @@ async function pageAbonnements() {
 
   brancherLignes(async (id) => {
     const { data: c } = await bd.from('structure')
-      .select('id, nom, code, type_commerce, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
+      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
       .eq('id', id).single();
     ficheCommerce(c);
   });
