@@ -58,7 +58,9 @@ lui rend aucune ligne. Le CMS le lui dit et le déconnecte.
 
 ## En ligne
 
-<https://jonasuatt.github.io/mondje-cms/>
+<https://mondje.ci/>
+
+(Ancienne adresse `https://jonasuatt.github.io/mondje-cms/` : GitHub la redirige vers `mondje.ci`. Le nom de domaine est réglé chez Cloudflare — zone `mondje.ci`, offre gratuite — et pointe vers GitHub Pages ; le fichier `cms/CNAME` doit rester dans le dossier.)
 
 Publié par GitHub Pages depuis le dépôt public `Jonasuatt/mondje-cms`, qui ne
 contient que ce dossier. Pour republier après une modification, depuis la
