@@ -33,6 +33,7 @@ const TYPE_COMMERCE = {
   boutique: 'Boutique',
   marche: 'Marché',
   vente_directe: 'Vente directe',
+  location: 'Location',
 };
 
 const TAILLE_BOUTIQUE = {
