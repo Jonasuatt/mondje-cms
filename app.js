@@ -169,6 +169,7 @@ const PAGES = {
   dossiers: { titre: 'Demandes d’ouverture', rendre: pageDossiers },
   commerces: { titre: 'Commerces', rendre: pageCommerces },
   abonnements: { titre: 'Abonnements', rendre: pageAbonnements },
+  usage: { titre: 'Usage', rendre: pageUsage },
   catalogue: { titre: 'Catalogue', rendre: pageCatalogue },
   propositions: { titre: 'Produits proposés', rendre: pagePropositions },
   messages: { titre: 'Messages', rendre: pageMessages },
@@ -223,11 +224,13 @@ async function rafraichirPastilles() {
 // --- Tableau de bord -------------------------------------------------------
 
 async function pageAccueil() {
-  const [etats, recettes, commerces] = await Promise.all([
+  const [etats, recettes, commerces, usage] = await Promise.all([
     bd.from('abonnement_etat').select('*').order('nom'),
     bd.from('abonnement_recette').select('*').order('mois', { ascending: false }).limit(6),
     bd.from('structure').select('id, nom, ville, type_commerce, actif'),
+    bd.from('usage_commerce').select('*'),
   ]);
+  const silencieux = (usage.data ?? []).filter((l) => l.actif && [1, 2, 0].includes(etatUsage(l).rang));
   const lignes = etats.data ?? [];
   const ouverts = (commerces.data ?? []).filter((c) => c.actif);
   const aRelancer = lignes.filter((l) => l.etat === 'expire' || l.etat === 'jamais_paye');
@@ -258,6 +261,11 @@ async function pageAccueil() {
         <div class="info">À relancer</div>
         <div class="gros">${aRelancer.length}</div>
         <div class="info">expiré ou jamais payé</div>
+      </div>
+      <div class="carte ${silencieux.length ? 'danger' : ''}" style="cursor:pointer" onclick="aller('usage')">
+        <div class="info">Silencieux</div>
+        <div class="gros">${silencieux.length}</div>
+        <div class="info">sans vente depuis 7 jours ou plus</div>
       </div>
     </div>
 
@@ -680,6 +688,60 @@ async function pageAbonnements() {
         jour(l.jusquau),
         `<span class="n">${fcfa(l.total_encaisse)}</span>`,
         etiquette(l.etat),
+      ],
+    })),
+    'Aucun commerce.'
+  );
+
+  brancherLignes(async (id) => {
+    const { data: c } = await bd.from('structure')
+      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
+      .eq('id', id).single();
+    ficheCommerce(c);
+  });
+}
+
+// --- Usage -----------------------------------------------------------------
+//
+// Un abonnement payé ne dit pas si l'application sert. Ici : la dernière vente de chaque commerce,
+// ce qu'il a vendu sur 7 et 30 jours. Un commerce actif qui ne vend plus va résilier — ou n'a jamais
+// compris : c'est le moment de l'appeler, pas quand l'abonnement expire.
+
+const joursDepuis = (iso) => (iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000) : null);
+
+// Ouvert depuis plus d'une semaine et pas une vente depuis 7 jours : silencieux. Depuis 14 : en danger.
+function etatUsage(l) {
+  if (!l.actif) return { rang: 9, html: '<span class="etiquette">suspendu</span>' };
+  const age = joursDepuis(l.cree_le);
+  const sans = joursDepuis(l.derniere_vente);
+  if (l.derniere_vente == null) {
+    return age > 7
+      ? { rang: 0, html: '<span class="etiquette danger">jamais vendu</span>' }
+      : { rang: 5, html: '<span class="etiquette accent">vient d’ouvrir</span>' };
+  }
+  if (sans >= 14) return { rang: 1, html: `<span class="etiquette danger">${sans} j sans vente</span>` };
+  if (sans >= 7) return { rang: 2, html: `<span class="etiquette accent">${sans} j sans vente</span>` };
+  return { rang: 6, html: '<span class="etiquette ok">actif</span>' };
+}
+
+async function pageUsage() {
+  const { data } = await bd.from('usage_commerce').select('*');
+  const lignes = (data ?? []).map((l) => ({ ...l, etat: etatUsage(l) }))
+    .sort((a, b) => a.etat.rang - b.etat.rang || (b.ventes_30j - a.ventes_30j));
+
+  $('#page').innerHTML = tableau(
+    ['Commerce', 'Ville', 'Dernière vente', 'Ventes 7 j', 'Ventes 30 j', 'Factures 30 j', 'Équipe', 'Usage'],
+    lignes.map((l) => ({
+      id: l.structure_id,
+      cellules: [
+        esc(l.nom),
+        esc(l.ville ?? '—'),
+        l.derniere_vente ? jour(l.derniere_vente) : '—',
+        `<span class="n">${fcfa(l.ventes_7j)}</span>`,
+        `<span class="n">${fcfa(l.ventes_30j)}</span>`,
+        `<span class="n">${l.factures_30j}</span>`,
+        `${l.membres} pers.`,
+        l.etat.html,
       ],
     })),
     'Aucun commerce.'
