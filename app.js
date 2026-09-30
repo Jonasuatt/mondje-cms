@@ -394,7 +394,7 @@ function ficheDemande(d) {
         <div class="carte ok">
           ${champLecture('Code commerce', data.code_commerce)}
           ${champLecture('N° d’employé', data.code_employe)}
-          ${champLecture('Code secret', data.code_secret)}
+          ${champLecture('Code secret', (data.code_secret ?? data.code_secret_provisoire))}
         </div>
         <p class="erreur">
           Ce code ne sera plus jamais affiché. Envoie-le maintenant sur le
@@ -406,7 +406,7 @@ function ficheDemande(d) {
         `${d.nom_proprietaire}, voici tes identifiants Mon Djê pour « ${d.nom_commerce} » :\n\n` +
         `• Code commerce : ${data.code_commerce}\n` +
         `• N° d'employé : ${data.code_employe}\n` +
-        `• Code secret : ${data.code_secret}\n\n` +
+        `• Code secret : ${data.code_secret ?? data.code_secret_provisoire}\n\n` +
         `Change ce code dès ta première connexion (Profil → Changer mon code).`;
       $('#copier').addEventListener('click', () => {
         navigator.clipboard.writeText(message);
