@@ -1788,6 +1788,7 @@ Pour commencer (5 minutes) :
 1️⃣ Installe l'application sur ton téléphone Android (version 7 ou plus récente) :
 https://mondje.ci/telecharger/
 Si Android affiche un avertissement, touche « Plus de détails » puis « Installer quand même » : c'est normal.
+⚠️ Télécharge l'application uniquement depuis mondje.ci : un fichier reçu d'ailleurs peut être une fausse copie qui vole tes codes.
 
 2️⃣ Ouvre l'application. Je t'envoie dans un autre message ton code commerce, ton n° d'employé et ton code secret provisoire.
 
