@@ -77,7 +77,7 @@ const html = `<!DOCTYPE html>
       ou depuis l'application (« Assistance Mon Djê »).</div>
   </div>
 </main>
-<footer class="pied"><div class="conteneur"><div class="bas" style="border:0;margin:0;padding:0">© 2026 Mon Djê · <a href="../">Accueil</a> · <a href="../telecharger/">Télécharger</a> · <a href="../apropos/">À propos</a> · <a href="../equipe/">Espace équipe</a></div></div></footer>
+<footer class="pied"><div class="conteneur"><div class="bas" style="border:0;margin:0;padding:0">© 2026 Mon Djê · <a href="../">Accueil</a> · <a href="../telecharger/">Télécharger</a> · <a href="../apropos/">À propos</a> · <a href="../propositions/">Une idée ?</a> · <a href="../equipe/">Espace équipe</a></div></div></footer>
 </body>
 </html>
 `;
@@ -123,7 +123,7 @@ writeFileSync(join(racine, 'apropos', 'index.html'), `<!DOCTYPE html>
     <p style="margin-top:30px"><a class="bouton clair" href="${SITE_WEB_URL}">${SITE_WEB}</a></p>
   </div>
 </main>
-<footer class="pied"><div class="conteneur"><div class="bas" style="border:0;margin:0;padding:0">© 2026 Mon Djê · <a href="../">Accueil</a> · <a href="../guide/">Guide</a> · <a href="../telecharger/">Télécharger</a></div></div></footer>
+<footer class="pied"><div class="conteneur"><div class="bas" style="border:0;margin:0;padding:0">© 2026 Mon Djê · <a href="../">Accueil</a> · <a href="../guide/">Guide</a> · <a href="../telecharger/">Télécharger</a> · <a href="../propositions/">Une idée ?</a></div></div></footer>
 </body>
 </html>
 `);

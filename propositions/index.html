@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Une idée, une remarque ? — Mon Djê</title>
+  <meta name="description" content="Écrivez à l'équipe Mon Djê : une proposition, une remarque, une question. Nous lisons tout et nous répondons." />
+  <meta name="theme-color" content="#0e1b2e" />
+  <link rel="canonical" href="https://mondje.ci/propositions/" />
+  <link rel="icon" href="../favicon.png" />
+  <link rel="stylesheet" href="../site.css" />
+  <style>
+    .formulaire { display: grid; gap: 14px; margin: 24px 0 8px; max-width: 640px; }
+    .formulaire label { display: grid; gap: 6px; font-weight: 600; color: var(--nuit); }
+    .formulaire label small { font-weight: 400; color: var(--faible); }
+    .formulaire input[type=text], .formulaire textarea {
+      font: inherit; padding: 12px 14px; border: 1px solid var(--trait); border-radius: 12px; background: #fff; color: var(--texte); width: 100%;
+    }
+    .formulaire textarea { min-height: 150px; resize: vertical; }
+    .formulaire input:focus, .formulaire textarea:focus { outline: 2px solid var(--bleu); border-color: transparent; }
+    .formulaire .case { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; color: var(--faible); font-size: 15px; }
+    .formulaire .case input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+    .piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .retour { padding: 12px 16px; border-radius: 12px; margin: 6px 0; }
+    .retour.ok { background: #e7f6ee; border: 1px solid #b6e2c8; color: #14572f; }
+    .retour.erreur { background: #fdecea; border: 1px solid #f3b9b3; color: #8a1f17; }
+    .reponses { margin-top: 18px; display: grid; gap: 14px; }
+    .echange { border: 1px solid var(--trait); border-radius: 16px; padding: 16px 18px; background: #fff; }
+    .echange .q { margin: 0 0 4px; }
+    .echange .qui { color: var(--faible); font-size: 14px; margin: 0 0 10px; }
+    .echange .r { margin: 0; padding: 12px 14px; background: var(--ciel); border-radius: 12px; }
+    .echange .r b { color: var(--nuit); }
+  </style>
+</head>
+<body>
+<header class="entete">
+  <div class="conteneur">
+    <a class="marque" href="../"><img src="../logo-mondje.png" alt="" width="38" height="38" /> Mon Djê</a>
+    <nav class="nav"><a href="../guide/">Guide</a><a href="../#faq">Questions</a><a class="bouton petit" href="../telecharger/">Télécharger</a></nav>
+  </div>
+</header>
+
+<main class="page">
+  <div class="conteneur contenu">
+    <span class="surtitre">Écrivez-nous</span>
+    <h1>Une idée, une remarque ?</h1>
+    <p class="chapeau">Mon Djê se construit avec ceux qui s'en servent. Dites-nous ce qui manque, ce qui gêne, ce que vous aimeriez voir.
+      Notre équipe lit chaque message et répond.</p>
+
+    <form id="formulaire" class="formulaire" novalidate>
+      <label>Votre nom <small>(un prénom suffit)</small>
+        <input type="text" id="nom" maxlength="80" autocomplete="given-name" />
+      </label>
+      <label>Votre WhatsApp ou votre e-mail <small>(facultatif — pour que nous puissions vous répondre en privé ; il n'est jamais affiché)</small>
+        <input type="text" id="contact" maxlength="120" autocomplete="off" inputmode="email" />
+      </label>
+      <label>Votre message
+        <textarea id="texte" maxlength="2000" required placeholder="Par exemple : « Ce serait bien de pouvoir… »"></textarea>
+      </label>
+      <label class="case">
+        <input type="checkbox" id="publiable" />
+        <span>J'accepte que mon message et la réponse de l'équipe puissent être affichés sur cette page, avec mon prénom (jamais mon contact). Cela peut aider d'autres personnes qui se posent la même question.</span>
+      </label>
+      <div class="piege" aria-hidden="true"><label>Ne pas remplir<input type="text" id="site_web" tabindex="-1" autocomplete="off" /></label></div>
+      <div><button class="bouton" id="envoyer" type="submit">Envoyer mon message</button></div>
+      <div id="retour" role="status" aria-live="polite"></div>
+    </form>
+    <p style="color:var(--faible);font-size:15px;max-width:640px">Plutôt par téléphone ? Écrivez-nous sur
+      <a href="https://wa.me/2250565750303">WhatsApp au 05 65 75 03 03</a>. Votre message n'est lu que par l'équipe Mon Djê.</p>
+
+    <h2 id="reponses-titre" class="cache">Vos propositions, nos réponses</h2>
+    <div id="reponses" class="reponses"></div>
+  </div>
+</main>
+
+<footer class="pied"><div class="conteneur"><div class="bas" style="border:0;margin:0;padding:0">© 2026 Mon Djê · <a href="../">Accueil</a> · <a href="../guide/">Guide</a> · <a href="../telecharger/">Télécharger</a> · <a href="../apropos/">À propos</a></div></div></footer>
+
+<script src="../vendor/supabase.js"></script>
+<script>
+  // Même clé publique que la page d'un commerce : elle ne donne que le droit d'envoyer un message et de lire les
+  // réponses publiées. Tout le reste est fermé côté base.
+  const bd = supabase.createClient('https://xflrfpmsatikglixxtxs.supabase.co', 'sb_publishable__o--lkXqrhp8MvCruh5aCA_AoBSlLLB');
+  const $ = (id) => document.getElementById(id);
+  const montrer = (classe, texte) => { $('retour').innerHTML = ''; const d = document.createElement('div'); d.className = 'retour ' + classe; d.textContent = texte; $('retour').append(d); };
+
+  $('formulaire').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if ($('texte').value.trim().length < 5) return montrer('erreur', 'Écrivez au moins quelques mots.');
+    $('envoyer').disabled = true;
+    const avecContact = $('contact').value.trim() !== '';
+    const { error } = await bd.rpc('envoyer_suggestion', {
+      p_nom: $('nom').value, p_contact: $('contact').value, p_texte: $('texte').value,
+      p_publiable: $('publiable').checked, p_site_web: $('site_web').value,
+    });
+    $('envoyer').disabled = false;
+    if (error) return montrer('erreur', error.message || 'Envoi impossible. Vérifiez votre connexion et réessayez.');
+    $('formulaire').reset();
+    montrer('ok', 'Merci ! Votre message est bien arrivé. L’équipe Mon Djê vous répondra' + (avecContact ? '' : ' (si vous nous laissez un contact la prochaine fois, nous pourrons vous écrire directement)') + '.');
+  });
+
+  // Les échanges que l'équipe a choisi de publier, avec l'accord de leur auteur.
+  (async () => {
+    const { data } = await bd.from('suggestion_publiee').select('nom, texte, reponse, repondu_le')
+      .order('repondu_le', { ascending: false }).limit(30);
+    if (!data || !data.length) return;
+    $('reponses-titre').classList.remove('cache');
+    for (const s of data) {
+      const bloc = document.createElement('article'); bloc.className = 'echange';
+      const q = document.createElement('p'); q.className = 'q'; q.textContent = s.texte;
+      const qui = document.createElement('p'); qui.className = 'qui';
+      qui.textContent = s.nom + ' · ' + new Date(s.repondu_le).toLocaleDateString('fr-FR');
+      const r = document.createElement('p'); r.className = 'r';
+      const b = document.createElement('b'); b.textContent = 'Mon Djê : '; r.append(b, s.reponse);
+      bloc.append(q, qui, r); $('reponses').append(bloc);
+    }
+  })();
+</script>
+</body>
+</html>

@@ -174,6 +174,7 @@ const PAGES = {
   catalogue: { titre: 'Catalogue', rendre: pageCatalogue },
   propositions: { titre: 'Produits proposés', rendre: pagePropositions },
   messages: { titre: 'Messages', rendre: pageMessages },
+  idees: { titre: 'Idées du site', rendre: pageIdees },
   journal: { titre: 'Journal des interventions', rendre: pageJournal },
   equipe: { titre: 'Équipe et formules', rendre: pageEquipe },
 };
@@ -206,10 +207,11 @@ async function aller(cle) {
 
 // Ce qui attend quelqu'un : demandes, produits proposés, messages non lus.
 async function rafraichirPastilles() {
-  const [d, p, m] = await Promise.all([
+  const [d, p, m, i] = await Promise.all([
     bd.from('demande_ouverture').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente'),
     bd.from('proposition_produit').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente'),
     bd.from('message').select('id', { count: 'exact', head: true }).eq('de_l_equipe', false).is('lu_le', null),
+    bd.from('suggestion').select('id', { count: 'exact', head: true }).is('reponse', null),
   ]);
   const poser = (cle, n) => {
     const e = $(`[data-pastille="${cle}"]`);
@@ -220,6 +222,7 @@ async function rafraichirPastilles() {
   poser('dossiers', d.count ?? 0);
   poser('propositions', p.count ?? 0);
   poser('messages', m.count ?? 0);
+  poser('idees', i.count ?? 0);
 }
 
 // --- Tableau de bord -------------------------------------------------------
@@ -1092,6 +1095,69 @@ async function ouvrirFil(structureId, nom) {
     });
     if (error) { echoue(error); ev.target.disabled = false; return; }
     ouvrirFil(structureId, nom);
+  });
+}
+
+// --- Idées du site (mondje.ci/propositions) --------------------------------
+
+async function pageIdees() {
+  const { data } = await bd.from('suggestion').select('*').order('cree_le', { ascending: false }).limit(300);
+  const liste = data ?? [];
+  const etat = (s) => !s.reponse ? '<span class="etiquette accent">À répondre</span>'
+    : s.publiee ? '<span class="etiquette ok">Publiée sur le site</span>' : '<span class="etiquette">Répondue</span>';
+
+  $('#page').innerHTML = liste.map((s) => `
+    <div class="carte ${s.reponse ? '' : 'accent'}" data-idee="${s.id}" style="cursor:pointer">
+      <div class="rangee"><span class="nom">${esc(s.nom)}</span>${etat(s)}</div>
+      <div class="info">${quand(s.cree_le)}${s.contact ? ` · ${esc(s.contact)}` : ''}</div>
+      <div>${esc(s.texte.slice(0, 160))}${s.texte.length > 160 ? '…' : ''}</div>
+    </div>`).join('') || `<p class="info">
+      Aucun message pour l'instant. Les internautes écrivent depuis mondje.ci/propositions.
+    </p>`;
+
+  $$('[data-idee]').forEach((c) => c.addEventListener('click', () =>
+    ficheIdee(liste.find((s) => s.id === c.dataset.idee))));
+}
+
+async function ficheIdee(s) {
+  // Lue en l'ouvrant, comme les messages des commerces.
+  if (!s.lue_le) {
+    await bd.from('suggestion').update({ lue_le: new Date().toISOString() }).eq('id', s.id);
+    rafraichirPastilles();
+  }
+  // Un contact qui ressemble à une adresse e-mail ou à un numéro : un lien pour répondre en privé.
+  const mail = /^\S+@\S+\.\S+$/.test(s.contact ?? '') ? s.contact : '';
+  const tel = !mail ? numeroWhatsApp(s.contact) : '';
+  const lien = mail ? `<a class="bouton sombre" href="mailto:${esc(mail)}">Répondre par e-mail</a>`
+    : tel ? `<a class="bouton sombre" href="https://wa.me/${tel}" target="_blank" rel="noopener">Répondre sur WhatsApp</a>` : '';
+
+  ouvrirPanneau(s.nom, `
+    <div class="carte">
+      <div class="info">${quand(s.cree_le)}</div>
+      <div style="white-space:pre-wrap;margin:8px 0 12px">${esc(s.texte)}</div>
+      ${champLecture('Contact (jamais affiché sur le site)', s.contact)}
+      ${lien}
+      <div class="info" style="margin-top:10px">${s.publiable
+        ? 'L’auteur accepte l’affichage de son message et de la réponse, avec son prénom.'
+        : 'L’auteur n’a pas accepté l’affichage : la réponse ne peut passer que par son contact.'}</div>
+    </div>
+    <label style="margin-top:16px">Réponse
+      <textarea id="reponseIdee" maxlength="2000" placeholder="Votre réponse">${esc(s.reponse ?? '')}</textarea>
+    </label>
+    <label style="display:flex;gap:8px;align-items:center">
+      <input type="checkbox" id="publierIdee" ${s.publiee ? 'checked' : ''} ${s.publiable ? '' : 'disabled'} style="width:auto" />
+      Afficher cet échange sur mondje.ci/propositions
+    </label>
+    <button class="bouton ok" id="enregistrerIdee">Enregistrer la réponse</button>
+  `);
+
+  $('#enregistrerIdee').addEventListener('click', async (ev) => {
+    const reponse = $('#reponseIdee').value.trim();
+    const publiee = $('#publierIdee').checked && !!reponse;
+    ev.target.disabled = true;
+    const { error } = await bd.from('suggestion').update({ reponse: reponse || null, publiee }).eq('id', s.id);
+    if (error) { echoue(error); ev.target.disabled = false; return; }
+    aller('idees');
   });
 }
 
