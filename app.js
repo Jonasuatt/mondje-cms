@@ -393,28 +393,39 @@ function ficheDemande(d) {
         body: { demande_id: d.id },
       });
       if (error) throw error;
-      ouvrirPanneau('Identifiants du propriétaire', `
+      const code = data.code_secret ?? data.code_secret_provisoire;
+      const numero = numeroWhatsApp(d.telephone);
+      const bienvenue = messageBienvenue(d);
+      const identifiants = messageIdentifiants(d, data.code_commerce, data.code_employe, code);
+      const envoi = (message) => numero
+        ? `<a class="bouton ok" style="display:inline-block;text-decoration:none" href="https://wa.me/${numero}?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a>`
+        : '<span class="info">Pas de numéro WhatsApp valide : utilise « Copier ».</span>';
+      ouvrirPanneau('Commerce ouvert', `
         <div class="carte ok">
           ${champLecture('Code commerce', data.code_commerce)}
           ${champLecture('N° d’employé', data.code_employe)}
-          ${champLecture('Code secret', (data.code_secret ?? data.code_secret_provisoire))}
+          ${champLecture('Code secret provisoire', code)}
         </div>
         <p class="erreur">
-          Ce code ne sera plus jamais affiché. Envoie-le maintenant sur le
-          WhatsApp du propriétaire (${esc(d.telephone)}).
+          Le code secret ne sera plus jamais affiché. Envoie les deux messages
+          maintenant sur le WhatsApp du propriétaire (${esc(d.telephone)}), avant
+          de quitter cette page.
         </p>
-        <button class="bouton" id="copier">Copier le message</button>
+        <h3 style="margin:18px 0 6px">1. Message de bienvenue</h3>
+        <p class="info">Installation, premiers pas, offre du pilote. Sans aucun code : on peut le renvoyer à volonté.</p>
+        <pre class="message-type">${esc(bienvenue)}</pre>
+        <div class="actions">${envoi(bienvenue)} <button class="bouton sombre" id="copierBienvenue">Copier</button></div>
+        <h3 style="margin:22px 0 6px">2. Message des identifiants</h3>
+        <p class="info">À envoyer à part, juste après : le code secret n'est pas mélangé au reste.</p>
+        <pre class="message-type">${esc(identifiants)}</pre>
+        <div class="actions">${envoi(identifiants)} <button class="bouton sombre" id="copierIdentifiants">Copier</button></div>
       `);
-      const message =
-        `${d.nom_proprietaire}, voici tes identifiants Mon Djê pour « ${d.nom_commerce} » :\n\n` +
-        `• Code commerce : ${data.code_commerce}\n` +
-        `• N° d'employé : ${data.code_employe}\n` +
-        `• Code secret : ${data.code_secret ?? data.code_secret_provisoire}\n\n` +
-        `Change ce code dès ta première connexion (Profil → Changer mon code).`;
-      $('#copier').addEventListener('click', () => {
-        navigator.clipboard.writeText(message);
-        $('#copier').textContent = 'Message copié';
+      const copier = (id, message) => $(id).addEventListener('click', async (ev) => {
+        try { await navigator.clipboard.writeText(message); ev.target.textContent = 'Copié'; }
+        catch { ev.target.textContent = 'Copie refusée par le navigateur'; }
       });
+      copier('#copierBienvenue', bienvenue);
+      copier('#copierIdentifiants', identifiants);
     } catch (err) {
       echoue(err);
       e.target.disabled = false;
@@ -1761,6 +1772,47 @@ async function ficheActivite(c) {
   dessiner();
   $('#filtreGenre').addEventListener('change', dessiner);
   $('#retourFiche2').addEventListener('click', () => ficheCommerce(c));
+}
+
+// Les deux messages envoyés à un commerce accepté. Le tutoiement est celui de l'application et des conditions.
+// Le montant de l'abonnement n'est pas écrit ici : il s'affiche dans l'application avant tout paiement.
+function messageBienvenue(d) {
+  const prenom = String(d.nom_proprietaire ?? '').trim().split(/\s+/)[0];
+  return `Bonjour${prenom ? ` ${prenom}` : ''}, bienvenue sur Mon Djê ! 🎉
+Ta demande pour « ${d.nom_commerce} » est acceptée.
+
+🎁 Ton premier mois est offert. Si tu te sers ensuite de Mon Djê régulièrement, tu gardes un tarif de lancement à moitié prix. Le montant s'affiche toujours avant tout paiement.
+
+Pour commencer (5 minutes) :
+
+1️⃣ Installe l'application sur ton téléphone Android (version 7 ou plus récente) :
+https://mondje.ci/telecharger/
+Si Android affiche un avertissement, touche « Plus de détails » puis « Installer quand même » : c'est normal.
+
+2️⃣ Ouvre l'application. Je t'envoie dans un autre message ton code commerce, ton n° d'employé et ton code secret provisoire.
+
+3️⃣ Change ton code secret (Profil → Changer mon code secret), puis lis et accepte les conditions d'utilisation.
+
+4️⃣ Ajoute tes produits : choisis-les dans le catalogue Mon Djê ou saisis-les un par un. Puis crée un compte par personne de ton équipe (bouton « Personnel » sur ton accueil) : ton code commerce se donne aussi à ton personnel pour se connecter.
+
+📖 Le guide pas à pas, par rôle : https://mondje.ci/guide/
+
+Une question ? Réponds ici ou écris-nous sur WhatsApp : 05 65 75 03 03.
+Une idée pour améliorer Mon Djê ? https://mondje.ci/propositions/
+
+Bon courage et bonnes ventes !
+L'équipe Mon Djê`;
+}
+
+function messageIdentifiants(d, codeCommerce, codeEmploye, codeSecret) {
+  const prenom = String(d.nom_proprietaire ?? '').trim().split(/\s+/)[0];
+  return `${prenom ? `${prenom}, voici` : 'Voici'} tes identifiants Mon Djê pour « ${d.nom_commerce} » :
+
+• Code commerce : ${codeCommerce}
+• N° d'employé : ${codeEmploye}
+• Code secret provisoire : ${codeSecret}
+
+Change ce code secret dès ta première connexion (Profil → Changer mon code secret). Ne le donne à personne, pas même à nous : Mon Djê ne te le demandera jamais.`;
 }
 
 // Un code neuf ne s'affiche qu'une fois : il n'est écrit nulle part, ni chez

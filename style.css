@@ -85,6 +85,7 @@ body {
   margin-bottom: 12px;
 }
 .carte.accent { border-color: var(--accent); }
+.message-type { white-space: pre-wrap; word-break: break-word; font: inherit; font-size: 14px; line-height: 1.5; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 12px 14px; margin: 8px 0 12px; max-width: 640px; }
 .carte.danger { border-color: var(--danger); }
 .carte.ok { border-color: var(--ok); }
 
