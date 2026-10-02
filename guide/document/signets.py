@@ -5,7 +5,7 @@ import shutil
 import sys
 import zipfile
 
-SORTIE = sys.argv[1] if len(sys.argv) > 1 else r"C:\Users\User\Documents\Claude\Plateforme SaaS Document\Mon-Dje-guide-illustre.docx"
+SORTIE = sys.argv[1] if len(sys.argv) > 1 else r"C:\Users\User\Documents\Claude\Plateforme SaaS Document\2 - Guides et présentations\Mon-Dje-guide-illustre.docx"
 n = 0
 
 

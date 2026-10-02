@@ -11,7 +11,7 @@ const {
 } = require('docx');
 
 const ICI = __dirname;
-const SORTIE = process.argv[2] || path.join('C:', 'Users', 'User', 'Documents', 'Claude', 'Plateforme SaaS Document', 'Mon-Dje-guide-illustre.docx');
+const SORTIE = process.argv[2] || path.join('C:', 'Users', 'User', 'Documents', 'Claude', 'Plateforme SaaS Document', '2 - Guides et présentations', 'Mon-Dje-guide-illustre.docx');
 const plan = JSON.parse(fs.readFileSync(path.join(ICI, 'plan.json'), 'utf8'));
 const logo = fs.readFileSync(path.join(ICI, '..', '..', 'logo-mondje.png'));
 

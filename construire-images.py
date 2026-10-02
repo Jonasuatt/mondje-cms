@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Fabrique les images du site (cms/img/*.webp) et du guide (cms/img/guide/*.webp) à partir des captures d'écran.
 
-Les captures PNG brutes sont dans « Plateforme SaaS Document/captures/<commerce>/<nom>.png » (hors dépôt : lourdes).
+Les captures PNG brutes sont dans « Plateforme SaaS Document/2 - Guides et présentations/captures/<commerce>/<nom>.png » (hors dépôt : lourdes).
 Chaque image du site est choisie ici, une fois : pour la changer, on change une ligne et on relance.
 
     python cms/construire-images.py
@@ -10,7 +10,7 @@ import os, sys
 from PIL import Image
 
 sys.stdout.reconfigure(encoding="utf-8")
-CAPTURES = r"C:\Users\User\Documents\Claude\Plateforme SaaS Document\captures"
+CAPTURES = r"C:\Users\User\Documents\Claude\Plateforme SaaS Document\2 - Guides et présentations\captures"
 ICI = os.path.dirname(os.path.abspath(__file__))
 LARGEUR, HAUTEUR = 540, 1200          # 720 x 1600 d'origine, réduit d'un quart
 

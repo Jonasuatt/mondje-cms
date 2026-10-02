@@ -9,7 +9,7 @@ import json, os, sys
 from PIL import Image, ImageDraw
 
 sys.stdout.reconfigure(encoding="utf-8")
-CAPTURES = r"C:\Users\User\Documents\Claude\Plateforme SaaS Document\captures"
+CAPTURES = r"C:\Users\User\Documents\Claude\Plateforme SaaS Document\2 - Guides et présentations\captures"
 ICI = os.path.dirname(os.path.abspath(__file__))
 SORTIE = os.path.join(ICI, "images")
 os.makedirs(SORTIE, exist_ok=True)

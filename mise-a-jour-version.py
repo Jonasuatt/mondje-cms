@@ -8,7 +8,7 @@ de l'application. À lancer avant de publier l'APK (Release GitHub) et le site.
 """
 import datetime as dt, hashlib, json, os, re, subprocess, sys
 
-APK = r"C:\Users\User\Documents\Claude\Plateforme SaaS Document\Mon-Dje.apk"
+APK = r"C:\Users\User\Documents\Claude\Plateforme SaaS Document\1 - Application Android\Mon-Dje.apk"
 AAPT2 = r"C:\Users\User\AppData\Local\Android\Sdk\build-tools\35.0.0\aapt2.exe"
 SORTIE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "version.json")
 URL = "https://github.com/Jonasuatt/mondje-cms/releases/latest/download/Mon-Dje.apk"
