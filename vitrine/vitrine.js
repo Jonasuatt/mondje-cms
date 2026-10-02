@@ -66,6 +66,92 @@ function numeroWhatsApp(tel) {
   return chiffres.length >= 8 ? chiffres : '';
 }
 
+// --- Parler au commerce sur WhatsApp ---------------------------------------------------
+//
+// Réserver, participer à un événement, commander un produit de la galerie : trois gestes, une seule fin. La page
+// prépare un message avec ce que le client a choisi, et ouvre le WhatsApp du commerce ; c'est le client qui
+// l'envoie. Rien n'est enregistré chez nous : pas de nom, pas de numéro, pas de demande.
+let page = { nom: '', numero: '', annonce: '' };
+
+function ouvrirWhatsApp(message) {
+  if (!page.numero) return;
+  compter('whatsapp');
+  window.open(`https://wa.me/${page.numero}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+}
+
+const uneLigne = (t, max = 160) => {
+  const s = String(t ?? '').replace(/\s+/g, ' ').trim();
+  return s.length > max ? s.slice(0, max - 1) + '…' : s;
+};
+
+const messageProduit = (produit) => {
+  const nom = uneLigne(produit, 80) || 'un produit de la galerie';
+  return `Bonjour ${page.nom}, ce produit m’intéresse : ${nom}.\n\n• Produit : ${nom}\n• Jour : \n• Heure : \n• Commande : \n• Nombre : \n\nMerci de me confirmer.`;
+};
+
+const messageEvenement = () => {
+  const texte = uneLigne(page.annonce, 140);
+  return `Bonjour ${page.nom} ! Je souhaite participer à l’événement ${texte ? `« ${texte} »` : 'à l’affiche'}.\n\nVous confirmez votre présence ? Oui`;
+};
+
+const messageReservation = (jour, heure, nombre) => {
+  const [y, m, d] = jour.split('-').map(Number);
+  const jourLisible = new Date(y, m - 1, d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const [hh, mm] = heure.split(':');
+  return `Bonjour ${page.nom}, je souhaite faire une réservation :\n\n• Jour : ${jourLisible}\n• Heure : ${Number(hh)} h ${mm}\n• Nombre de personnes : ${nombre}\n\nMerci de me confirmer.`;
+};
+
+// La fenêtre : un seul conteneur, rempli selon la demande.
+const modale = document.getElementById('modale');
+const corpsModale = document.getElementById('modaleCorps');
+const fermerModale = () => { modale.classList.add('cache'); corpsModale.innerHTML = ''; };
+function ouvrirModale(html) {
+  corpsModale.innerHTML = html;
+  modale.classList.remove('cache');
+  corpsModale.querySelector('input, .oui')?.focus?.();
+}
+
+function ouvrirReservation() {
+  const aujourdhui = new Date().toLocaleDateString('sv-SE'); // AAAA-MM-JJ, à l'heure du téléphone
+  ouvrirModale(`
+    <h2>Réserver chez ${esc(page.nom)}</h2>
+    <p>Dites-nous quand vous venez : la demande part sur WhatsApp.</p>
+    <label>Jour<input type="date" id="rJour" min="${aujourdhui}" /></label>
+    <label>Heure<input type="time" id="rHeure" /></label>
+    <label>Nombre de personnes<input type="number" id="rNombre" min="1" max="100" inputmode="numeric" /></label>
+    <p class="erreur" id="rErreur"></p>
+    <div class="actions-modale">
+      <button type="button" class="non" data-fermer>Annuler</button>
+      <button type="button" class="oui" data-envoyer-reservation>Envoyer sur WhatsApp</button>
+    </div>`);
+}
+
+function envoyerReservation() {
+  const jour = document.getElementById('rJour').value;
+  const heure = document.getElementById('rHeure').value;
+  const nombre = Number(document.getElementById('rNombre').value);
+  const erreur = (t) => { document.getElementById('rErreur').textContent = t; };
+  if (!jour) return erreur('Choisissez le jour.');
+  if (jour < new Date().toLocaleDateString('sv-SE')) return erreur('Ce jour est déjà passé.');
+  if (!heure) return erreur('Choisissez l’heure.');
+  if (!Number.isInteger(nombre) || nombre < 1 || nombre > 100) return erreur('Indiquez le nombre de personnes (1 à 100).');
+  ouvrirWhatsApp(messageReservation(jour, heure, nombre));
+  fermerModale();
+}
+
+// L'affiche : on demande d'abord si le client veut vraiment venir. « Non » ferme, « Oui » ouvre WhatsApp.
+function ouvrirEvenement() {
+  const affiche = document.querySelector('.annonce img')?.src;
+  ouvrirModale(`
+    ${affiche ? `<img class="affiche" src="${esc(affiche)}" alt="Affiche de l’événement" />` : ''}
+    ${page.annonce ? `<p class="phrase">${esc(page.annonce)}</p>` : ''}
+    <h2>Voulez-vous participer à cet événement ?</h2>
+    <div class="actions-modale">
+      <button type="button" class="non" data-fermer>Non</button>
+      <button type="button" class="oui" data-participer>Oui</button>
+    </div>`);
+}
+
 // Beaucoup de villes de l'intérieur n'ont qu'une commune, qui porte leur nom :
 // « Bouaké · Bouaké » ferait négligé sur la page d'un commerçant.
 const lieu = (c) => [...new Set([c.quartier, c.commune, c.ville].filter(Boolean))].join(' · ');
@@ -86,29 +172,32 @@ function introuvable() {
 
 // Ce que le commerce a voulu dire aujourd'hui : une phrase, une affiche, ou
 // les deux. La vue ne la rend plus passé sa date, donc rien à vérifier ici.
-function annonce(c) {
+function annonce(c, numero) {
   if (!c.annonce_texte && !c.annonce_affiche_chemin) return '';
   return `
     <h2 class="titre-bloc">Événement à l'affiche</h2>
-    <div class="annonce">
+    <div class="annonce${numero ? ' cliquable' : ''}"${numero ? ' data-evenement role="button" tabindex="0"' : ''}>
       ${c.annonce_affiche_chemin
         ? `<img src="${esc(SEAU_LOGO + c.annonce_affiche_chemin)}" alt="Annonce" />` : ''}
       ${c.annonce_texte ? `<p>${esc(c.annonce_texte)}</p>` : ''}
+      ${numero ? '<p class="indice">Touchez l’annonce pour participer.</p>' : ''}
     </div>`;
 }
 
 // Ce que le commerce sert, en images. La légende est facultative : une photo
 // de poisson braisé se passe de commentaire, mais « Poulet braisé, 3000 F le
 // demi » en dit plus qu'une ligne de carte.
-function galerie(photos) {
+function galerie(photos, numero) {
   if (photos.length === 0) return '';
   return `
     <h2 class="titre-bloc">Galerie du jour</h2>
+    ${numero ? '<p class="indice" style="margin:0 0 4px">Touchez un produit pour le commander sur WhatsApp.</p>' : ''}
     <div class="photos">
       ${photos.map((p) => `
-        <figure class="photo">
+        <figure class="photo${numero ? ' cliquable' : ''}"${numero ? ` data-produit="${esc(p.legende ?? '')}"` : ''}>
           <img src="${esc(SEAU_LOGO + p.chemin)}" alt="${esc(p.legende ?? '')}" loading="lazy" />
           ${p.legende ? `<figcaption>${esc(p.legende)}</figcaption>` : ''}
+          ${numero ? '<span class="cmd">Commander</span>' : ''}
         </figure>`).join('')}
     </div>`;
 }
@@ -153,6 +242,7 @@ async function demarrer() {
   document.title = `${c.nom} — ${lieu(c) || 'Côte d’Ivoire'}`;
 
   const numero = numeroWhatsApp(c.telephone);
+  page = { nom: c.nom, numero, annonce: c.annonce_texte ?? '' };
   const articles = produits.data ?? [];
   let rayon = null;
 
@@ -168,8 +258,11 @@ async function demarrer() {
     ${c.telephone ? `<a class="appel tel" href="tel:${esc(c.telephone)}">
       Appeler ${esc(c.telephone)}</a>` : ''}
 
-    ${annonce(c)}
-    ${galerie(images.data ?? [])}
+    ${numero && ['restauration', 'location'].includes(c.type_commerce)
+      ? '<button type="button" class="appel reserver" data-reserver>Réserver</button>' : ''}
+
+    ${annonce(c, numero)}
+    ${galerie(images.data ?? [], numero)}
 
     ${articles.length === 0
       ? '<p class="lieu" style="margin-top:24px">La liste des produits arrive bientôt.</p>'
@@ -209,6 +302,16 @@ function ouvrirLoupe(img) {
 const fermerLoupe = () => loupe.classList.add('cache');
 
 document.addEventListener('click', (ev) => {
+  // Les demandes au commerce : réserver, participer à l'événement, commander un produit de la galerie.
+  if (ev.target.closest('[data-reserver]')) return ouvrirReservation();
+  if (ev.target.closest('[data-envoyer-reservation]')) return envoyerReservation();
+  if (ev.target.closest('[data-participer]')) { ouvrirWhatsApp(messageEvenement()); return fermerModale(); }
+  if (ev.target.closest('[data-fermer]') || ev.target === modale) return fermerModale();
+  if (page.numero && ev.target.closest('[data-evenement]')) return ouvrirEvenement();
+  const produit = page.numero && ev.target.closest('.photo.cliquable');
+  if (produit) return ouvrirWhatsApp(messageProduit(produit.dataset.produit));
+
+  // Sans numéro WhatsApp, rien à ouvrir : l'image s'agrandit seulement.
   const image = ev.target.closest('.annonce img, .photo img');
   if (image) return ouvrirLoupe(image);
   // Sur un telephone, le toucher declenche un clic fantome quelques dizaines de
@@ -217,7 +320,12 @@ document.addEventListener('click', (ev) => {
   if (loupe.contains(ev.target) && Date.now() - ouverteA > 400) fermerLoupe();
 });
 document.addEventListener('keydown', (ev) => {
-  if (ev.key === 'Escape') fermerLoupe();
+  if (ev.key === 'Escape') { fermerLoupe(); fermerModale(); }
+  // L'annonce est un « bouton » : Entrée ou Espace l'ouvre aussi, pour qui n'a pas d'écran tactile.
+  if ((ev.key === 'Enter' || ev.key === ' ') && page.numero && ev.target.matches?.('[data-evenement]')) {
+    ev.preventDefault();
+    ouvrirEvenement();
+  }
 });
 
 // Ce qui compte vraiment : une page qu'on ouvre ne rapporte rien, une page dont on
