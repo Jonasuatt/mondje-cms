@@ -319,6 +319,13 @@ document.addEventListener('click', (ev) => {
   // clic retombe dessus : elle se refermait aussitot.
   if (loupe.contains(ev.target) && Date.now() - ouverteA > 400) fermerLoupe();
 });
+// Dès que le client corrige un champ, l'ancien message d'erreur n'a plus lieu d'être.
+document.addEventListener('input', (ev) => {
+  if (ev.target.closest?.('#modale')) {
+    const erreur = document.getElementById('rErreur');
+    if (erreur) erreur.textContent = '';
+  }
+});
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape') { fermerLoupe(); fermerModale(); }
   // L'annonce est un « bouton » : Entrée ou Espace l'ouvre aussi, pour qui n'a pas d'écran tactile.
