@@ -114,10 +114,10 @@ const pied_modale = (retour = false) => `
 const modale = document.getElementById('modale');
 const corpsModale = document.getElementById('modaleCorps');
 const fermerModale = () => { modale.classList.add('cache'); corpsModale.innerHTML = ''; demande = null; };
-function ouvrirModale(html) {
+function ouvrirModale(html, { focus = true } = {}) {
   corpsModale.innerHTML = html;
   modale.classList.remove('cache');
-  corpsModale.querySelector('input, .oui')?.focus?.();
+  if (focus) corpsModale.querySelector('input, .oui')?.focus?.();
 }
 
 function ouvrirReservation() {
@@ -164,9 +164,96 @@ function ouvrirProduit(figure) {
     ${pied_modale()}`);
 }
 
+// --- Commander un ou plusieurs produits de la carte ---------------------------------------
+//
+// Une recherche, la liste de ce que le commerce vend, un + et un − par produit. Quand le commerce affiche ses
+// prix, le total se calcule tout seul ; sinon on n'invente rien, et le message dit « prix à confirmer ».
+let catalogue = [];       // les produits de la page : { nom, unite, prix, rubrique }
+const panier = new Map(); // indice dans le catalogue -> quantité
+
+const sansAccents = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+function ouvrirCommande() {
+  demande = { type: 'commande' };
+  panier.clear();
+  ouvrirModale(`
+    <h2>Commander chez ${esc(page.nom)}</h2>
+    <input type="search" id="fRecherche" placeholder="Rechercher un produit" autocomplete="off" />
+    <div class="liste-produits" id="listeProduits"></div>
+    <p class="total" id="totalCommande"></p>
+    ${CHAMPS.jour()}${CHAMPS.heure()}
+    ${pied_modale()}`, { focus: false });
+  rafraichirListe();
+}
+
+// Ce qui est choisi : le nombre d'articles, et le total si tous les prix sont connus.
+function resumePanier() {
+  const choisis = [...panier.entries()];
+  const articles = choisis.reduce((s, [, q]) => s + q, 0);
+  const prixConnus = choisis.every(([i]) => catalogue[i].prix != null);
+  const total = choisis.reduce((s, [i, q]) => s + q * (catalogue[i].prix ?? 0), 0);
+  return { choisis, articles, prixConnus, total };
+}
+
+function rafraichirListe() {
+  const liste = document.getElementById('listeProduits');
+  if (!liste) return;
+  const haut = liste.scrollTop;
+  const q = sansAccents(document.getElementById('fRecherche')?.value).trim();
+  const lignes = catalogue.map((a, i) => ({ a, i })).filter(({ a }) => !q || sansAccents(`${a.nom} ${a.rubrique ?? ''}`).includes(q)); // « biere » trouve aussi la rubrique « Bières »
+  liste.innerHTML = lignes.length ? lignes.map(({ a, i }) => {
+    const n = panier.get(i) ?? 0;
+    return `
+      <div class="ligne-produit${n ? ' choisi' : ''}">
+        <div class="np"><span>${esc(a.nom)}</span><small>${esc(a.unite ?? '')}</small></div>
+        ${a.prix != null ? `<div class="pp">${fcfa(a.prix)}</div>` : ''}
+        <div class="qte">
+          <button type="button" data-moins="${i}" aria-label="Retirer un ${esc(a.nom)}" ${n ? '' : 'disabled'}>−</button>
+          <b>${n}</b>
+          <button type="button" data-plus="${i}" aria-label="Ajouter un ${esc(a.nom)}">+</button>
+        </div>
+      </div>`;
+  }).join('') : '<p class="vide">Aucun produit ne correspond.</p>';
+  liste.scrollTop = haut;
+
+  const { articles, prixConnus, total } = resumePanier();
+  document.getElementById('totalCommande').innerHTML = !articles ? 'Touchez + pour ajouter un produit.'
+    : `${articles} article${articles > 1 ? 's' : ''} choisi${articles > 1 ? 's' : ''}`
+      + (prixConnus ? ` · <b>Total : ${fcfa(total)}</b>` : ' · prix à confirmer par le commerce');
+}
+
+function changerQuantite(i, delta) {
+  const n = Math.max(0, Math.min(99, (panier.get(i) ?? 0) + delta));
+  if (n) panier.set(i, n); else panier.delete(i);
+  rafraichirListe();
+}
+
+function envoyerCommande() {
+  const lire = (id) => document.getElementById(id)?.value ?? '';
+  const erreur = (t) => { document.getElementById('rErreur').textContent = t; };
+  const jour = lire('fJour');
+  const heure = lire('fHeure');
+  if (!panier.size) return erreur('Choisissez au moins un produit.');
+  if (!jour) return erreur('Choisissez le jour.');
+  if (jour < aujourdhui()) return erreur('Ce jour est déjà passé.');
+  if (!heure) return erreur('Choisissez l’heure.');
+
+  const { choisis, prixConnus, total } = resumePanier();
+  const lignes = choisis.map(([i, q]) => {
+    const a = catalogue[i];
+    return `• ${q} × ${uneLigne(a.nom, 80)}${a.prix != null ? ` — ${fcfa(q * a.prix)}` : ''}`;
+  });
+  ouvrirWhatsApp(
+    `Bonjour ${page.nom}, je souhaite commander :\n\n${lignes.join('\n')}\n\n`
+    + `${prixConnus ? `Total : ${fcfa(total)}` : 'Prix à confirmer.'}\n`
+    + `• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}\n\nMerci de me confirmer.`);
+  fermerModale();
+}
+
 // Lit les réponses, dit ce qui manque, compose le message, ouvre WhatsApp.
 function envoyerDemande() {
   if (!demande) return;
+  if (demande.type === 'commande') return envoyerCommande();
   const lire = (id) => document.getElementById(id)?.value ?? '';
   const erreur = (t) => { document.getElementById('rErreur').textContent = t; };
   const jour = lire('fJour');
@@ -290,6 +377,7 @@ async function demarrer() {
   const numero = numeroWhatsApp(c.telephone);
   page = { nom: c.nom, numero, annonce: c.annonce_texte ?? '' };
   const articles = produits.data ?? [];
+  catalogue = articles.map((a) => ({ nom: a.nom, unite: a.unite, prix: a.prix, rubrique: a.rubrique }));
   let rayon = null;
 
   afficher(`
@@ -308,6 +396,8 @@ async function demarrer() {
 
     ${annonce(c, numero)}
     ${galerie(images.data ?? [], numero)}
+    ${numero && articles.length
+      ? `<button type="button" class="appel reserver autre" data-commander>${(images.data ?? []).length ? 'Commander un autre produit' : 'Commander'}</button>` : ''}
 
     ${articles.length === 0
       ? '<p class="lieu" style="margin-top:24px">La liste des produits arrive bientôt.</p>'
@@ -349,6 +439,11 @@ const fermerLoupe = () => loupe.classList.add('cache');
 document.addEventListener('click', (ev) => {
   // Les demandes au commerce : réserver, participer à l'événement, commander un produit de la galerie.
   if (ev.target.closest('[data-reserver]')) return ouvrirReservation();
+  if (ev.target.closest('[data-commander]')) return ouvrirCommande();
+  const plus = ev.target.closest('[data-plus]');
+  if (plus) return changerQuantite(Number(plus.dataset.plus), 1);
+  const moins = ev.target.closest('[data-moins]');
+  if (moins) return changerQuantite(Number(moins.dataset.moins), -1);
   if (ev.target.closest('[data-envoyer]')) return envoyerDemande();
   if (ev.target.closest('[data-participer]')) return ouvrirParticipation();
   if (ev.target.closest('[data-retour]')) return ouvrirEvenement();
@@ -367,6 +462,7 @@ document.addEventListener('click', (ev) => {
 });
 // Dès que le client corrige un champ, l'ancien message d'erreur n'a plus lieu d'être.
 document.addEventListener('input', (ev) => {
+  if (ev.target.id === 'fRecherche') return rafraichirListe();
   if (ev.target.closest?.('#modale')) {
     const erreur = document.getElementById('rErreur');
     if (erreur) erreur.textContent = '';

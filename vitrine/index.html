@@ -124,6 +124,27 @@
       border: 1px solid #c9d0de; border-radius: 10px; background: #fff; color: #10131a;
     }
     .carte-modale .erreur { color: #b3261e; font-size: 14px; min-height: 18px; margin: 0 0 8px; }
+    .appel.reserver.autre { background: #fff; color: #14572f; border: 2px solid #25d366; margin-top: 16px; }
+    .liste-produits {
+      max-height: 38vh; overflow-y: auto; border: 1px solid #e2e6ef; border-radius: 10px; margin: 8px 0 6px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .ligne-produit { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid #eef1f6; }
+    .ligne-produit:last-child { border-bottom: 0; }
+    .ligne-produit.choisi { background: #e7f6ee; }
+    .ligne-produit .np { flex: 1; min-width: 0; }
+    .ligne-produit .np span { display: block; font-size: 15px; color: #10131a; }
+    .ligne-produit .np small { color: #5b6579; font-size: 12px; }
+    .ligne-produit .pp { font-weight: 700; white-space: nowrap; font-size: 14px; color: #10131a; }
+    .qte { display: flex; align-items: center; gap: 6px; }
+    .qte button {
+      width: 34px; height: 34px; border-radius: 50%; border: 0; background: #e9edf5; color: #10131a;
+      font-size: 20px; font-weight: 700; line-height: 1; cursor: pointer; padding: 0;
+    }
+    .qte button:disabled { opacity: .35; cursor: default; }
+    .qte b { min-width: 22px; text-align: center; color: #10131a; }
+    .carte-modale .total { margin: 6px 0 12px; color: #10131a; font-size: 15px; }
+    .carte-modale .vide { padding: 12px; text-align: center; }
     .actions-modale { display: flex; gap: 10px; margin-top: 6px; }
     .actions-modale button {
       flex: 1; padding: 14px; font: inherit; font-weight: 700; border: 0; border-radius: 12px; cursor: pointer;
