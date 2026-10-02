@@ -304,8 +304,7 @@ async function demarrer() {
     ${c.telephone ? `<a class="appel tel" href="tel:${esc(c.telephone)}">
       Appeler ${esc(c.telephone)}</a>` : ''}
 
-    ${numero && ['restauration', 'location'].includes(c.type_commerce)
-      ? '<button type="button" class="appel reserver" data-reserver>Réserver</button>' : ''}
+    ${numero ? '<button type="button" class="appel reserver" data-reserver>Réserver</button>' : ''}
 
     ${annonce(c, numero)}
     ${galerie(images.data ?? [], numero)}
