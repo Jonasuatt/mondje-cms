@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modèle Excel pour importer vos produits — Mon Djê</title>
+  <meta name="description" content="Téléchargez le modèle Excel de Mon Djê : remplissez votre liste de produits et votre stock de départ, puis importez-la dans l'application sans tout ressaisir." />
+  <meta name="theme-color" content="#0e1b2e" />
+  <link rel="canonical" href="https://mondje.ci/modeles/" />
+  <link rel="icon" href="../favicon.png" />
+  <link rel="stylesheet" href="../site.css" />
+</head>
+<body>
+<header class="entete">
+  <div class="conteneur">
+    <a class="marque" href="../"><img src="../logo-mondje.png" alt="" width="38" height="38" /> Mon Djê</a>
+    <nav class="nav"><a href="../guide/">Guide</a><a href="../#faq">Questions</a><a class="bouton petit" href="../telecharger/">Télécharger</a></nav>
+  </div>
+</header>
+
+<main class="page">
+  <div class="conteneur contenu">
+    <span class="surtitre">Gagner du temps</span>
+    <h1>Importez vos produits depuis Excel</h1>
+    <p class="chapeau">Vous avez déjà votre liste de produits dans un cahier ou sur Excel ? Ne la ressaisissez pas au téléphone : remplissez notre modèle, puis importez-le dans Mon Djê, avec votre stock de départ.</p>
+
+    <p style="margin:26px 0 6px">
+      <a class="bouton" href="Mon-Dje-modele-produits.xlsx" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13m0 0-5-5m5 5 5-5M4 20h16"/></svg>
+        Télécharger le modèle Excel
+      </a>
+    </p>
+    <p class="version">Fichier Excel (.xlsx) · fonctionne aussi dans Google Sheets</p>
+
+    <h2>Les 4 étapes</h2>
+    <div class="alerte"><b>1. Remplissez</b> la feuille « Mes produits » : une ligne par produit. Les colonnes jaunes (Nom, Prix de vente) sont obligatoires ; Unité, Prix d'achat et Stock sont facultatives. Jusqu'à 500 lignes par fichier.</div>
+    <div class="alerte"><b>2. Enregistrez en CSV.</b> Dans Excel : Fichier → Enregistrer sous → type <b>« CSV UTF-8 (délimité par des virgules) »</b>. Dans Google Sheets : Fichier → Télécharger → Valeurs séparées par des virgules (.csv). Excel prévient que seule la première feuille est enregistrée : c'est normal.</div>
+    <div class="alerte"><b>3. Envoyez le fichier .csv</b> sur le téléphone qui a Mon Djê (WhatsApp, e-mail ou câble).</div>
+    <div class="alerte"><b>4. Importez.</b> Dans Mon Djê, connecté en propriétaire : <b>Carte et stock → Importer ma liste de produits → Choisir mon fichier</b>. L'application vous montre ce qui passe et ce qui est refusé, avec la raison, et n'écrit rien tant que vous n'avez pas touché « Importer ».</div>
+
+    <h2>Les colonnes</h2>
+    <div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font-size:15px">
+      <tr><th style="text-align:left;border:1px solid var(--trait);padding:8px 10px;background:var(--ciel)">Colonne</th><th style="text-align:left;border:1px solid var(--trait);padding:8px 10px;background:var(--ciel)">Ce qu'on y met</th></tr>
+      <tr><td style="border:1px solid var(--trait);padding:8px 10px"><b>Nom</b> (obligatoire)</td><td style="border:1px solid var(--trait);padding:8px 10px">2 à 80 caractères, sans doublon. Exemple : Castel Beer 33 cl.</td></tr>
+      <tr><td style="border:1px solid var(--trait);padding:8px 10px">Unité</td><td style="border:1px solid var(--trait);padding:8px 10px">Bouteille, sac, kg, assiette… (liste déroulante, ou la vôtre). Si vide : « pièce ».</td></tr>
+      <tr><td style="border:1px solid var(--trait);padding:8px 10px"><b>Prix de vente</b> (obligatoire)</td><td style="border:1px solid var(--trait);padding:8px 10px">En francs CFA, nombre entier supérieur à 0, sans « F ». Exemple : 700.</td></tr>
+      <tr><td style="border:1px solid var(--trait);padding:8px 10px">Prix d'achat</td><td style="border:1px solid var(--trait);padding:8px 10px">Ce que vous payez au fournisseur : il sert à calculer votre marge.</td></tr>
+      <tr><td style="border:1px solid var(--trait);padding:8px 10px">Stock</td><td style="border:1px solid var(--trait);padding:8px 10px">La quantité que vous avez aujourd'hui. Si vide : 0.</td></tr>
+    </table></div>
+
+    <h2>Bon à savoir</h2>
+    <ul>
+      <li>Un produit qui existe déjà dans votre carte est refusé, jamais écrasé : vous pouvez importer plusieurs fois sans risque.</li>
+      <li>Si « Bière » apparaît « Bi?re » dans l'aperçu, enregistrez de nouveau en <b>CSV UTF-8</b>.</li>
+      <li>La feuille « Exemples » du modèle montre une liste type de maquis, de boutique et de marché ; elle n'est pas importée.</li>
+      <li>Une question ? Écrivez-nous sur <a href="https://wa.me/2250565750303">WhatsApp au 05 65 75 03 03</a>.</li>
+    </ul>
+    <p style="margin-top:30px"><a class="bouton clair" href="../guide/">Lire le guide d'utilisation</a></p>
+  </div>
+</main>
+
+<footer class="pied"><div class="conteneur"><div class="bas" style="border:0;margin:0;padding:0">© 2026 Mon Djê · <a href="../">Accueil</a> · <a href="../guide/">Guide</a> · <a href="../telecharger/">Télécharger</a> · <a href="../apropos/">À propos</a> · <a href="../propositions/">Une idée ?</a></div></div></footer>
+</body>
+</html>

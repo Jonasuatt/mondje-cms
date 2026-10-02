@@ -1794,7 +1794,7 @@ Chrome peut afficher « Fichier potentiellement dangereux » : touche « Téléc
 
 3️⃣ Change ton code secret (Profil → Changer mon code secret), puis lis et accepte les conditions d'utilisation.
 
-4️⃣ Ajoute tes produits : choisis-les dans le catalogue Mon Djê ou saisis-les un par un. Puis crée un compte par personne de ton équipe (bouton « Personnel » sur ton accueil) : ton code commerce se donne aussi à ton personnel pour se connecter.
+4️⃣ Ajoute tes produits : choisis-les dans le catalogue Mon Djê, saisis-les un par un, ou importe ta liste Excel avec notre modèle (https://mondje.ci/modeles/). Puis crée un compte par personne de ton équipe (bouton « Personnel » sur ton accueil) : ton code commerce se donne aussi à ton personnel pour se connecter.
 
 📖 Le guide pas à pas, par rôle : https://mondje.ci/guide/
 
