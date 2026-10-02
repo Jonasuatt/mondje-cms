@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /equipe/
+Sitemap: https://mondje.ci/sitemap.xml

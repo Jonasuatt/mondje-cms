@@ -286,7 +286,7 @@ async function pageAccueil() {
 
     <h2 style="margin-top:24px">Où sont nos abonnés</h2>
     <div class="carte-ci" id="carteCI">
-      <img src="carte-ci.jpg" alt="Carte de la Côte d'Ivoire" />
+      <img src="../carte-ci.jpg" alt="Carte de la Côte d'Ivoire" />
     </div>
 
     <h2 style="margin-top:24px">Recette encaissée</h2>

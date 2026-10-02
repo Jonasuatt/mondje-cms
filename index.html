@@ -3,60 +3,317 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mon Djê — espace équipe</title>
+  <title>Mon Djê — La caisse et le stock de votre commerce, sans coulage</title>
+  <meta name="description" content="Mon Djê, l'application de caisse et de stock des maquis, restaurants, boutiques, marchés et locations de Côte d'Ivoire. Elle marche sans internet, accepte Wave, Orange Money, MTN et Moov, et montre où va chaque franc." />
+  <meta name="theme-color" content="#0e1b2e" />
+  <link rel="canonical" href="https://mondje.ci/" />
   <link rel="icon" href="favicon.png" />
-  <link rel="stylesheet" href="style.css" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Mon Djê — Sachez où va chaque franc de votre commerce" />
+  <meta property="og:description" content="Caisse, stock, crédits clients, Mobile Money : tout dans le téléphone, même sans internet. Pilote gratuit pour 200 commerces." />
+  <meta property="og:url" content="https://mondje.ci/" />
+  <meta property="og:image" content="https://mondje.ci/logo-mondje.png" />
+  <link rel="stylesheet" href="site.css" />
 </head>
 <body>
-  <!-- Connexion : le même compte que dans l'application, sur grand écran. -->
-  <div id="connexion" class="connexion">
-    <form id="formConnexion" class="carte connexion-carte">
-      <img class="logo" src="logo-mondje.png" alt="" width="96" height="96" />
-      <h1>Mon Djê</h1>
-      <p class="sous">Espace équipe</p>
-      <label>Adresse e-mail
-        <input id="email" type="email" autocomplete="username" required />
-      </label>
-      <label>Mot de passe
-        <input id="motDePasse" type="password" autocomplete="current-password" required />
-      </label>
-      <button type="button" class="lien voir" data-voir="motDePasse">Voir</button>
-      <button class="bouton" type="submit">Se connecter</button>
-      <p id="erreurConnexion" class="erreur"></p>
-      <p class="info">
-        Réservé à l'équipe. Les commerçants, eux, travaillent depuis
-        l'application sur leur téléphone.
+
+<header class="entete">
+  <div class="conteneur">
+    <a class="marque" href="./"><img src="logo-mondje.png" alt="" width="38" height="38" /> Mon Djê</a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#probleme">Le problème</a>
+      <a href="#solution">La solution</a>
+      <a href="#ecrans">L'application</a>
+      <a href="#demarrer">Démarrer</a>
+      <a href="#pilote">Pilote</a>
+      <a href="#faq">Questions</a>
+      <a class="bouton petit" href="telecharger/">Télécharger</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================================================================================ HÉROS -->
+<section class="hero">
+  <div class="conteneur grille">
+    <div>
+      <span class="surtitre">Maquis · Restaurants · Boutiques · Marchés · Locations</span>
+      <h1>Sachez où va chaque franc de votre commerce.</h1>
+      <p class="chapeau">
+        Mon Djê est la caisse et le stock dans le téléphone de votre équipe. Chaque vente est écrite, chaque produit est compté,
+        chaque crédit est suivi. <b>Ça marche même sans internet.</b>
       </p>
-    </form>
-  </div>
-
-  <div id="app" class="app cache">
-    <aside class="menu">
-      <div class="marque">
-        <img src="logo-mondje.png" alt="" width="30" height="30" />
-        Mon Djê
+      <div class="actions">
+        <a class="bouton" href="telecharger/">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13m0 0-5-5m5 5 5-5M4 20h16"/></svg>
+          Télécharger pour Android
+        </a>
+        <a class="bouton clair" href="#demarrer">Comment ça marche</a>
       </div>
-      <nav id="nav"></nav>
-      <div class="pied">
-        <div id="moi" class="info"></div>
-        <button id="deconnexion" class="bouton sombre">Se déconnecter</button>
-      </div>
-    </aside>
-
-    <main class="contenu">
-      <header class="entete">
-        <h1 id="titrePage"></h1>
-        <div id="actionsPage" class="actions"></div>
-      </header>
-      <div id="page"></div>
-    </main>
+      <ul class="preuves">
+        <li>Un mois d'essai gratuit</li>
+        <li>Wave, Orange, MTN, Moov</li>
+        <li>En français, sur Android</li>
+      </ul>
+    </div>
+    <div>
+      <div class="telephone"><img src="img/hero-vendre.webp" alt="Écran de vente de l'application Mon Djê" width="540" height="1140" /></div>
+    </div>
   </div>
+</section>
 
+<!-- ======================================================================================== LE PROBLÈME -->
+<section id="probleme">
+  <div class="conteneur centre">
+    <span class="surtitre">Vous le savez déjà</span>
+    <h2>Le commerce marche, mais l'argent « fond ».</h2>
+    <p class="chapeau">
+      Vous travaillez dur, la clientèle est là, et pourtant à la fin du mois la caisse ne raconte pas la même histoire que les ventes.
+      Ce n'est pas toujours du vol : c'est souvent un manque d'écriture. Et ce qui n'est pas écrit ne peut pas être vérifié.
+    </p>
+    <div class="cartes">
+      <div class="carte">
+        <div class="icone">💸</div>
+        <h3>La caisse ne tombe pas juste</h3>
+        <p><span class="question">« Il manque 5 000 F… »</span> Mais manque-t-il vraiment, ou la monnaie a-t-elle été mal rendue ? Sans trace, personne ne peut le dire.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">📦</div>
+        <h3>Le stock disparaît</h3>
+        <p><span class="question">« On a reçu 10 casiers… »</span> Où sont-ils passés ? Offerts, cassés, bus, volés : le cahier ne le dit pas, et la commande suivante repart à l'aveugle.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">📒</div>
+        <h3>Les crédits s'oublient</h3>
+        <p><span class="question">« Il m'a dit qu'il paierait vendredi. »</span> Quel vendredi ? Combien ? Un client qui doit de l'argent et que personne ne relance, c'est de l'argent perdu.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- La bibliothèque Supabase est livrée avec le CMS, pas chargée d'un CDN :
-       une coupure ou une compromission chez un tiers n'ouvre pas nos comptes. -->
-  <script src="vendor/supabase.js"></script>
-  <script src="villes.js"></script>
-  <script src="app.js"></script>
+<!-- ======================================================================================== LA SOLUTION -->
+<section id="solution" class="sombre">
+  <div class="conteneur">
+    <span class="surtitre">Ce que fait Mon Djê</span>
+    <h2>Chacun son code, chaque franc son écriture.</h2>
+    <p class="chapeau sur">
+      Mon Djê n'est pas un cahier plus joli : c'est une organisation qui rend le coulage difficile — et visible quand il arrive.
+    </p>
+    <div class="cartes">
+      <div class="carte">
+        <div class="icone">🔑</div>
+        <h3>Chacun signe ses ventes</h3>
+        <p>Chaque employé a son numéro et son code à 6 chiffres. Chaque vente, chaque remise, chaque annulation porte un nom.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">🤝</div>
+        <h3>Le vendeur vend, la caisse valide</h3>
+        <p>Celui qui prend la commande n'est pas celui qui encaisse l'argent. Personne ne se valide lui-même une annulation.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">🧮</div>
+        <h3>Le stock se compte tout seul</h3>
+        <p>Chaque vente retire du stock. À l'inventaire, l'écart entre ce qui devrait rester et ce qui reste s'affiche — en francs.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">🚨</div>
+        <h3>Les écarts parlent</h3>
+        <p>Caisse fermée avec un manque, remise contestée, produit qui s'évapore : vous le voyez le jour même, avec le nom et le motif.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================================================== POUR QUI -->
+<section class="fond">
+  <div class="conteneur centre">
+    <span class="surtitre">Pour quel commerce ?</span>
+    <h2>Un seul outil, cinq façons de vendre.</h2>
+    <p class="chapeau">Le vocabulaire et les écrans s'adaptent à votre activité : la table d'un maquis n'est pas l'étal d'un marché.</p>
+    <div class="types">
+      <div class="type"><div class="emoji">🍺</div><b>Maquis & restaurant</b><span>Tables, plats, bouteilles consignées, serveurs et caisse</span></div>
+      <div class="type"><div class="emoji">🏪</div><b>Boutique</b><span>Détail, kg, demi-gros, gros ; prix d'achat et marge</span></div>
+      <div class="type"><div class="emoji">🍅</div><b>Marché</b><span>Tas, sachets, sacs ; achats du matin, ventes du jour</span></div>
+      <div class="type"><div class="emoji">👜</div><b>Vente directe</b><span>Vêtements, accessoires, articles à l'unité</span></div>
+      <div class="type"><div class="emoji">🏨</div><b>Location</b><span>Chambres, logements, véhicules ; séjours, baux, cautions</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================================================= L'APPLICATION -->
+<section id="ecrans">
+  <div class="conteneur centre">
+    <span class="surtitre">L'application</span>
+    <h2>Simple pour le personnel, clair pour le patron.</h2>
+    <p class="chapeau">Les gros boutons, les mots du métier, et rien d'inutile : chaque rôle ne voit que ce qui le concerne.</p>
+    <div class="ecrans">
+      <div class="ecran"><div class="telephone petit"><img src="img/ecran-vendre.webp" alt="Prendre une commande" loading="lazy" width="540" height="1140" /></div>
+        <h3>Vendre</h3><p>Touchez les produits, la quantité, c'est fait. Le prix est celui de la carte, pas celui de la tête du client.</p></div>
+      <div class="ecran"><div class="telephone petit"><img src="img/ecran-paiement.webp" alt="Encaisser avec Wave ou en espèces" loading="lazy" width="540" height="1140" /></div>
+        <h3>Encaisser</h3><p>Espèces avec calcul de la monnaie, Wave, Orange Money, MTN, Moov, ou crédit. Le QR s'affiche en grand pour le client.</p></div>
+      <div class="ecran"><div class="telephone petit"><img src="img/ecran-caisse.webp" alt="La caisse valide les paiements" loading="lazy" width="540" height="1140" /></div>
+        <h3>La caisse</h3><p>Le caissier valide chaque paiement, compte le tiroir le soir et remet l'argent au patron. L'écart est écrit.</p></div>
+      <div class="ecran"><div class="telephone petit"><img src="img/ecran-stock.webp" alt="Le stock avec les alertes" loading="lazy" width="540" height="1140" /></div>
+        <h3>Le stock</h3><p>Ce qu'il reste, ce qui manque, ce qu'il faut commander. Une alerte avant la rupture, pas après.</p></div>
+      <div class="ecran"><div class="telephone petit"><img src="img/ecran-inventaire.webp" alt="L'inventaire et ses écarts" loading="lazy" width="540" height="1140" /></div>
+        <h3>L'inventaire</h3><p>On compte sans voir le stock affiché. L'écart se lit en francs, produit par produit, avec le motif.</p></div>
+      <div class="ecran"><div class="telephone petit"><img src="img/ecran-ardoises.webp" alt="Les crédits clients" loading="lazy" width="540" height="1140" /></div>
+        <h3>Les crédits</h3><p>Qui doit combien, depuis quand, promis pour quand. Un message WhatsApp de rappel en un geste.</p></div>
+      <div class="ecran"><div class="telephone petit"><img src="img/ecran-bilan.webp" alt="Le résultat du mois" loading="lazy" width="540" height="1140" /></div>
+        <h3>Ce qu'il vous reste</h3><p>Ventes, marchandise, charges, pertes : le résultat du mois, à envoyer à votre comptable en un geste.</p></div>
+      <div class="ecran"><div class="telephone petit"><img src="img/ecran-location.webp" alt="Les chambres, séjours et loyers" loading="lazy" width="540" height="1140" /></div>
+        <h3>Chambres & loyers</h3><p>Arrivées, départs, cautions, ménage, baux mensuels, véhicules et kilomètres : tout est suivi.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================================== SANS INTERNET + MOBILE MONEY -->
+<section class="creme">
+  <div class="conteneur">
+    <div class="cartes" style="margin-top:0">
+      <div class="carte">
+        <div class="icone">📶</div>
+        <h3>Ça marche sans internet</h3>
+        <p>Le réseau coupe, le courant saute : vous continuez à vendre. Tout est gardé sur le téléphone et part tout seul au serveur dès que le réseau revient. Rien n'est perdu.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">📱</div>
+        <h3>Wave, Orange, MTN, Moov</h3>
+        <p>Votre QR marchand s'affiche en grand pour le client. Le vendeur note le numéro du payeur, la caisse retrouve le paiement sur le téléphone du commerce.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">🧾</div>
+        <h3>Des factures propres</h3>
+        <p>Une facture avec votre logo, envoyée par WhatsApp en un geste. Vos clients voient un commerce sérieux, et vous gardez la trace.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">🌐</div>
+        <h3>Votre page publique</h3>
+        <p>Une adresse à partager où vos clients voient vos produits, vos horaires et votre localisation. Vous décidez de ce qui s'affiche.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================================================== DÉMARRER -->
+<section id="demarrer">
+  <div class="conteneur centre">
+    <span class="surtitre">Démarrer</span>
+    <h2>Quatre étapes, une journée.</h2>
+    <p class="chapeau">Pas de matériel à acheter : un téléphone Android suffit. Nous vous accompagnons pour le démarrage.</p>
+    <ol class="etapes" style="text-align:left">
+      <li><b>Installez l'application</b><span>Téléchargez-la depuis cette page. Elle pèse environ 45 Mo.</span></li>
+      <li><b>Demandez l'ouverture</b><span>Dans l'application ou sur WhatsApp : nom du commerce, type, ville. Nous répondons rapidement.</span></li>
+      <li><b>Recevez vos codes</b><span>Un code commerce, et un code personnel pour chaque employé. Vous choisissez qui fait quoi.</span></li>
+      <li><b>Saisissez vos produits</b><span>Un par un, depuis notre catalogue, ou en important votre liste Excel. Puis vendez.</span></li>
+    </ol>
+    <div class="actions" style="justify-content:center;margin-top:34px">
+      <a class="bouton" href="telecharger/">Télécharger l'application</a>
+      <a class="bouton clair" id="whatsapp" href="https://wa.me/2250565750303?text=Bonjour%2C%20je%20souhaite%20tester%20Mon%20Dj%C3%AA%20pour%20mon%20commerce.%0A%0ANom%20du%20commerce%20%3A%20%0AType%20(maquis%2C%20boutique%2C%20march%C3%A9%2C%20location%E2%80%A6)%20%3A%20%0AVille%20%3A%20">Demander l'ouverture sur WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================================================== PILOTE -->
+<section id="pilote" class="sombre">
+  <div class="conteneur pilote">
+    <div>
+      <span class="surtitre">Programme pilote</span>
+      <h2>Nous cherchons 200 commerces pour tester en grandeur nature.</h2>
+      <p class="chapeau sur">
+        Mon Djê est prêt, et nous voulons le faire éprouver par de vrais commerçants, dans de vraies conditions :
+        coupures de réseau, rush du samedi soir, personnel qui change. Vos retours construisent l'application.
+      </p>
+      <p class="sur">Celles et ceux qui l'utilisent au quotidien après l'essai gardent un <b style="color:#fff">tarif réduit de moitié</b> pour passer à l'abonnement.</p>
+    </div>
+    <div class="offre">
+      <div class="surtitre" style="color:var(--bleu)">Offre pilote</div>
+      <div class="gros">1 mois gratuit</div>
+      <ul>
+        <li>Toutes les fonctions pendant l'essai</li>
+        <li>Accompagnement au démarrage</li>
+        <li><b>Puis −50 %</b> sur l'abonnement si vous l'utilisez chaque jour</li>
+      </ul>
+      <a class="bouton" href="#demarrer" style="width:100%">Je veux participer</a>
+    </div>
+  </div>
+  <div class="conteneur">
+    <div class="prix">
+      <div class="carte"><h3>Boutique</h3><div class="montant">2 500 F<span style="font-size:16px;font-weight:600"> /mois</span></div><div class="barre">5 000 F</div><small>Petit commerce : une caisse, trois comptes.</small></div>
+      <div class="carte"><h3>Maquis</h3><div class="montant">5 000 F<span style="font-size:16px;font-weight:600"> /mois</span></div><div class="barre">10 000 F</div><small>Maquis ou restaurant : plusieurs vendeuses, une caisse.</small></div>
+      <div class="carte"><h3>Grand commerce</h3><div class="montant">10 000 F<span style="font-size:16px;font-weight:600"> /mois</span></div><div class="barre">20 000 F</div><small>Comptes sans limite, plusieurs caisses.</small></div>
+    </div>
+    <p class="sur centre" style="margin-top:18px;font-size:15px">Tarifs pilote après l'essai, pour les commerces qui utilisent Mon Djê chaque jour. Barré : tarif normal.</p>
+  </div>
+</section>
+
+<!-- ============================================================================================ QUESTIONS -->
+<section id="faq">
+  <div class="conteneur">
+    <div class="centre"><span class="surtitre">Questions fréquentes</span><h2>Ce que les commerçants demandent.</h2></div>
+    <div class="faq">
+      <details><summary>Faut-il avoir internet en permanence ?</summary>
+        <p>Non. Vous vendez, encaissez et comptez sans réseau. L'application garde tout sur le téléphone et envoie les opérations dès que le réseau revient. Un petit bandeau vous dit combien d'opérations attendent.</p></details>
+      <details><summary>Sur quels téléphones ça marche ?</summary>
+        <p>Sur les téléphones Android, même d'entrée de gamme. La version pour iPhone n'est pas disponible pour le moment. L'application arrivera aussi sur le Play Store ; en attendant, vous l'installez directement depuis cette page.</p></details>
+      <details><summary>Mes employés peuvent-ils tricher ?</summary>
+        <p>Mon Djê rend la triche difficile et visible : chaque action porte le nom de son auteur, le vendeur ne valide pas lui-même son paiement, une vente encaissée ne s'annule plus, un employé ne valide pas sa propre annulation. Les écarts de caisse et de stock sont écrits avec le motif.</p></details>
+      <details><summary>Où sont mes données ? Qui peut les voir ?</summary>
+        <p>Elles sont sur un serveur sécurisé, en Europe, et sur votre téléphone. Chaque commerce ne voit que ses propres données. L'équipe Mon Djê peut accompagner votre démarrage avec votre accord. Vous pouvez exporter vos données à tout moment.</p></details>
+      <details><summary>Et si mon téléphone est volé ou cassé ?</summary>
+        <p>Vos données sont sur le serveur : vous vous reconnectez avec le même code depuis un autre téléphone et vous retrouvez tout. Le propriétaire peut aussi désactiver le compte d'un employé à tout moment.</p></details>
+      <details><summary>Combien ça coûte ?</summary>
+        <p>Le premier mois est gratuit. Ensuite l'abonnement va de 5 000 F à 20 000 F par mois selon la taille du commerce. Pendant le programme pilote, les commerces qui l'utilisent chaque jour paient la moitié.</p></details>
+      <details><summary>Je ne sais pas me servir d'un logiciel. Est-ce pour moi ?</summary>
+        <p>L'application est faite pour le personnel de maquis et de boutique : de gros boutons, des mots simples, et un guide pour chaque rôle. Nous vous accompagnons au démarrage, et vous pouvez nous écrire sur WhatsApp à tout moment.</p></details>
+      <details><summary>Puis-je importer mes produits ?</summary>
+        <p>Oui : depuis notre catalogue de plus de 350 produits courants, un par un, ou en important votre liste Excel (fichier CSV). Les prix d'achat se renseignent à la livraison, et l'application calcule votre marge.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================================================ APPEL FINAL -->
+<section class="fond">
+  <div class="conteneur centre">
+    <h2>Prêt à savoir où va votre argent ?</h2>
+    <p class="chapeau">Installez Mon Djê aujourd'hui, essayez-le un mois sans payer.</p>
+    <div class="actions" style="justify-content:center;margin-top:22px">
+      <a class="bouton" href="telecharger/">Télécharger pour Android</a>
+      <a class="bouton clair" href="guide/">Lire le guide d'utilisation</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <div class="conteneur">
+    <div class="grille">
+      <div>
+        <a class="marque" href="./" style="color:#fff"><img src="logo-mondje.png" alt="" width="38" height="38" /> Mon Djê</a>
+        <p style="margin:12px 0 0;max-width:38ch">La caisse et le stock des commerces de Côte d'Ivoire. Fait à Abidjan, pour ceux qui travaillent dur.</p>
+      </div>
+      <div>
+        <h4>L'application</h4>
+        <ul>
+          <li><a href="telecharger/">Télécharger</a></li>
+          <li><a href="guide/">Guide d'utilisation</a></li>
+          <li><a href="#faq">Questions fréquentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Nous joindre</h4>
+        <ul>
+          <li><a href="https://wa.me/2250565750303">WhatsApp : 05 65 75 03 03</a></li>
+          <li><a href="mailto:contact@mondje.ci">contact@mondje.ci</a></li>
+          <li><a href="equipe/">Espace équipe Mon Djê</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="bas">© 2026 Mon Djê. Tous droits réservés.</div>
+  </div>
+</footer>
+
 </body>
 </html>

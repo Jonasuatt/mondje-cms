@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mon Djê — espace équipe</title>
+  <link rel="icon" href="../favicon.png" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- Connexion : le même compte que dans l'application, sur grand écran. -->
+  <div id="connexion" class="connexion">
+    <form id="formConnexion" class="carte connexion-carte">
+      <img class="logo" src="../logo-mondje.png" alt="" width="96" height="96" />
+      <h1>Mon Djê</h1>
+      <p class="sous">Espace équipe</p>
+      <label>Adresse e-mail
+        <input id="email" type="email" autocomplete="username" required />
+      </label>
+      <label>Mot de passe
+        <input id="motDePasse" type="password" autocomplete="current-password" required />
+      </label>
+      <button type="button" class="lien voir" data-voir="motDePasse">Voir</button>
+      <button class="bouton" type="submit">Se connecter</button>
+      <p id="erreurConnexion" class="erreur"></p>
+      <p class="info">
+        Réservé à l'équipe. Les commerçants, eux, travaillent depuis
+        l'application sur leur téléphone.
+      </p>
+    </form>
+  </div>
+
+  <div id="app" class="app cache">
+    <aside class="menu">
+      <div class="marque">
+        <img src="../logo-mondje.png" alt="" width="30" height="30" />
+        Mon Djê
+      </div>
+      <nav id="nav"></nav>
+      <div class="pied">
+        <div id="moi" class="info"></div>
+        <button id="deconnexion" class="bouton sombre">Se déconnecter</button>
+      </div>
+    </aside>
+
+    <main class="contenu">
+      <header class="entete">
+        <h1 id="titrePage"></h1>
+        <div id="actionsPage" class="actions"></div>
+      </header>
+      <div id="page"></div>
+    </main>
+  </div>
+
+
+  <!-- La bibliothèque Supabase est livrée avec le CMS, pas chargée d'un CDN :
+       une coupure ou une compromission chez un tiers n'ouvre pas nos comptes. -->
+  <script src="../vendor/supabase.js"></script>
+  <script src="../villes.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+/* Site public de Mon Djê (mondje.ci) : page de présentation, guide, téléchargement.
+   Aucune bibliothèque, aucune police chargée : la page doit s'ouvrir vite sur un téléphone en 3G. */
+:root {
+  --nuit: #0e1b2e;
+  --bleu: #1a5fa8;
+  --ciel: #e6f4fe;
+  --accent: #f4a300;
+  --accent-fonce: #c98200;
+  --texte: #1c2433;
+  --faible: #5b667a;
+  --trait: #e3e8ef;
+  --creme: #fff8ec;
+  --ok: #1f9d55;
+  --rayon: 16px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; color: var(--texte); background: #fff; line-height: 1.55; font-size: 17px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--bleu); }
+.conteneur { width: min(1120px, 100% - 32px); margin-inline: auto; }
+.cache { display: none !important; }
+
+/* --- En-tête --------------------------------------------------------------------------------------------- */
+.entete { position: sticky; top: 0; z-index: 20; background: rgba(255, 255, 255, .96); backdrop-filter: blur(6px); border-bottom: 1px solid var(--trait); }
+.entete .conteneur { display: flex; align-items: center; gap: 16px; min-height: 64px; }
+.marque { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--nuit); font-weight: 800; font-size: 20px; }
+.marque img { width: 38px; height: 38px; background: var(--ciel); border-radius: 50%; padding: 3px; }
+.nav { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+.nav a { text-decoration: none; color: var(--texte); padding: 8px 10px; border-radius: 10px; font-size: 15px; }
+.nav a:hover { background: var(--ciel); }
+.nav .secondaire { color: var(--faible); }
+@media (max-width: 860px) { .nav a:not(.bouton) { display: none; } }
+
+/* --- Boutons --------------------------------------------------------------------------------------------- */
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; cursor: pointer;
+  padding: 14px 22px; border-radius: 14px; font-weight: 700; font-size: 17px; border: 2px solid var(--accent);
+  background: var(--accent); color: #1a1200; transition: transform .1s, background .15s;
+}
+.bouton:hover { background: #ffb81f; transform: translateY(-1px); }
+.bouton.clair { background: #fff; color: var(--nuit); border-color: var(--trait); }
+.bouton.clair:hover { border-color: var(--bleu); background: var(--ciel); }
+.bouton.petit { padding: 9px 16px; font-size: 15px; border-radius: 12px; }
+.bouton svg { width: 20px; height: 20px; }
+
+/* --- Sections -------------------------------------------------------------------------------------------- */
+section { padding: 64px 0; }
+section.fond { background: var(--ciel); }
+section.creme { background: var(--creme); }
+section.sombre { background: var(--nuit); color: #fff; }
+section.sombre .sur { color: #b8c7dc; }
+.surtitre { display: inline-block; font-weight: 700; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; color: var(--bleu); margin-bottom: 8px; }
+section.sombre .surtitre { color: var(--accent); }
+h1, h2, h3 { line-height: 1.15; margin: 0 0 12px; color: var(--nuit); }
+section.sombre h2, section.sombre h3 { color: #fff; }
+h1 { font-size: clamp(34px, 6vw, 56px); letter-spacing: -.02em; }
+h2 { font-size: clamp(27px, 4vw, 40px); letter-spacing: -.01em; }
+h3 { font-size: 21px; }
+.chapeau { font-size: 19px; color: var(--faible); max-width: 62ch; }
+.centre { text-align: center; }
+.centre .chapeau { margin-inline: auto; }
+
+/* --- Hero ------------------------------------------------------------------------------------------------ */
+.hero { padding: 56px 0 72px; background: linear-gradient(180deg, var(--ciel), #fff 90%); overflow: hidden; }
+.hero .grille { display: grid; gap: 40px; align-items: center; grid-template-columns: 1.1fr .9fr; }
+@media (max-width: 860px) { .hero .grille { grid-template-columns: 1fr; } }
+.hero .chapeau { font-size: 20px; margin: 16px 0 28px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.preuves { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 26px 0 0; padding: 0; list-style: none; color: var(--faible); font-size: 15px; }
+.preuves li::before { content: "✓ "; color: var(--ok); font-weight: 800; }
+
+/* --- Téléphone (les captures s'y logent) ------------------------------------------------------------------ */
+.telephone {
+  width: min(290px, 78vw); aspect-ratio: 9 / 19; margin-inline: auto; position: relative; border: 9px solid #101826; border-radius: 38px;
+  background: #101826; box-shadow: 0 24px 60px rgba(14, 27, 46, .28); overflow: hidden;
+}
+.telephone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 28px; background: #1a1d24; }
+.telephone.petit { width: min(220px, 60vw); border-width: 7px; border-radius: 30px; }
+.telephone.petit img { border-radius: 22px; }
+.hero .telephone { transform: rotate(3deg); }
+@media (max-width: 860px) { .hero .telephone { transform: none; } }
+
+/* --- Grilles de cartes ----------------------------------------------------------------------------------- */
+.cartes { display: grid; gap: 18px; margin-top: 36px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.carte {
+  background: #fff; border: 1px solid var(--trait); border-radius: var(--rayon); padding: 24px; box-shadow: 0 2px 10px rgba(14, 27, 46, .04);
+}
+section.fond .carte { border-color: transparent; }
+section.sombre .carte { background: #14263d; border-color: #1f3652; box-shadow: none; }
+section.sombre .carte h3 { color: #fff; }
+.carte p { margin: 0; color: var(--faible); }
+section.sombre .carte p { color: #b8c7dc; }
+.icone { width: 48px; height: 48px; border-radius: 14px; background: var(--ciel); display: grid; place-items: center; margin-bottom: 14px; font-size: 24px; }
+section.sombre .icone { background: #1f3652; }
+.question { color: #b3261e; font-weight: 700; font-size: 18px; }
+
+/* --- Types de commerces ---------------------------------------------------------------------------------- */
+.types { display: grid; gap: 14px; margin-top: 32px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.type { background: #fff; border: 1px solid var(--trait); border-radius: var(--rayon); padding: 18px; text-align: center; }
+.type .emoji { font-size: 34px; }
+.type b { display: block; color: var(--nuit); margin: 6px 0 2px; }
+.type span { color: var(--faible); font-size: 15px; }
+
+/* --- Écrans de l'application ----------------------------------------------------------------------------- */
+.ecrans { display: grid; gap: 34px 22px; margin-top: 40px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); justify-items: center; }
+.ecran { text-align: center; max-width: 260px; }
+.ecran h3 { margin: 16px 0 4px; font-size: 19px; }
+.ecran p { margin: 0; color: var(--faible); font-size: 15.5px; }
+
+/* --- Étapes ---------------------------------------------------------------------------------------------- */
+.etapes { counter-reset: e; display: grid; gap: 18px; margin-top: 36px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); padding: 0; list-style: none; }
+.etapes li { counter-increment: e; background: #fff; border-radius: var(--rayon); padding: 26px 22px 22px; position: relative; border: 1px solid var(--trait); }
+.etapes li::before {
+  content: counter(e); position: absolute; top: -18px; left: 20px; width: 38px; height: 38px; border-radius: 50%; background: var(--accent);
+  color: #1a1200; font-weight: 800; display: grid; place-items: center; font-size: 19px;
+}
+.etapes b { display: block; color: var(--nuit); margin-bottom: 4px; font-size: 18px; }
+.etapes span { color: var(--faible); font-size: 16px; }
+
+/* --- Pilote ---------------------------------------------------------------------------------------------- */
+.pilote { display: grid; gap: 30px; grid-template-columns: 1.2fr .8fr; align-items: center; }
+@media (max-width: 860px) { .pilote { grid-template-columns: 1fr; } }
+.offre { background: #fff; color: var(--texte); border-radius: 22px; padding: 28px; text-align: center; }
+.offre .gros { font-size: 44px; font-weight: 800; color: var(--nuit); line-height: 1; }
+.offre ul { list-style: none; padding: 0; margin: 16px 0 22px; text-align: left; }
+.offre li { padding: 6px 0; border-bottom: 1px dashed var(--trait); }
+.offre li:last-child { border: 0; }
+.prix { display: grid; gap: 12px; margin-top: 26px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.prix .carte { text-align: center; }
+.prix .montant { font-size: 30px; font-weight: 800; color: var(--nuit); }
+.prix .barre { color: var(--faible); text-decoration: line-through; font-size: 16px; }
+.prix small { display: block; color: var(--faible); margin-top: 6px; }
+
+/* --- FAQ ------------------------------------------------------------------------------------------------- */
+.faq { max-width: 780px; margin: 34px auto 0; }
+.faq details { background: #fff; border: 1px solid var(--trait); border-radius: 14px; padding: 4px 20px; margin-bottom: 10px; }
+.faq summary { cursor: pointer; padding: 14px 0; font-weight: 700; color: var(--nuit); list-style: none; display: flex; justify-content: space-between; gap: 14px; }
+.faq summary::after { content: "+"; font-size: 24px; color: var(--accent-fonce); line-height: 1; }
+.faq details[open] summary::after { content: "–"; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq details p { margin: 0 0 16px; color: var(--faible); }
+
+/* --- Pied de page ---------------------------------------------------------------------------------------- */
+.pied { background: var(--nuit); color: #b8c7dc; padding: 40px 0 28px; font-size: 15px; }
+.pied .grille { display: grid; gap: 24px; grid-template-columns: 1.4fr 1fr 1fr; }
+@media (max-width: 760px) { .pied .grille { grid-template-columns: 1fr; } }
+.pied a { color: #dce8f7; }
+.pied h4 { color: #fff; margin: 0 0 10px; font-size: 16px; }
+.pied ul { list-style: none; margin: 0; padding: 0; }
+.pied li { margin-bottom: 6px; }
+.pied .bas { border-top: 1px solid #1f3652; margin-top: 26px; padding-top: 18px; font-size: 14px; }
+
+/* --- Pages intérieures (guide, téléchargement) ---------------------------------------------------------------- */
+.page { padding: 44px 0 70px; }
+.page h1 { font-size: clamp(30px, 5vw, 44px); }
+.contenu { max-width: 800px; }
+.contenu h2 { font-size: 28px; margin-top: 40px; }
+.contenu h3 { margin-top: 26px; }
+.contenu li { margin-bottom: 8px; }
+.alerte { background: var(--creme); border: 1px solid #f1d9a8; border-left: 5px solid var(--accent); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+.alerte b { color: var(--nuit); }
+.pas { display: grid; gap: 22px; grid-template-columns: 1fr 220px; align-items: center; margin: 22px 0; padding: 20px; border: 1px solid var(--trait); border-radius: var(--rayon); }
+@media (max-width: 640px) { .pas { grid-template-columns: 1fr; } }
+.pas h3 { margin-top: 0; }
+.sommaire { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+.sommaire a { padding: 8px 14px; border-radius: 999px; background: var(--ciel); text-decoration: none; font-size: 15px; font-weight: 600; }
+.version { color: var(--faible); font-size: 15px; }
+code, .code { background: #f2f5f9; padding: 2px 7px; border-radius: 6px; font-size: .92em; }
