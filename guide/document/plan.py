@@ -237,6 +237,14 @@ CHAPITRES = [
           ("mes-activites-1", "Les activités du commerce : ici, la location."),
           ("personnel-1", "L'équipe : propriétaire, réception, caisse."), ("personnel-2", None)),
     ]),
+    dict(cle="caverne", titre="La page publique d'un commerce", commerce="La Caverne (Abidjan, Cocody) — page réelle, vue sur un téléphone",
+         intro="Chaque commerce peut ouvrir une page publique que ses clients consultent sans compte, depuis un lien partagé sur WhatsApp : le logo, un bouton pour écrire ou appeler, l'événement à l'affiche, la galerie du jour et les produits avec leurs prix. Le propriétaire l'active et la règle depuis l'application (Profil → page publique). Cette page est tenue à jour d'après le stock réel du commerce.",
+         sections=[
+        S("Ce que voit le client",
+          ("page-publique-1", "En haut de page : le logo, le nom, le lieu, deux boutons (écrire sur WhatsApp, appeler) et l'événement à l'affiche."),
+          ("page-publique-2", "La galerie du jour, puis les produits rangés par rubrique."),
+          ("page-publique-3", "En bas de page : « Qui est derrière Mon Djê ? » déplie l'auteur, les copropriétaires et la collaboration, avec le lien mondje.ci.")),
+    ]),
 ]
 
 
@@ -247,7 +255,8 @@ def fabriquer(commerce, nom):
     sortie = os.path.join(SORTIE, f"{commerce}__{nom}.jpg")
     if not os.path.exists(sortie) or os.path.getmtime(sortie) < os.path.getmtime(src):
         im = Image.open(src).convert("RGB")
-        ImageDraw.Draw(im).rectangle([0, 0, im.width, 66], fill=im.getpixel((6, 74)))   # barre d'état effacée
+        if commerce != "caverne":   # capture du navigateur, sans barre d'état à effacer
+            ImageDraw.Draw(im).rectangle([0, 0, im.width, 66], fill=im.getpixel((6, 74)))   # barre d'état effacée
         im.resize((540, 1200), Image.LANCZOS).save(sortie, "JPEG", quality=78, optimize=True)
     return sortie
 

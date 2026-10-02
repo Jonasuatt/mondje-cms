@@ -63,9 +63,10 @@ const lecture = [
     'Marché : vente par tas, sachet et kilo.',
     'Vente directe : articles à l’unité, paiements mobiles.',
     'Location : chambres, séjours, réservations, cautions, baux mensuels.',
+    'La page publique : ce que voit un client qui ouvre le lien d’un commerce, sans compte.',
   ].map(puce),
   para('Les écrans sont ceux d’un propriétaire, qui voit tout. Un vendeur ne voit que la vente et son historique ; un caissier, la caisse ; un gérant, le stock et les livraisons.', { spacing: { before: 160, after: 120 } }, { size: 22 }),
-  para('Les noms, les montants et les téléphones sont inventés : ils servent à montrer comment l’application se comporte avec une activité réelle.', {}, { size: 22 }),
+  para('Les noms, les montants et les téléphones sont inventés : ils servent à montrer comment l’application se comporte avec une activité réelle. Seule exception : le dernier chapitre montre la page publique réelle d’un commerce, La Caverne.', {}, { size: 22 }),
 ];
 
 // ----- Chapitres ----------------------------------------------------------------------------------------------------
