@@ -68,10 +68,12 @@ function numeroWhatsApp(tel) {
 
 // --- Parler au commerce sur WhatsApp ---------------------------------------------------
 //
-// Réserver, participer à un événement, commander un produit de la galerie : trois gestes, une seule fin. La page
-// prépare un message avec ce que le client a choisi, et ouvre le WhatsApp du commerce ; c'est le client qui
-// l'envoie. Rien n'est enregistré chez nous : pas de nom, pas de numéro, pas de demande.
+// Réserver, participer à un événement, commander un produit de la galerie : trois questionnaires dans la même
+// fenêtre, une seule fin. Le client répond aux questions, la page compose le message avec ses réponses et ouvre le
+// WhatsApp du commerce ; c'est le client qui l'envoie. Rien n'est enregistré chez nous : pas de nom, pas de
+// numéro, pas de demande.
 let page = { nom: '', numero: '', annonce: '' };
+let demande = null; // ce que la fenêtre ouverte est en train de demander : { type, produit }
 
 function ouvrirWhatsApp(message) {
   if (!page.numero) return;
@@ -84,27 +86,34 @@ const uneLigne = (t, max = 160) => {
   return s.length > max ? s.slice(0, max - 1) + '…' : s;
 };
 
-const messageProduit = (produit) => {
-  const nom = uneLigne(produit, 80) || 'un produit de la galerie';
-  return `Bonjour ${page.nom}, ce produit m’intéresse : ${nom}.\n\n• Produit : ${nom}\n• Jour : \n• Heure : \n• Commande : \n• Nombre : \n\nMerci de me confirmer.`;
-};
-
-const messageEvenement = () => {
-  const texte = uneLigne(page.annonce, 140);
-  return `Bonjour ${page.nom} ! Je souhaite participer à l’événement ${texte ? `« ${texte} »` : 'à l’affiche'}.\n\nVous confirmez votre présence ? Oui`;
-};
-
-const messageReservation = (jour, heure, nombre) => {
+const aujourdhui = () => new Date().toLocaleDateString('sv-SE'); // AAAA-MM-JJ, à l'heure du téléphone
+const jourLisible = (jour) => {
   const [y, m, d] = jour.split('-').map(Number);
-  const jourLisible = new Date(y, m - 1, d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const [hh, mm] = heure.split(':');
-  return `Bonjour ${page.nom}, je souhaite faire une réservation :\n\n• Jour : ${jourLisible}\n• Heure : ${Number(hh)} h ${mm}\n• Nombre de personnes : ${nombre}\n\nMerci de me confirmer.`;
+  return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 };
+const heureLisible = (heure) => { const [hh, mm] = heure.split(':'); return `${Number(hh)} h ${mm}`; };
+
+// Les champs, les mêmes partout : un questionnaire n'est qu'une liste de champs.
+const CHAMPS = {
+  jour: () => `<label>Jour<input type="date" id="fJour" min="${aujourdhui()}" /></label>`,
+  heure: () => '<label>Heure<input type="time" id="fHeure" /></label>',
+  nombre: (libelle = 'Nombre de personnes') =>
+    `<label>${libelle}<input type="number" id="fNombre" min="1" max="100" inputmode="numeric" /></label>`,
+  commande: (valeur = '') =>
+    `<label>Commande<input type="text" id="fCommande" maxlength="120" value="${esc(valeur)}" placeholder="Ce que vous voulez commander" /></label>`,
+};
+
+const pied_modale = (retour = false) => `
+  <p class="erreur" id="rErreur"></p>
+  <div class="actions-modale">
+    <button type="button" class="non" ${retour ? 'data-retour' : 'data-fermer'}>${retour ? 'Retour' : 'Annuler'}</button>
+    <button type="button" class="oui" data-envoyer>Envoyer sur WhatsApp</button>
+  </div>`;
 
 // La fenêtre : un seul conteneur, rempli selon la demande.
 const modale = document.getElementById('modale');
 const corpsModale = document.getElementById('modaleCorps');
-const fermerModale = () => { modale.classList.add('cache'); corpsModale.innerHTML = ''; };
+const fermerModale = () => { modale.classList.add('cache'); corpsModale.innerHTML = ''; demande = null; };
 function ouvrirModale(html) {
   corpsModale.innerHTML = html;
   modale.classList.remove('cache');
@@ -112,35 +121,17 @@ function ouvrirModale(html) {
 }
 
 function ouvrirReservation() {
-  const aujourdhui = new Date().toLocaleDateString('sv-SE'); // AAAA-MM-JJ, à l'heure du téléphone
+  demande = { type: 'reservation' };
   ouvrirModale(`
     <h2>Réserver chez ${esc(page.nom)}</h2>
     <p>Dites-nous quand vous venez : la demande part sur WhatsApp.</p>
-    <label>Jour<input type="date" id="rJour" min="${aujourdhui}" /></label>
-    <label>Heure<input type="time" id="rHeure" /></label>
-    <label>Nombre de personnes<input type="number" id="rNombre" min="1" max="100" inputmode="numeric" /></label>
-    <p class="erreur" id="rErreur"></p>
-    <div class="actions-modale">
-      <button type="button" class="non" data-fermer>Annuler</button>
-      <button type="button" class="oui" data-envoyer-reservation>Envoyer sur WhatsApp</button>
-    </div>`);
+    ${CHAMPS.jour()}${CHAMPS.heure()}${CHAMPS.nombre()}
+    ${pied_modale()}`);
 }
 
-function envoyerReservation() {
-  const jour = document.getElementById('rJour').value;
-  const heure = document.getElementById('rHeure').value;
-  const nombre = Number(document.getElementById('rNombre').value);
-  const erreur = (t) => { document.getElementById('rErreur').textContent = t; };
-  if (!jour) return erreur('Choisissez le jour.');
-  if (jour < new Date().toLocaleDateString('sv-SE')) return erreur('Ce jour est déjà passé.');
-  if (!heure) return erreur('Choisissez l’heure.');
-  if (!Number.isInteger(nombre) || nombre < 1 || nombre > 100) return erreur('Indiquez le nombre de personnes (1 à 100).');
-  ouvrirWhatsApp(messageReservation(jour, heure, nombre));
-  fermerModale();
-}
-
-// L'affiche : on demande d'abord si le client veut vraiment venir. « Non » ferme, « Oui » ouvre WhatsApp.
+// L'affiche : on demande d'abord si le client veut vraiment venir. « Non » ferme ; « Oui » pose la dernière question.
 function ouvrirEvenement() {
+  demande = { type: 'evenement-question' };
   const affiche = document.querySelector('.annonce img')?.src;
   ouvrirModale(`
     ${affiche ? `<img class="affiche" src="${esc(affiche)}" alt="Affiche de l’événement" />` : ''}
@@ -150,6 +141,61 @@ function ouvrirEvenement() {
       <button type="button" class="non" data-fermer>Non</button>
       <button type="button" class="oui" data-participer>Oui</button>
     </div>`);
+}
+
+function ouvrirParticipation() {
+  demande = { type: 'evenement' };
+  ouvrirModale(`
+    <h2>Participer à l’événement</h2>
+    ${page.annonce ? `<p class="phrase">${esc(page.annonce)}</p>` : ''}
+    ${CHAMPS.nombre()}
+    ${pied_modale(true)}`);
+}
+
+// Un produit de la galerie : son nom est donné, le client dit quand, quoi et combien.
+function ouvrirProduit(figure) {
+  const produit = uneLigne(figure.dataset.produit, 80);
+  const photo = figure.querySelector('img')?.src;
+  demande = { type: 'produit', produit };
+  ouvrirModale(`
+    <h2>Commander${produit ? ` : ${esc(produit)}` : ''}</h2>
+    ${photo ? `<img class="affiche" style="max-height:22vh" src="${esc(photo)}" alt="${esc(produit)}" />` : ''}
+    ${CHAMPS.jour()}${CHAMPS.heure()}${CHAMPS.commande(produit)}${CHAMPS.nombre('Nombre')}
+    ${pied_modale()}`);
+}
+
+// Lit les réponses, dit ce qui manque, compose le message, ouvre WhatsApp.
+function envoyerDemande() {
+  if (!demande) return;
+  const lire = (id) => document.getElementById(id)?.value ?? '';
+  const erreur = (t) => { document.getElementById('rErreur').textContent = t; };
+  const jour = lire('fJour');
+  const heure = lire('fHeure');
+  const nombre = Number(lire('fNombre'));
+  const commande = uneLigne(lire('fCommande'), 120);
+
+  if (demande.type !== 'evenement') {
+    if (!jour) return erreur('Choisissez le jour.');
+    if (jour < aujourdhui()) return erreur('Ce jour est déjà passé.');
+    if (!heure) return erreur('Choisissez l’heure.');
+  }
+  if (demande.type === 'produit' && !commande) return erreur('Dites ce que vous voulez commander.');
+  if (!Number.isInteger(nombre) || nombre < 1 || nombre > 100) {
+    return erreur(demande.type === 'produit' ? 'Indiquez le nombre (1 à 100).' : 'Indiquez le nombre de personnes (1 à 100).');
+  }
+
+  let message;
+  if (demande.type === 'reservation') {
+    message = `Bonjour ${page.nom}, je souhaite faire une réservation :\n\n• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}\n• Nombre de personnes : ${nombre}\n\nMerci de me confirmer.`;
+  } else if (demande.type === 'evenement') {
+    const texte = uneLigne(page.annonce, 140);
+    message = `Bonjour ${page.nom} ! Je souhaite participer à l’événement ${texte ? `« ${texte} »` : 'à l’affiche'}.\n\n• Nombre de personnes : ${nombre}\n\nVous confirmez votre présence ? Oui`;
+  } else {
+    const nom = demande.produit || 'un produit de la galerie';
+    message = `Bonjour ${page.nom}, je souhaite commander : ${nom}.\n\n• Produit : ${nom}\n• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}\n• Commande : ${commande}\n• Nombre : ${nombre}\n\nMerci de me confirmer.`;
+  }
+  ouvrirWhatsApp(message);
+  fermerModale();
 }
 
 // Beaucoup de villes de l'intérieur n'ont qu'une commune, qui porte leur nom :
@@ -304,12 +350,13 @@ const fermerLoupe = () => loupe.classList.add('cache');
 document.addEventListener('click', (ev) => {
   // Les demandes au commerce : réserver, participer à l'événement, commander un produit de la galerie.
   if (ev.target.closest('[data-reserver]')) return ouvrirReservation();
-  if (ev.target.closest('[data-envoyer-reservation]')) return envoyerReservation();
-  if (ev.target.closest('[data-participer]')) { ouvrirWhatsApp(messageEvenement()); return fermerModale(); }
+  if (ev.target.closest('[data-envoyer]')) return envoyerDemande();
+  if (ev.target.closest('[data-participer]')) return ouvrirParticipation();
+  if (ev.target.closest('[data-retour]')) return ouvrirEvenement();
   if (ev.target.closest('[data-fermer]') || ev.target === modale) return fermerModale();
   if (page.numero && ev.target.closest('[data-evenement]')) return ouvrirEvenement();
   const produit = page.numero && ev.target.closest('.photo.cliquable');
-  if (produit) return ouvrirWhatsApp(messageProduit(produit.dataset.produit));
+  if (produit) return ouvrirProduit(produit);
 
   // Sans numéro WhatsApp, rien à ouvrir : l'image s'agrandit seulement.
   const image = ev.target.closest('.annonce img, .photo img');
