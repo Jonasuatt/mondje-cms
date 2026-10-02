@@ -169,6 +169,14 @@ section.sombre .icone { background: #1f3652; }
 .credits h4 { margin: 14px 0 4px; color: var(--nuit); font-size: 16px; }
 .credits ul { margin: 0 0 12px; padding-left: 20px; }
 
+/* --- Pages légales : ce qui reste à renseigner par l'éditeur se voit ---------------------------------------------- */
+.a-completer { background: #fff3b0; color: #5c4400; padding: 1px 6px; border-radius: 6px; font-weight: 600; }
+.brouillon { background: #fff3b0; border-bottom: 2px solid #e0b800; color: #5c4400; padding: 10px 0; font-size: 15px; text-align: center; }
+.contenu table { border-collapse: collapse; width: 100%; margin: 14px 0 22px; font-size: 15px; }
+.contenu th, .contenu td { border: 1px solid var(--trait); padding: 9px 11px; text-align: left; vertical-align: top; }
+.contenu th { background: var(--ciel); color: var(--nuit); }
+.table-defile { overflow-x: auto; }
+
 /* --- Pages intérieures (guide, téléchargement) ---------------------------------------------------------------- */
 .page { padding: 44px 0 70px; }
 .page h1 { font-size: clamp(30px, 5vw, 44px); }
