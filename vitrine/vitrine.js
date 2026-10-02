@@ -118,7 +118,22 @@ const pied = () => `
     <img src="../logo-mondje.png" alt="" />
     Page tenue à jour par Mon Djê, d'après le stock réel du commerce.<br />
     <small>Les visites sont comptées, sans cookie et sans rien savoir de vous.</small>
-  </p>`;
+  </p>
+  <details class="apropos">
+    <summary>Qui est derrière Mon Djê ?</summary>
+    <div data-credits><p>Chargement…</p></div>
+    <p><a href="https://mondje.ci">mondje.ci</a></p>
+  </details>`;
+
+// Le texte des crédits est un fragment du site (cms/apropos/credits.html), chargé à la première ouverture :
+// la page d'un commerce reste légère pour qui ne l'ouvre pas.
+document.addEventListener('toggle', (e) => {
+  const zone = e.target.matches?.('details.apropos') && e.target.open && e.target.querySelector('[data-credits]');
+  if (!zone || zone.dataset.charge) return;
+  zone.dataset.charge = '1';
+  fetch('../apropos/credits.html').then((r) => r.text()).then((h) => { zone.innerHTML = h; })
+    .catch(() => { zone.innerHTML = '<p>Voir <a href="../apropos/">mondje.ci/apropos</a>.</p>'; delete zone.dataset.charge; });
+}, true);
 
 async function demarrer() {
   const code = new URLSearchParams(location.search).get('c');

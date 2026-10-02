@@ -2,6 +2,7 @@
 //
 //   python cms/guide/document/plan.py
 //   NODE_PATH=<dossier contenant node_modules/docx> node cms/guide/document/construire.js
+//   python cms/guide/document/signets.py   (docx-js numérote tous les signets 1 : on les renumérote)
 const fs = require('fs');
 const path = require('path');
 const {
@@ -43,45 +44,13 @@ const ligneCredit = (role, nom) => new Paragraph({
 const mentions = [
   new Paragraph({ heading: HeadingLevel.HEADING_1, pageBreakBefore: true, children: [texte('Crédits', { size: 40, bold: true, color: NUIT })] }),
   ligneCredit('Idée et mise en œuvre de l’application :', 'Ouattara Nogolourgo Jonas'),
-  ligneCredit('Associé dans la conception de la plateforme Mon Djê :', 'SFP SANS FRONTIERE PROPERTIES, LLC'),
-  ligneCredit('Avec la collaboration de', 'Claude Code pour le développement de l’application.'),
-
-  titreMention('SFP SANS FRONTIERE PROPERTIES, LLC'),
-  para([texte('Objet :', { size: 22, bold: true })]),
-  ...[
-    'Infrastructures et équipements d’énergie alternative et renouvelable',
-    'Vente de matériels informatiques et consommables',
-    'Expertise informatique (sécurité, programmation et robotique)',
-    'Hydraulique (eau potable)',
-    'Production et vente d’eau minérale naturelle',
-    'Import et export',
-    'BTP – Génie civil',
-    'Formation professionnelle, qualifiante et continue (FDFP)',
-    'Communication et télécommunication (NTIC)',
-    'Commerce général',
-    'Imprimerie, sérigraphie',
-    'Assurance',
-    'Finances',
-    'Fournitures, mobilier de bureau et matériel informatique',
-    'Intermédiation, représentation et sous-traitance dans tous les secteurs d’activité',
-    'Agence de voyage',
-    'Universités et écoles primaires et secondaires d’enseignement général et technique',
-    'Établissements de santé',
-    'Ascenseurs',
-    'Diverses prestations',
-    'Transport',
-  ].map(puce),
-
-  titreMention('Africa Global International (ONG AGI)'),
-  para([texte('L’ONG Africa Global International (ONG AGI) est une organisation non gouvernementale ivoirienne de développement social et humanitaire, active depuis 2014.', { size: 22 })]),
-  para([texte('Axes stratégiques et missions :', { size: 22, bold: true })]),
-  ...[
-    'Protection de l’enfance : lutte contre le travail des enfants et soutien à la scolarisation.',
-    'Autonomisation des femmes : financement d’activités génératrices de revenus (AGR) et promotion de l’égalité des genres.',
-    'Santé et nutrition communautaire : suivi sanitaire de proximité et prise en charge de la petite enfance.',
-    'Eau, hygiène et assainissement (WASH) : construction de latrines et réhabilitation de points d’eau en milieu rural.',
-    'Renforcement des capacités : appui aux institutions, aux organisations de la société civile et aux coopératives.',
-  ].map(puce),
+  titreMention('Copropriétaires de Mon Djê'),
+  puce('SFP Sans Frontière Properties, LLC'),
+  puce('ONG Africa Global International (ONG AGI)'),
+  titreMention('Collaboration'),
+  puce('Claude Code (Anthropic), pour le développement de l’application'),
+  para([texte('Le détail de chaque structure se déplie dans l’application (Profil → À propos de Mon Djê) et sur ', { size: 22, color: GRIS }), texte('mondje.ci/apropos', { size: 22, bold: true, color: BLEU }), texte('.', { size: 22, color: GRIS })], { spacing: { before: 240, after: 120 } }),
+  para([texte('Site : ', { size: 24, color: GRIS }), texte('mondje.ci', { size: 24, bold: true, color: BLEU })]),
 ];
 
 // ----- Mode d'emploi du guide ---------------------------------------------------------------------------------------
