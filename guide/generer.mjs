@@ -28,7 +28,7 @@ const ROLES = [
 const section = (rid, s) => {
   const k = `${rid}-${cle(s.titre)}`;
   const image = existsSync(join(racine, 'img', 'guide', `${k}.webp`))
-    ? `<div class="telephone petit"><img src="../img/guide/${k}.webp" alt="${echapper(s.titre)}" loading="lazy" width="540" height="1140" /></div>` : '';
+    ? `<div class="telephone petit"><img src="../img/guide/${k}.webp" alt="${echapper(s.titre)}" loading="lazy" width="540" height="1200" /></div>` : '';
   const texte = `<h3 id="${k}">${echapper(s.titre)}</h3><ul>${s.points.map((p) => `<li>${echapper(p)}</li>`).join('')}</ul>`;
   return image ? `<div class="pas"><div>${texte}</div>${image}</div>` : texte;
 };
