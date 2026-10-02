@@ -44,6 +44,7 @@
         <h3>1. Téléchargez et ouvrez le fichier</h3>
         <p>Touchez le bouton orange. Chrome affiche <b>« Fichier potentiellement dangereux »</b> : c'est normal pour toute application installée en dehors du Play Store. Touchez <b>Télécharger quand même</b>.</p>
         <p>Quand le téléchargement est fini, touchez la notification « Mon-Dje.apk », ou ouvrez l'application <b>Mes fichiers</b> puis le dossier <b>Téléchargements</b>, et touchez <b>Mon-Dje.apk</b>.</p>
+        <p style="color:var(--faible);font-size:15px">Si Android demande avec quelle application ouvrir le fichier, choisissez <b>Programme d'installation</b> (ou « Installateur de package »), puis <b>Une seule fois</b>.</p>
       </div>
       <div class="telephone petit"><img src="../img/installer-1.webp" alt="Avertissement de Chrome : Télécharger quand même" loading="lazy" width="540" height="1200" /></div>
     </div>
@@ -56,12 +57,13 @@
       </div>
     </div>
 
-    <div class="pas" style="grid-template-columns:1fr">
+    <div class="pas">
       <div>
-        <h3>3. Si Android affiche un avertissement</h3>
-        <p>Il peut écrire « Application non vérifiée » ou « Bloquer l'installation ? ». C'est normal pour une application qui n'est pas encore sur le Play Store.
-          Touchez <b>Plus de détails</b>, puis <b>Installer quand même</b>.</p>
+        <h3>3. Google Play Protect affiche un avertissement</h3>
+        <p>Il écrit <b>« Appli bloquée pour protéger votre appareil »</b> et « Play Protect n'a jamais vu d'appli de ce développeur auparavant ». C'est normal : l'application n'est pas encore sur le Play Store.
+          Touchez <b>Plus de détails</b>, puis <b>Installer quand même</b>. Ne touchez pas « OK » : cela annule l'installation.</p>
       </div>
+      <div class="telephone petit"><img src="../img/installer-3.webp" alt="Google Play Protect : Installer quand même" loading="lazy" width="540" height="1200" /></div>
     </div>
 
     <div class="pas" style="grid-template-columns:1fr">
@@ -81,6 +83,7 @@
 
     <h2>Ça ne marche pas ?</h2>
     <ul>
+      <li><b>« L'application n'a pas été installée, car le package semble ne pas être valide »</b> : le téléchargement s'est mal terminé (fichier incomplet). Supprimez le fichier, puis retéléchargez-le, de préférence en Wi-Fi. Vous pouvez comparer l'empreinte du fichier avec celle de la page.</li>
       <li><b>« L'application n'est pas installée »</b> : vous avez peut-être une ancienne version de test. Désinstallez-la, puis recommencez.</li>
       <li><b>Chrome affiche « Ce site est inaccessible » ou le téléchargement ne démarre pas</b> : essayez en Wi-Fi ou avec un autre réseau mobile, puis touchez de nouveau le bouton orange. Si cela ne passe toujours pas, écrivez-nous.</li>
       <li><b>Pas assez de place</b> : libérez environ 150 Mo, puis recommencez.</li>

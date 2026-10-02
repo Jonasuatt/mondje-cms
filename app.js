@@ -1787,7 +1787,7 @@ Pour commencer (5 minutes) :
 
 1️⃣ Installe l'application sur ton téléphone Android (version 7 ou plus récente) :
 https://mondje.ci/telecharger/
-Chrome peut afficher « Fichier potentiellement dangereux » : touche « Télécharger quand même ». Ensuite, si Android affiche un avertissement, touche « Plus de détails » puis « Installer quand même ». C'est normal pour une application hors Play Store.
+Chrome peut afficher « Fichier potentiellement dangereux » : touche « Télécharger quand même ». Ensuite, Google Play Protect peut afficher « Appli bloquée pour protéger votre appareil » : touche « Plus de détails » puis « Installer quand même » (pas « OK »). C'est normal pour une application hors Play Store.
 ⚠️ Télécharge l'application uniquement depuis mondje.ci : un fichier reçu d'ailleurs peut être une fausse copie qui vole tes codes.
 
 2️⃣ Ouvre l'application. Je t'envoie dans un autre message ton code commerce, ton n° d'employé et ton code secret provisoire.
