@@ -175,6 +175,7 @@ const PAGES = {
   propositions: { titre: 'Produits proposés', rendre: pagePropositions },
   messages: { titre: 'Messages', rendre: pageMessages },
   idees: { titre: 'Idées du site', rendre: pageIdees },
+  visites: { titre: 'Visites du site', rendre: pageVisites },
   journal: { titre: 'Journal des interventions', rendre: pageJournal },
   equipe: { titre: 'Équipe et formules', rendre: pageEquipe },
 };
@@ -1170,6 +1171,85 @@ async function ficheIdee(s) {
     if (error) { echoue(error); ev.target.disabled = false; return; }
     aller('idees');
   });
+}
+
+// --- Visites du site (mondje.ci) ---------------------------------------------
+//
+// Le compteur est anonyme (aucun cookie, aucun identifiant) : on lit des totaux par jour, par page et par provenance.
+// « Visite » = un onglet qui arrive sur le site ; « page vue » = chaque page ouverte, y compris la suite d'une même visite.
+
+async function pageVisites() {
+  const depuis = (n) => new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
+  const [site, commerces] = await Promise.all([
+    bd.from('site_stat').select('jour, page, origine, visites, pages').gte('jour', depuis(59)).limit(5000),
+    bd.from('vitrine_stat').select('visites, whatsapp, appels').gte('jour', depuis(29)),
+  ]);
+  if (site.error) throw site.error;
+  const lignes = site.data ?? [];
+  const somme = (liste, champ) => liste.reduce((n, l) => n + l[champ], 0);
+  const depuisJour = (n) => lignes.filter((l) => l.jour >= depuis(n));
+  const aujourdhui = lignes.filter((l) => l.jour === depuis(0));
+  const carte = (titre, liste) => `
+    <div class="carte">
+      <div class="info">${titre}</div>
+      <div class="gros">${somme(liste, 'visites')}</div>
+      <div class="info">${somme(liste, 'pages')} page(s) vue(s)</div>
+    </div>`;
+
+  // 14 derniers jours, le plus récent en haut.
+  const par14 = Array.from({ length: 14 }, (_, i) => {
+    const j = depuis(i);
+    return { jour: j, v: somme(lignes.filter((l) => l.jour === j), 'visites') };
+  });
+  const sommet = Math.max(1, ...par14.map((d) => d.v));
+
+  const regrouper = (liste, cle) => {
+    const m = new Map();
+    for (const l of liste) {
+      const k = cle(l);
+      const t = m.get(k) ?? { v: 0, p: 0 };
+      t.v += l.visites; t.p += l.pages;
+      m.set(k, t);
+    }
+    return [...m.entries()].sort((a, b) => b[1].v - a[1].v || b[1].p - a[1].p);
+  };
+  const derniers30 = depuisJour(29);
+  const parPage = regrouper(derniers30, (l) => l.page);
+  const parOrigine = regrouper(derniers30.filter((l) => l.origine !== 'interne'), (l) => l.origine);
+  const cm = commerces.data ?? [];
+
+  $('#page').innerHTML = `
+    <div class="grille">
+      ${carte('Aujourd’hui', aujourdhui)}
+      ${carte('7 derniers jours', depuisJour(6))}
+      ${carte('30 derniers jours', derniers30)}
+      <div class="carte">
+        <div class="info">Pages des commerces · 30 jours</div>
+        <div class="gros">${somme(cm, 'visites')}</div>
+        <div class="info">${somme(cm, 'whatsapp')} WhatsApp · ${somme(cm, 'appels')} appel(s)</div>
+      </div>
+    </div>
+
+    <h3 style="margin:22px 0 8px">Visites par jour</h3>
+    <div class="carte">
+      ${par14.map((d) => `
+        <div class="rangee" style="margin:6px 0">
+          <span style="width:96px;flex:none">${jour(d.jour)}</span>
+          <span style="flex:1">${barre(d.v / sommet)}</span>
+          <span class="n" style="width:40px;text-align:right">${d.v}</span>
+        </div>`).join('')}
+    </div>
+
+    <h3 style="margin:22px 0 8px">D’où viennent les visiteurs · 30 jours</h3>
+    ${tableau(['Provenance', 'Visites'], parOrigine.map(([o, t]) => ({ cellules: [esc(o), `<span class="n">${t.v}</span>`] })),
+      'Aucune visite pour l’instant.')}
+    <p class="info">« direct » : lien tapé, favori ou application qui ne dit pas d’où l’on vient. Pour suivre une publication, ajoutez
+      <b>?s=facebook</b> (ou tiktok, whatsapp…) au lien partagé : mondje.ci/?s=facebook.</p>
+
+    <h3 style="margin:22px 0 8px">Pages les plus ouvertes · 30 jours</h3>
+    ${tableau(['Page', 'Visites', 'Pages vues'], parPage.slice(0, 20).map(([pg, t]) => ({
+      cellules: [esc(pg), `<span class="n">${t.v}</span>`, `<span class="n">${t.p}</span>`] })), 'Aucune page ouverte pour l’instant.')}
+  `;
 }
 
 // --- Journal ---------------------------------------------------------------
