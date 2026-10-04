@@ -48,6 +48,13 @@
       font-size: 34px; line-height: 1; background: none; border: 0; padding: 8px;
     }
     .cache { display: none; }
+    /* L'équipe soignante : qui est là, qui est de garde aujourd'hui. */
+    .garde { background: #e8f7ee; border: 1px solid #25d366; border-radius: 12px; padding: 10px 14px; margin: 0 0 10px; font-size: 15px; }
+    .equipe { display: grid; gap: 8px; }
+    .membre-eq { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: #fff; border: 1px solid #e3e8ef; border-radius: 12px; padding: 10px 14px; }
+    .membre-eq small { display: block; color: #5b6579; font-size: 13px; margin-top: 2px; }
+    .pastille-garde { background: #25d366; color: #fff; font-weight: 700; font-size: 12px; border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+
 
     /* L'annonce du commerce. Elle se voit sans crier : une bordure et un fond
        chaud suffisent sur une page par ailleurs blanche. */
@@ -119,7 +126,7 @@
     .carte-modale .affiche { display: block; width: 100%; max-height: 46vh; object-fit: contain; border-radius: 10px; margin-bottom: 10px; background: #f5f7fb; }
     .carte-modale .phrase { color: #10131a; font-size: 16px; white-space: pre-line; }
     .carte-modale label { display: block; margin: 0 0 12px; font-weight: 700; font-size: 14px; }
-    .carte-modale input {
+    .carte-modale input, .carte-modale select {
       display: block; width: 100%; margin-top: 4px; padding: 12px; font: inherit; font-weight: 400;
       border: 1px solid #c9d0de; border-radius: 10px; background: #fff; color: #10131a;
     }
