@@ -331,7 +331,9 @@ function poserPoints(parVille) {
 // --- Demandes d'ouverture --------------------------------------------------
 
 async function pageDossiers() {
-  const { data } = await bd.from('demande_ouverture').select('*')
+  // Une demande traitée quitte cette liste : acceptée, elle devient un commerce (module Commerces, « Comptes validés ») ;
+  // refusée, elle y attend sous « Comptes rejetés », où on peut encore la valider si le commerce se justifie.
+  const { data } = await bd.from('demande_ouverture').select('*').eq('statut', 'en_attente')
     .order('cree_le', { ascending: false }).limit(200);
   const demandes = data ?? [];
 
@@ -350,7 +352,7 @@ async function pageDossiers() {
           : '<span class="etiquette danger">Refusée</span>',
       ],
     })),
-    'Aucune demande.'
+    'Aucune demande en attente.'
   );
 
   brancherLignes((id) => ficheDemande(demandes.find((d) => d.id === id)));
@@ -459,8 +461,31 @@ async function pageCommerces() {
     .order('nom');
   if (error) throw error;
   const commerces = data ?? [];
+  const { data: rejetees } = await bd.from('demande_ouverture').select('*').eq('statut', 'refusee')
+    .order('cree_le', { ascending: false }).limit(200);
+  const refus = rejetees ?? [];
 
-  $('#page').innerHTML = tableau(
+  // Deux listes : les comptes validés (les commerces) et les comptes rejetés (les demandes refusées).
+  const dessinerRejetes = () => {
+    $('#listeCommerces').innerHTML = tableau(
+      ['Commerce', 'Type', 'Ville', 'Propriétaire', 'Reçue le', 'Motif du refus'],
+      refus.map((d) => ({
+        id: d.id,
+        cellules: [
+          esc(d.nom_commerce),
+          esc(TYPE_COMMERCE[d.type_commerce] ?? d.type_commerce),
+          esc(d.commune ? `${d.ville} — ${d.commune}` : d.ville),
+          `${esc(d.nom_proprietaire)}<div class="info">${esc(d.telephone)}</div>`,
+          jour(d.cree_le),
+          esc(d.motif_refus ?? '—'),
+        ],
+      })),
+      'Aucun compte rejeté.'
+    );
+    brancherLignes((id) => ficheRejetee(refus.find((d) => d.id === id)));
+  };
+  const dessinerValides = () => {
+    $('#listeCommerces').innerHTML = tableau(
     ['Commerce', 'Code', 'Type', 'Ville', 'Comptes', 'État'],
     commerces.map((c) => ({
       id: c.id,
@@ -474,9 +499,54 @@ async function pageCommerces() {
       ],
     })),
     'Aucun commerce.'
-  );
+    );
+    brancherLignes((id) => ficheCommerce(commerces.find((c) => c.id === id)));
+  };
 
-  brancherLignes((id) => ficheCommerce(commerces.find((c) => c.id === id)));
+  $('#page').innerHTML = `
+    <div class="actions" style="margin-bottom:12px">
+      <button class="bouton" id="ongletValides">Comptes validés (${commerces.length})</button>
+      <button class="bouton sombre" id="ongletRejetes">Comptes rejetés (${refus.length})</button>
+    </div>
+    <div id="listeCommerces"></div>`;
+  const choisir = (rejetes) => {
+    $('#ongletValides').classList.toggle('sombre', rejetes);
+    $('#ongletRejetes').classList.toggle('sombre', !rejetes);
+    (rejetes ? dessinerRejetes : dessinerValides)();
+  };
+  $('#ongletValides').addEventListener('click', () => choisir(false));
+  $('#ongletRejetes').addEventListener('click', () => choisir(true));
+  choisir(false);
+}
+
+// Un compte rejeté peut être validé si le commerce se justifie : la demande repasse « en attente » et suit le parcours normal
+// (accepter crée le commerce et le compte du propriétaire). Rien n'est effacé : le motif du refus reste lisible dans la fiche.
+function ficheRejetee(d) {
+  ouvrirPanneau(d.nom_commerce + ' — compte rejeté', `
+    <div class="carte danger">
+      ${champLecture('Motif du refus', d.motif_refus)}
+    </div>
+    ${champLecture('Type', TYPE_COMMERCE[d.type_commerce] ?? d.type_commerce)}
+    ${champLecture('Ville', d.commune ? `${d.ville} — ${d.commune}` : d.ville)}
+    ${champLecture('Propriétaire', d.nom_proprietaire)}
+    ${champLecture('WhatsApp', d.telephone)}
+    ${champLecture('E-mail', d.email)}
+    ${champLecture('Message', d.message)}
+    <div class="carte accent">
+      <p class="info">
+        Le commerce s'est justifié ? Valide-le : la demande revient en attente et tu peux alors créer son commerce.
+      </p>
+      <button class="bouton ok" id="revalider">Valider ce compte</button>
+    </div>
+  `);
+  $('#revalider').addEventListener('click', async (e) => {
+    if (!confirm(`Valider « ${d.nom_commerce} » malgré le refus ?`)) return;
+    e.target.disabled = true;
+    const { error } = await bd.from('demande_ouverture')
+      .update({ statut: 'en_attente' }).eq('id', d.id);
+    if (error) { echoue(error); e.target.disabled = false; return; }
+    ficheDemande({ ...d, statut: 'en_attente' });
+  });
 }
 
 async function ficheCommerce(c) {
@@ -1618,6 +1688,7 @@ async function ficheCarte(c) {
   ouvrirPanneau(c.nom + ' — carte et stock', `
     <button class="bouton sombre" id="retourFiche">Retour à la fiche</button>
     <button class="bouton" id="ajouterCatalogue">Ajouter des produits du catalogue</button>
+    <button class="bouton" id="importerFichier">Importer un fichier Excel / CSV</button>
 
     ${liste.length === 0
       ? '<p class="info">Ce commerce n’a aucun produit. Commence par le catalogue.</p>'
@@ -1655,6 +1726,7 @@ async function ficheCarte(c) {
 
   $('#retourFiche').addEventListener('click', () => ficheCommerce(c));
   $('#ajouterCatalogue').addEventListener('click', () => ficheCatalogueCommerce(c));
+  $('#importerFichier').addEventListener('click', () => ficheImportFichier(c));
 
   const bouton = $('#enregistrerEntrees');
   if (!bouton) return;
@@ -1673,6 +1745,77 @@ async function ficheCarte(c) {
     } catch (e) {
       echoue(e);
       bouton.disabled = false;
+    }
+  });
+}
+
+// Importer la liste de produits d'un commerce depuis son fichier (le modèle Excel du site, enregistré en CSV). Les mêmes règles que
+// dans l'application (cms/importer.js est compilé depuis maquis/src/importer.ts) : on lit, on montre ce qui passe et ce qui est refusé,
+// puis seulement on écrit. Le fichier ne quitte pas ce navigateur : seules les lignes valides partent vers le serveur.
+async function ficheImportFichier(c) {
+  const importeur = await import('./importer.js');
+  const { data: existants } = await bd.from('produit').select('nom').eq('structure_id', c.id);
+  let analyse = null;
+
+  ouvrirPanneau(c.nom + ' — importer un fichier', `
+    <button class="bouton sombre" id="retourCarte">Retour à la carte</button>
+    <p class="info">
+      Le fichier du commerçant : le modèle Excel de mondje.ci, enregistré en <b>CSV</b> (Fichier &gt; Enregistrer sous &gt; « CSV UTF-8 »).
+      Colonnes : Nom, Unité, Prix de vente, Prix d’achat, Stock. Seuls le nom et le prix de vente sont obligatoires.
+      Un produit déjà sur sa carte n’est jamais écrasé. ${importeur.MAX_LIGNES} lignes au plus.
+    </p>
+    <label>Fichier (.csv)<input id="fichierImport" type="file" accept=".csv,.txt,text/csv" /></label>
+    <div id="apercuImport"></div>
+    <button class="bouton ok" id="lancerImport" style="display:none">Importer</button>
+  `);
+
+  $('#retourCarte').addEventListener('click', () => ficheCarte(c));
+  $('#fichierImport').addEventListener('change', async (ev) => {
+    const fichier = ev.target.files[0];
+    if (!fichier) return;
+    $('#lancerImport').style.display = 'none';
+    if (/\.xlsx?$/i.test(fichier.name)) {
+      $('#apercuImport').innerHTML = '<p class="erreur">Ce fichier est un classeur Excel. Dans Excel : Fichier &gt; Enregistrer sous &gt; « CSV UTF-8 », puis choisis le .csv.</p>';
+      return;
+    }
+    const octets = new Uint8Array(await fichier.arrayBuffer());
+    let texte = new TextDecoder('utf-8').decode(octets);
+    if (importeur.aDesCaracteresAbimes(texte)) texte = importeur.decoderAnsi(octets);   // Excel français : Windows-1252
+    analyse = importeur.analyserImport(texte, (existants ?? []).map((p) => p.nom));
+    const a = analyse;
+    if (a.illisible) { $('#apercuImport').innerHTML = `<p class="erreur">${esc(a.illisible)}</p>`; return; }
+    $('#apercuImport').innerHTML = `
+      <div class="carte ${a.valides.length ? 'ok' : 'danger'}">
+        <div class="nom">${a.valides.length} produit(s) prêt(s) à importer · ${a.refus.length} ligne(s) refusée(s)</div>
+        ${a.tropLong ? `<div class="info">Fichier trop long : seules les ${importeur.MAX_LIGNES} premières lignes sont lues.</div>` : ''}
+      </div>
+      ${a.valides.length ? `<div class="tableau"><table>
+        <thead><tr><th>Produit</th><th>Unité</th><th class="n">Vente</th><th class="n">Achat</th><th class="n">Stock</th></tr></thead>
+        <tbody>${a.valides.slice(0, 60).map((l) => `<tr><td>${esc(l.nom)}</td><td>${esc(l.unite)}</td>
+          <td class="n">${fcfa(l.prixVente)}</td><td class="n">${l.prixAchat == null ? '—' : fcfa(l.prixAchat)}</td><td class="n">${l.stock}</td></tr>`).join('')}</tbody>
+      </table></div>${a.valides.length > 60 ? `<p class="info">… et ${a.valides.length - 60} autre(s).</p>` : ''}` : ''}
+      ${a.refus.length ? `<h3>Refusées</h3><div class="tableau"><table><tbody>${a.refus.slice(0, 60).map((r) =>
+        `<tr><td>ligne ${r.ligne}</td><td>${esc(r.nom)}</td><td class="info">${esc(r.raison)}</td></tr>`).join('')}</tbody></table></div>` : ''}
+    `;
+    if (a.valides.length) $('#lancerImport').style.display = '';
+  });
+
+  $('#lancerImport').addEventListener('click', async (ev) => {
+    if (!analyse?.valides.length) return;
+    const total = analyse.valides.reduce((n, l) => n + l.stock, 0);
+    if (!confirm(`${analyse.valides.length} produit(s) et ${total} unité(s) de stock ajoutés chez ${c.nom}. `
+                 + `L’entrée de stock portera le nom de Mon Djê. Confirmer ?`)) return;
+    ev.target.disabled = true;
+    try {
+      const r = await appelerFonction('importer-produits-commerce', {
+        structure_id: c.id,
+        lignes: analyse.valides.map((l) => ({ nom: l.nom, unite: l.unite, prix_vente: l.prixVente, prix_achat: l.prixAchat, stock: l.stock })),
+      });
+      alert(`${r.crees} produit(s) créé(s)${r.ignores ? `, ${r.ignores} déjà présent(s) ignoré(s)` : ''}.`);
+      ficheCarte(c);
+    } catch (e) {
+      echoue(e);
+      ev.target.disabled = false;
     }
   });
 }
