@@ -498,7 +498,8 @@ async function demarrer() {
     ${articles.length === 0
       ? '<p class="lieu" style="margin-top:24px">La liste des produits arrive bientôt.</p>'
       : articles.map((a) => {
-          const entete = a.rubrique !== rayon
+          // Un commerce dont tous les produits sont « Autres » n'a pas de rayons : un titre « AUTRES » au-dessus de tout serait du bruit.
+          const entete = !articles.every((x) => x.rubrique === 'Autres') && a.rubrique !== rayon
             ? `<div class="rayon">${esc(a.rubrique)}</div>` : '';
           rayon = a.rubrique;
           return entete + `

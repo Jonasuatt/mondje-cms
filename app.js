@@ -457,7 +457,7 @@ function ficheDemande(d) {
 // qui échoue doit le dire.
 async function pageCommerces() {
   const { data, error } = await bd.from('structure')
-    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
+    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, fonction, actif)')
     .order('nom');
   if (error) throw error;
   const commerces = data ?? [];
@@ -588,7 +588,7 @@ async function ficheCommerce(c) {
       <div class="carte" style="${m.actif ? '' : 'opacity:.5'}">
         <div class="rangee">
           <span class="nom">${String(m.code_employe).padStart(2, '0')} · ${esc(m.nom)}</span>
-          <span class="info">${esc(m.roles.join(', '))}${m.actif ? '' : ' · désactivé'}</span>
+          <span class="info">${esc(m.roles.includes('autre') && m.fonction ? m.fonction : m.roles.join(', '))}${m.actif ? '' : ' · désactivé'}</span>
         </div>
         ${m.actif ? `<button class="bouton sombre petit" data-recoder="${esc(m.id)}"
           data-nom="${esc(m.nom)}" style="margin-top:8px">Nouveau code secret</button>` : ''}
