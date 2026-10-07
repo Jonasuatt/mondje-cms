@@ -1,9 +1,9 @@
 {
-  "versionCode": 30,
-  "versionName": "1.0.20",
+  "versionCode": 31,
+  "versionName": "1.0.21",
   "date": "07/10/2026",
   "androidMin": "7",
   "tailleMo": 47,
-  "sha256": "a7deca42b0c3ae220a159ee0f78ab9a4d2cc24ea349376f8887e5bf5bacd85c5",
+  "sha256": "f1f5319e4263b198bc449d86bd2a8cf77347ebcb30e9f7621403f9ed25910780",
   "apk": "https://github.com/Jonasuatt/mondje-cms/releases/latest/download/Mon-Dje.apk"
 }
