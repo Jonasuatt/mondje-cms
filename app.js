@@ -34,6 +34,7 @@ const TYPE_COMMERCE = {
   marche: 'Marché',
   vente_directe: 'Vente directe',
   location: 'Location',
+  clinique: 'Clinique',
 };
 
 const TAILLE_BOUTIQUE = {
