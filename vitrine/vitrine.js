@@ -73,7 +73,7 @@ function numeroWhatsApp(tel) {
 // pour le commerce (qui la retrouve dans son application et peut l'accepter ou la refuser), puis ouvre le WhatsApp du
 // commerce ; c'est le client qui l'envoie. Le nom et le numéro ne servent qu'à lui répondre : le client les tape lui-même,
 // la page ne les lit nulle part, et seul le commerce concerné les voit.
-let page = { nom: '', numero: '', annonce: '', code: '', equipe: [] };
+let page = { nom: '', numero: '', annonce: '', code: '', equipe: [], telephone: '', acompte: { pct: 0, min: null, consigne: '' } };
 let demande = null; // ce que la fenêtre ouverte est en train de demander : { type, produit }
 
 function ouvrirWhatsApp(message) {
@@ -145,12 +145,90 @@ function ouvrirModale(html, { focus = true } = {}) {
 
 function ouvrirReservation() {
   demande = { type: 'reservation' };
+  const ac = page.acompte;
   ouvrirModale(`
     <h2>Réserver chez ${esc(page.nom)}</h2>
-    <p>Dites-nous quand vous venez : la demande part sur WhatsApp.</p>
+    <p>Dites-nous quand vous venez. ${ac.pct > 0 ? 'La demande est enregistrée, puis part sur WhatsApp.' : 'La demande part sur WhatsApp.'}</p>
     ${CHAMPS.jour()}${CHAMPS.heure()}${CHAMPS.nombre()}
-    ${CHAMPS.nom()}${CHAMPS.tel()}${CHAMPS.note()}
+    ${CHAMPS.nom(true)}${CHAMPS.tel(true)}
+    <label>Votre adresse mail (facultatif)<input type="email" id="fMail" maxlength="120" autocomplete="email" placeholder="vous@exemple.ci" /></label>
+    ${ac.pct > 0 ? `
+    <div class="acompte">
+      <b>Un acompte valide votre réservation</b><br />
+      ${ac.pct} % du montant de la réservation${ac.min ? `, au minimum ${fcfa(ac.min)}` : ''}. Il sera déduit de votre note à la fin.
+      <br />${ac.consigne ? esc(ac.consigne) : page.telephone ? `Payez-le au ${esc(page.telephone)} (Mobile Money).` : 'Le commerce vous dit comment le payer.'}
+    </div>
+    <label>Montant de l’acompte versé, en F<input type="number" id="fAcompte" min="1" inputmode="numeric" /></label>
+    <label>Capture de votre paiement<input type="file" id="fCapture" accept="image/*" /></label>
+    <img class="vignette cache" id="fVignette" alt="Votre capture" />` : ''}
+    ${CHAMPS.note()}
     ${pied_modale()}`);
+}
+
+// La capture est réduite sur le téléphone avant l'envoi : une image de 4 Mo n'a pas besoin de voyager pour qu'on y lise un montant.
+function lireCapture(fichier) {
+  return new Promise((ok, ko) => {
+    const lecteur = new FileReader();
+    lecteur.onerror = () => ko(new Error('Image illisible.'));
+    lecteur.onload = () => {
+      const img = new Image();
+      img.onerror = () => ko(new Error('Image illisible.'));
+      img.onload = () => {
+        const echelle = Math.min(1, 1280 / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * echelle);
+        c.height = Math.round(img.height * echelle);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        ok(c.toDataURL('image/jpeg', 0.72));
+      };
+      img.src = lecteur.result;
+    };
+    lecteur.readAsDataURL(fichier);
+  });
+}
+
+let envoiEnCours = false;
+async function envoyerReservation() {
+  if (envoiEnCours) return;
+  const lire = (id) => document.getElementById(id)?.value ?? '';
+  const erreur = (m) => { document.getElementById('rErreur').textContent = m; };
+  const jour = lire('fJour'), heure = lire('fHeure'), nombre = Number(lire('fNombre'));
+  const nom = uneLigne(lire('fNom'), 80), tel = lire('fTel').trim(), mail = lire('fMail').trim();
+  const ac = page.acompte;
+  if (!jour) return erreur('Choisissez le jour.');
+  if (jour < aujourdhui()) return erreur('Ce jour est déjà passé.');
+  if (!heure) return erreur('Choisissez l’heure.');
+  if (!Number.isInteger(nombre) || nombre < 1 || nombre > 100) return erreur('Indiquez le nombre de personnes (1 à 100).');
+  if (nom.length < 2) return erreur('Indiquez votre nom.');
+  if (tel.replace(/\D/g, '').length < 8) return erreur('Indiquez votre numéro de téléphone.');
+  if (mail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) return erreur('Cette adresse mail ne semble pas juste.');
+  let montant = null, capture = null;
+  if (ac.pct > 0) {
+    montant = Number(lire('fAcompte'));
+    if (!Number.isInteger(montant) || montant < 1) return erreur('Indiquez le montant de l’acompte que vous avez versé.');
+    if (ac.min && montant < ac.min) return erreur(`L’acompte minimum est de ${fcfa(ac.min)}.`);
+    const fichier = document.getElementById('fCapture')?.files?.[0];
+    if (!fichier) return erreur('Ajoutez la capture de votre paiement : sans elle, la réservation n’est pas validée.');
+    try { capture = await lireCapture(fichier); } catch { return erreur('Cette image ne peut pas être lue. Essayez une autre capture.'); }
+  }
+
+  const message = `Bonjour ${page.nom}, je souhaite faire une réservation :\n\n• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}\n• Nombre de personnes : ${nombre}\n• Nom : ${nom}`
+    + `${montant ? `\n• Acompte versé : ${fcfa(montant)} (capture envoyée)` : ''}\n\nMerci de me confirmer.`;
+  envoiEnCours = true;
+  const bouton = document.querySelector('[data-envoyer]');
+  if (bouton) bouton.disabled = true;
+  const { error } = robot ? { error: null } : await bd.rpc('envoyer_reservation', {
+    p_code: page.code, p_nom: nom, p_telephone: tel, p_email: mail || null, p_texte: message, p_jour: jour, p_heure: heure,
+    p_nombre: nombre, p_acompte: montant, p_capture: capture, p_site_web: '',
+  });
+  envoiEnCours = false;
+  if (bouton) bouton.disabled = false;
+  if (error) return erreur(error.message || 'La demande n’a pas pu être enregistrée. Réessayez.');
+  ouvrirWhatsApp(message);
+  corpsModale.innerHTML = `
+    <h2>Demande envoyée</h2>
+    <p>${ac.pct > 0 ? 'Votre réservation est en attente : le commerce vérifie votre acompte, puis vous confirme.' : 'Le commerce va vous répondre.'}${mail ? ' Vous recevrez aussi un mail.' : ''}</p>
+    <div class="actions-modale"><button type="button" class="oui" data-fermer>Fermer</button></div>`;
 }
 
 // L'affiche : on demande d'abord si le client veut vraiment venir. « Non » ferme ; « Oui » pose la dernière question.
@@ -343,6 +421,7 @@ function envoyerDemande() {
   if (!demande) return;
   if (demande.type === 'commande') return envoyerCommande();
   if (demande.type === 'rendez_vous') return envoyerRendezVous();
+  if (demande.type === 'reservation') return envoyerReservation();
   const lire = (id) => document.getElementById(id)?.value ?? '';
   const erreur = (t) => { document.getElementById('rErreur').textContent = t; };
   const nomClient = uneLigne(lire('fNom'), 80);
@@ -450,9 +529,26 @@ document.addEventListener('toggle', (e) => {
     .catch(() => { zone.innerHTML = '<p>Voir <a href="../apropos/">mondje.ci/apropos</a>.</p>'; delete zone.dataset.charge; });
 }, true);
 
+// Le client confirme sa venue avec le lien que le commerce lui a envoyé (.../vitrine/?c=CODE&confirmer=JETON).
+async function confirmerVenue(jeton) {
+  const { data } = await bd.rpc('confirmer_reservation', { p_jeton: jeton });
+  const etat = data?.etat;
+  const commerce = data?.commerce ? esc(data.commerce) : 'le commerce';
+  const messages = {
+    ok: `Merci ! Votre venue chez ${commerce} est confirmée.`,
+    deja: `Votre venue chez ${commerce} est déjà confirmée. À bientôt !`,
+    expiree: `Le délai de confirmation est dépassé : la réservation chez ${commerce} a expiré. Contactez-les pour en refaire une.`,
+    pas_encore: `${commerce} n’a pas encore accepté votre réservation. Réessayez avec le lien qu’il vous enverra.`,
+  };
+  document.title = `Confirmation — ${data?.commerce ?? 'Mon Djê'}`;
+  afficher(`<p class="attente">${messages[etat] ?? 'Ce lien n’est pas valide. Vérifiez le message reçu.'}</p>${pied()}`);
+}
+
 async function demarrer() {
   const code = new URLSearchParams(location.search).get('c');
   if (!code) return introuvable();
+  const jeton = new URLSearchParams(location.search).get('confirmer');
+  if (jeton) return confirmerVenue(jeton);
 
   const [commerce, produits, images, equipeRes] = await Promise.all([
     bd.from('vitrine_commerce').select('*').eq('code', code.toUpperCase()).maybeSingle(),
@@ -469,7 +565,10 @@ async function demarrer() {
   document.title = `${c.nom} — ${lieu(c) || 'Côte d’Ivoire'}`;
 
   const numero = numeroWhatsApp(c.telephone);
-  page = { nom: c.nom, numero, annonce: c.annonce_texte ?? '', code: c.code, equipe: equipeRes.data ?? [] };
+  page = {
+    nom: c.nom, numero, annonce: c.annonce_texte ?? '', code: c.code, equipe: equipeRes.data ?? [], telephone: c.telephone ?? '',
+    acompte: { pct: c.acompte_reservation_pct ?? 0, min: c.acompte_reservation_min ?? null, consigne: c.acompte_consigne ?? '' },
+  };
   const articles = produits.data ?? [];
   catalogue = articles.map((a) => ({ nom: a.nom, unite: a.unite, prix: a.prix, rubrique: a.rubrique }));
   let rayon = null;
@@ -572,6 +671,15 @@ document.addEventListener('input', (ev) => {
     const erreur = document.getElementById('rErreur');
     if (erreur) erreur.textContent = '';
   }
+});
+document.addEventListener('change', (ev) => {
+  if (ev.target.id !== 'fCapture') return;
+  const vignette = document.getElementById('fVignette');
+  const fichier = ev.target.files?.[0];
+  if (!vignette) return;
+  if (!fichier) { vignette.classList.add('cache'); return; }
+  vignette.src = URL.createObjectURL(fichier);
+  vignette.classList.remove('cache');
 });
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape') { fermerLoupe(); fermerModale(); }
