@@ -458,10 +458,11 @@ function ficheDemande(d) {
 // qui échoue doit le dire.
 async function pageCommerces() {
   const { data, error } = await bd.from('structure')
-    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, fonction, actif)')
+    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, est_test, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, fonction, actif)')
     .order('nom');
   if (error) throw error;
-  const commerces = data ?? [];
+  // Les vrais clients d'abord (en vert), les comptes de test ensuite (en violet) : on ne confond plus un essai avec un client.
+  const commerces = (data ?? []).slice().sort((a, b) => Number(a.est_test) - Number(b.est_test) || a.nom.localeCompare(b.nom, 'fr'));
   const { data: rejetees } = await bd.from('demande_ouverture').select('*').eq('statut', 'refusee')
     .order('cree_le', { ascending: false }).limit(200);
   const refus = rejetees ?? [];
@@ -487,11 +488,13 @@ async function pageCommerces() {
   };
   const dessinerValides = () => {
     $('#listeCommerces').innerHTML = tableau(
-    ['Commerce', 'Code', 'Type', 'Ville', 'Comptes', 'État'],
+    ['Commerce', 'Compte', 'Code', 'Type', 'Ville', 'Comptes', 'État'],
     commerces.map((c) => ({
       id: c.id,
+      classe: c.est_test ? 'compte-test' : 'compte-client',
       cellules: [
         `${esc(c.nom)}<div class="info">${esc(c.membre.find((m) => m.roles.includes('proprietaire') && m.actif)?.nom ?? '')}</div>`,
+        c.est_test ? '<span class="etiquette test">Compte de test</span>' : '<span class="etiquette ok">Compte client</span>',
         `<code>${esc(c.code)}</code>`,
         esc(TYPE_COMMERCE[c.type_commerce] ?? c.type_commerce),
         esc(c.ville ?? '—'),
@@ -1500,7 +1503,7 @@ function tableau(colonnes, lignes, vide) {
     <thead><tr>${colonnes.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead>
     <tbody>
       ${lignes.map((l) => `
-        <tr class="${l.id ? 'cliquable' : ''}" ${l.id ? `data-id="${esc(l.id)}"` : ''}>
+        <tr class="${[l.id ? 'cliquable' : '', l.classe || ''].join(' ').trim()}" ${l.id ? `data-id="${esc(l.id)}"` : ''}>
           ${l.cellules.map((c) => `<td>${c}</td>`).join('')}
         </tr>`).join('')}
     </tbody>

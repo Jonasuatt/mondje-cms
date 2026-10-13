@@ -136,6 +136,10 @@ td.n, th.n { text-align: right; white-space: nowrap; }
 .etiquette.ok { background: rgba(46,204,113,.15); color: var(--ok); }
 .etiquette.accent { background: rgba(244,163,0,.15); color: var(--accent); }
 .etiquette.danger { background: rgba(231,76,60,.15); color: var(--danger); }
+.etiquette.test { background: rgba(167,139,250,.18); color: #A78BFA; }
+/* Liste des commerces : un filet vert devant un vrai client, violet devant un compte de test. */
+.tableau tr.compte-client td:first-child { box-shadow: inset 4px 0 0 var(--ok); }
+.tableau tr.compte-test td:first-child { box-shadow: inset 4px 0 0 #A78BFA; }
 
 .barre { height: 10px; background: var(--bord); border-radius: 5px; overflow: hidden; }
 .barre span { display: block; height: 100%; background: var(--accent); }
