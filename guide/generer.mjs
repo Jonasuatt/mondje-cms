@@ -8,7 +8,7 @@
 import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, DEBUT_COMMANDE, vendeur } from '../../maquis/src/guide.ts';
+import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, FABRICATION, DEBUT_COMMANDE, vendeur } from '../../maquis/src/guide.ts';
 import { AUTEUR, STRUCTURES, SITE_WEB, SITE_WEB_URL } from '../../maquis/src/apropos.ts';
 
 const ici = dirname(fileURLToPath(import.meta.url));
@@ -23,6 +23,7 @@ const ROLES = [
   { id: 'gerant', titre: 'Je gère', qui: 'Gérant : le stock, les livraisons, l\'inventaire, les fournisseurs.', sections: GERANT },
   { id: 'proprietaire', titre: 'Je suis le propriétaire', qui: 'Propriétaire : la carte, l\'équipe, les chiffres, l\'abonnement.', sections: PROPRIETAIRE },
   { id: 'location', titre: 'Chambres, logements, véhicules', qui: 'Locations : séjours, réservations, cautions, baux, véhicules.', sections: [LOCATION] },
+  { id: 'boulangerie', titre: 'Boulangerie, pâtisserie', qui: 'Fabriquer et vendre : recettes, fabrication du jour, invendus.', sections: [FABRICATION] },
   { id: 'atelier', titre: 'Atelier, pressing, cordonnerie', qui: 'Objets confiés par les clients : déposer, suivre, prévenir, rendre.', sections: [DEPOTS] },
   { id: 'commun', titre: 'Pour tout le monde', qui: 'Se connecter, et que faire quand le réseau coupe.', sections: COMMUN },
 ];
