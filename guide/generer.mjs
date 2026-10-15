@@ -8,7 +8,7 @@
 import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, FABRICATION, RENDEZVOUS, DEBUT_COMMANDE, vendeur } from '../../maquis/src/guide.ts';
+import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, FABRICATION, RENDEZVOUS, LIVRAISONS, VERSEMENTS, DEBUT_COMMANDE, vendeur } from '../../maquis/src/guide.ts';
 import { AUTEUR, STRUCTURES, SITE_WEB, SITE_WEB_URL } from '../../maquis/src/apropos.ts';
 
 const ici = dirname(fileURLToPath(import.meta.url));
@@ -23,6 +23,8 @@ const ROLES = [
   { id: 'gerant', titre: 'Je gère', qui: 'Gérant : le stock, les livraisons, l\'inventaire, les fournisseurs.', sections: GERANT },
   { id: 'proprietaire', titre: 'Je suis le propriétaire', qui: 'Propriétaire : la carte, l\'équipe, les chiffres, l\'abonnement.', sections: PROPRIETAIRE },
   { id: 'location', titre: 'Chambres, logements, véhicules', qui: 'Locations : séjours, réservations, cautions, baux, véhicules.', sections: [LOCATION] },
+  { id: 'versements', titre: 'Gérance et abonnements', qui: 'Un véhicule confié à un chauffeur, un abonnement : ce qui est dû, ce qui est versé.', sections: [VERSEMENTS] },
+  { id: 'livraisons', titre: 'Livraisons à domicile', qui: 'Porter la commande chez le client, encaisser, remettre l’argent.', sections: [LIVRAISONS] },
   { id: 'rendezvous', titre: 'Salon, garage, clinique : rendez-vous', qui: 'Prendre les rendez-vous, prévenir le client, noter qui est venu.', sections: [RENDEZVOUS] },
   { id: 'boulangerie', titre: 'Boulangerie, pâtisserie', qui: 'Fabriquer et vendre : recettes, fabrication du jour, invendus.', sections: [FABRICATION] },
   { id: 'atelier', titre: 'Atelier, pressing, cordonnerie', qui: 'Objets confiés par les clients : déposer, suivre, prévenir, rendre.', sections: [DEPOTS] },
