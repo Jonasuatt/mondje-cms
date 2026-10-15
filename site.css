@@ -211,3 +211,11 @@ code, .code { background: #f2f5f9; padding: 2px 7px; border-radius: 6px; font-si
 .video-rangee .video-bloc h3 { font-size: 18px; min-height: 2.6em; display: flex; align-items: center; justify-content: center; }
 .video-note { text-align: center; margin: 22px 0 0; font-size: 14px; color: var(--faible); }
 .video-suite { text-align: center; margin: 18px 0 0; }
+
+/* Les vidéos de formation (accueil et page « Se former ») */
+.demos { display: grid; gap: 34px 26px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); margin: 24px 0 8px; }
+.demo video { width: 100%; height: auto; aspect-ratio: 9 / 16; border-radius: 18px; background: var(--nuit); box-shadow: 0 14px 40px rgba(14,27,46,.25); }
+.demo h3 { margin: 14px 0 4px; font-size: 18px; }
+.demo p { margin: 0; color: var(--faible); font-size: 15px; }
+.mail-aide { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); max-width: min(92vw, 460px); background: var(--nuit); color: #fff; padding: 14px 18px; border-radius: 14px; font-size: 15px; line-height: 1.4; box-shadow: 0 14px 40px rgba(14,27,46,.35); z-index: 50; }
+.mail-aide a { color: #FFB65C; font-weight: 700; }
