@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Vérifier un relevé · Mon Djê</title>
+  <link rel="icon" href="../favicon.png" />
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f7fb; color: #10131a; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+    main { max-width: 640px; margin: 0 auto; padding: 20px 16px 56px; }
+    header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    header img { width: 44px; height: 44px; }
+    h1 { font-size: 22px; margin: 0; }
+    .sous { color: #5b6579; margin: 2px 0 0; font-size: 14px; }
+    form { display: flex; gap: 8px; margin: 14px 0 18px; }
+    input { flex: 1; min-width: 0; font: inherit; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; padding: 12px; border: 1px solid #c9d0de; border-radius: 10px; background: #fff; }
+    button { font: inherit; font-weight: 700; padding: 12px 18px; border: 0; border-radius: 10px; background: #f4a300; color: #10131a; cursor: pointer; }
+    .carte { background: #fff; border: 1px solid #e2e6ef; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+    .ok { background: #d9f5e3; color: #0b5a2b; }
+    .non { background: #fde3e1; color: #8a1c14; }
+    h2 { font-size: 15px; margin: 0 0 8px; color: #5b6579; text-transform: uppercase; letter-spacing: .4px; }
+    .gros { font-size: 30px; font-weight: 800; margin: 2px 0; }
+    dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; }
+    dt { color: #3a4458; }
+    dd { margin: 0; font-weight: 700; text-align: right; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    th { text-align: left; font-size: 12px; color: #5b6579; text-transform: uppercase; border-bottom: 1px solid #d5dbe8; padding: 6px 4px; }
+    td { padding: 7px 4px; border-bottom: 1px solid #eef1f7; }
+    td.n, th.n { text-align: right; white-space: nowrap; }
+    .avertissement { background: #fff7e6; border-color: #f0d9a3; font-size: 14px; }
+    .empreinte { font: 12px/1.4 ui-monospace, Consolas, monospace; word-break: break-all; color: #3a4458; }
+    .petit { color: #5b6579; font-size: 13px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="../logo-mondje.png" alt="" />
+    <div>
+      <h1>Vérifier un relevé d’activité</h1>
+      <p class="sous">Entrez le code figurant sur le document reçu du commerçant.</p>
+    </div>
+  </header>
+
+  <form id="formulaire" autocomplete="off">
+    <input id="code" name="code" placeholder="MJ-XXXX-XXXX-XXXX" maxlength="19" aria-label="Code du relevé" />
+    <button type="submit">Vérifier</button>
+  </form>
+
+  <div id="resultat" aria-live="polite"></div>
+
+  <p class="petit">Ce relevé est établi automatiquement par Mon Djê à partir des données saisies par le commerce. Il n’a fait l’objet d’aucun audit et ne constitue ni un avis ni une recommandation de crédit.</p>
+</main>
+<script src="verifier.js"></script>
+</body>
+</html>
