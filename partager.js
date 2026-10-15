@@ -27,16 +27,26 @@
   document.addEventListener('click', (e) => { if (menu && !menu.contains(e.target) && !e.target.closest('.partager')) fermer(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fermer(); });
 
-  const ouvrir = async (bouton, id, titre) => {
+  const ouvrir = async (bouton, id, titre, video) => {
     const texte = titre + ' — Mon Djê';
     if (navigator.share && /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)) {
+      // Une vidéo se partage en fichier : TikTok, YouTube, Facebook, WhatsApp… la reçoivent telle quelle si l'application est installée.
+      if (video) {
+        try {
+          bouton.textContent = '… préparation';
+          const blob = await (await fetch(video)).blob();
+          const f = new File([blob], slug(titre) + '.mp4', { type: 'video/mp4' });
+          if (navigator.canShare && navigator.canShare({ files: [f] })) { bouton.textContent = '↗ Partager'; await navigator.share({ files: [f], title: texte, text: texte + ' ' + lien(id, '') }); return; }
+        } catch (err) { if (err && err.name === 'AbortError') { bouton.textContent = '↗ Partager'; return; } }
+        bouton.textContent = '↗ Partager';
+      }
       try { await navigator.share({ title: texte, text: texte, url: lien(id, '') }); return; } catch (err) { if (err && err.name === 'AbortError') return; }
     }
     fermer();
     menu = document.createElement('div');
     menu.className = 'partager-menu';
     menu.setAttribute('role', 'menu');
-    menu.innerHTML = RESEAUX.map(([c, n, f]) => `<a role="menuitem" target="_blank" rel="noopener" href="${f(lien(id, c), texte)}">${n}</a>`).join('') + '<button type="button" role="menuitem">Copier le lien</button>';
+    menu.innerHTML = RESEAUX.map(([c, n, f]) => `<a role="menuitem" target="_blank" rel="noopener" href="${f(lien(id, c), texte)}">${n}</a>`).join('') + (video ? `<a role="menuitem" href="${video}" download="${slug(titre)}.mp4">Télécharger la vidéo</a><small>Pour TikTok, YouTube, Instagram : téléchargez la vidéo, puis publiez-la.</small>` : '') + '<button type="button" role="menuitem">Copier le lien</button>';
     menu.querySelector('button').onclick = async () => {
       try { await navigator.clipboard.writeText(lien(id, '')); menu.querySelector('button').textContent = 'Lien copié ✓'; } catch { menu.querySelector('button').textContent = lien(id, ''); }
       setTimeout(fermer, 1600);
@@ -52,7 +62,8 @@
     const id = idDe(cible, titre);
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'partager'; b.textContent = '↗ Partager'; b.setAttribute('aria-label', 'Partager : ' + titre);
-    b.onclick = () => ouvrir(b, id, titre);
+    const video = cible.querySelector('video source')?.getAttribute('src');
+    b.onclick = () => ouvrir(b, id, titre, video ? new URL(video, location.href).href : '');
     (apres || cible).appendChild(b);
   };
 

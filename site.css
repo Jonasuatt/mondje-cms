@@ -230,3 +230,4 @@ code, .code { background: #f2f5f9; padding: 2px 7px; border-radius: 6px; font-si
 .partager-menu { position: absolute; z-index: 60; display: flex; flex-direction: column; min-width: 190px; background: #fff; color: var(--texte); border-radius: 14px; box-shadow: 0 14px 40px rgba(14,27,46,.3); padding: 6px; }
 .partager-menu a, .partager-menu button { font: inherit; font-size: 16px; text-align: left; color: inherit; text-decoration: none; background: transparent; border: 0; padding: 10px 14px; border-radius: 10px; cursor: pointer; }
 .partager-menu a:hover, .partager-menu button:hover { background: var(--ciel); }
+.partager-menu small { font-size: 13px; color: var(--faible); padding: 2px 14px 8px; line-height: 1.35; }
