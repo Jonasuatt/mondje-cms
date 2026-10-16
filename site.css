@@ -158,6 +158,9 @@ section.sombre .icone { background: #1f3652; }
 .credits { margin: 26px 0 0; }
 .credit-auteur { margin: 0 0 18px; font-size: 18px; }
 .credit-auteur span { display: block; color: var(--faible); font-size: 14px; }
+.histoire { margin: 0 0 22px; max-width: 700px; }
+.histoire p { margin: 0 0 12px; color: var(--faible); font-size: 16px; line-height: 1.6; }
+.histoire b { color: var(--nuit); }
 .credits details { background: #fff; border: 1px solid var(--trait); border-radius: 14px; padding: 4px 20px; margin-bottom: 10px; }
 .credits summary { cursor: pointer; padding: 14px 0; list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; color: var(--nuit); }
 .credits summary b { flex: 1 1 60%; }

@@ -9,7 +9,7 @@ import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, FABRICATION, RENDEZVOUS, LIVRAISONS, VERSEMENTS, DEBUT_COMMANDE, vendeur } from '../../maquis/src/guide.ts';
-import { AUTEUR, STRUCTURES, SITE_WEB, SITE_WEB_URL } from '../../maquis/src/apropos.ts';
+import { AUTEUR, HISTOIRE, STRUCTURES, SITE_WEB, SITE_WEB_URL } from '../../maquis/src/apropos.ts';
 
 const ici = dirname(fileURLToPath(import.meta.url));
 const racine = join(ici, '..');
@@ -94,6 +94,7 @@ console.log(`guide/index.html : ${ROLES.reduce((n, r) => n + r.sections.length, 
 // --- Qui est derrière Mon Djê : la page /apropos/ et le fragment que reprend la page publique des commerces ---
 const credits = `<div class="credits">
   <p class="credit-auteur"><span>${echapper(AUTEUR.role)}</span> <b>${echapper(AUTEUR.nom)}</b></p>
+  <div class="histoire">${HISTOIRE.map((h) => `<p><b>${echapper(h.titre)}.</b> ${echapper(h.texte)}</p>`).join('')}</div>
   ${STRUCTURES.map((st) => `<details>
     <summary><b>${echapper(st.nom)}</b><small>${echapper(st.role)}</small></summary>
     <p>${echapper(st.resume)}</p>
