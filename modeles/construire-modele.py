@@ -24,8 +24,9 @@ LIGNES = 500          # = MAX_LIGNES de l'importeur
 
 ENTETES = ["Nom", "Unité", "Prix de vente", "Prix d’achat", "Stock"]
 OBLIGATOIRES = {"Nom", "Prix de vente"}
-UNITES = ["pièce", "bouteille", "canette", "casier", "carton", "sac", "sachet", "paquet", "kg", "litre",
-          "assiette", "dose", "tas", "détail", "demi", "gros", "article"]
+UNITES = ["pièce", "bouteille", "canette", "casier", "carton", "sac", "sachet", "paquet", "kg", "100 g", "10 g", "litre",
+          "assiette", "dose", "tas", "botte", "détail", "demi", "gros", "article", "boîte", "pot", "flacon", "tube", "bidon", "seau", "barre", "rouleau",
+          "mètre", "m²", "feuille", "lot", "jeu", "paire", "balle", "ramette", "plaque", "part"]
 AIDE = {
     "Nom": "Obligatoire. 2 à 80 caractères. Un nom par ligne, sans doublon (« Castel Beer 33 cl »).",
     "Unité": "Facultatif. Choisissez dans la liste ou écrivez la vôtre (bouteille, sac, kg…). Si vide : « pièce ».",
@@ -64,7 +65,12 @@ for r in range(2, LIGNES + 2):
 zone = lambda col: f"{col}2:{col}{LIGNES + 1}"
 v_nom = DataValidation(type="textLength", operator="between", formula1="2", formula2="80", allow_blank=True,
                        errorTitle="Nom", error="Le nom doit faire entre 2 et 80 caractères.", errorStyle="warning")
-v_unite = DataValidation(type="list", formula1='"' + ",".join(UNITES) + '"', allow_blank=True, showErrorMessage=False)
+# La liste des unités est trop longue pour une liste en ligne (255 signes au plus) : elle vit sur une feuille cachée « Listes ».
+listes = wb.create_sheet("Listes")
+for i, u in enumerate(UNITES, start=1):
+    listes.cell(row=i, column=1, value=u)
+listes.sheet_state = "hidden"
+v_unite = DataValidation(type="list", formula1=f"=Listes!$A$1:$A${len(UNITES)}", allow_blank=True, showErrorMessage=False)
 v_pv = DataValidation(type="whole", operator="greaterThanOrEqual", formula1="1", allow_blank=True,
                       errorTitle="Prix de vente", error="Écrivez un nombre entier supérieur à 0, sans « F ».", errorStyle="warning")
 v_pa = DataValidation(type="whole", operator="greaterThanOrEqual", formula1="0", allow_blank=True,
