@@ -8,7 +8,7 @@
 import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, FABRICATION, RENDEZVOUS, LIVRAISONS, VERSEMENTS, DEBUT_COMMANDE, vendeur } from '../../maquis/src/guide.ts';
+import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, FABRICATION, RENDEZVOUS, LIVRAISONS, VERSEMENTS, DEBUT_COMMANDE, vendeur, videosDe, VIDEOS, lienVideo } from '../../maquis/src/guide.ts';
 import { AUTEUR, HISTOIRE, STRUCTURES, SITE_WEB, SITE_WEB_URL } from '../../maquis/src/apropos.ts';
 
 const ici = dirname(fileURLToPath(import.meta.url));
@@ -35,7 +35,7 @@ const section = (rid, s) => {
   const k = `${rid}-${cle(s.titre)}`;
   const image = existsSync(join(racine, 'img', 'guide', `${k}.webp`))
     ? `<div class="telephone petit"><img src="../img/guide/${k}.webp" alt="${echapper(s.titre)}" loading="lazy" width="540" height="1200" /></div>` : '';
-  const texte = `<h3 id="${k}">${echapper(s.titre)}</h3><ul>${s.points.map((p) => `<li>${echapper(p)}</li>`).join('')}</ul>`;
+  const texte = `<h3 id="${k}">${echapper(s.titre)}</h3><ul>${s.points.map((p) => `<li>${echapper(p)}</li>`).join('')}</ul>${videosDe(s.titre).map((n) => `<p class="lien-video">▶ Vidéo : <a href="../former/#v${n}">${echapper(VIDEOS[n])}</a></p>`).join('')}`;
   return image ? `<div class="pas"><div>${texte}</div>${image}</div>` : texte;
 };
 
