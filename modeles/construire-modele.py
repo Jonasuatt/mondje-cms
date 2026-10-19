@@ -5,7 +5,7 @@ de produits (et leur stock de départ) dans Mon Djê.
     python cms/modeles/construire-modele.py
 
 Les en-têtes de la feuille « Mes produits » sont EXACTEMENT ceux que lit maquis/src/importer.ts (MODELE_IMPORT) :
-Nom, Unité, Prix de vente, Prix d’achat, Stock. Un export CSV ne garde que la feuille active : « Mes produits » doit
+Nom, Unité, Prix de vente, Prix d’achat, Stock, Prix de gros (facultatif : le prix des livraisons). Un export CSV ne garde que la feuille active : « Mes produits » doit
 rester la première. Elle est vide (seulement les en-têtes) pour qu'aucun exemple ne soit importé par mégarde.
 """
 import os
@@ -22,7 +22,7 @@ NUIT, ACCENT, CIEL, GRIS = "0E1B2E", "F4A300", "E6F4FE", "5B667A"
 POLICE = "Calibri"
 LIGNES = 500          # = MAX_LIGNES de l'importeur
 
-ENTETES = ["Nom", "Unité", "Prix de vente", "Prix d’achat", "Stock"]
+ENTETES = ["Nom", "Unité", "Prix de vente", "Prix d’achat", "Stock", "Prix de gros"]
 OBLIGATOIRES = {"Nom", "Prix de vente"}
 UNITES = ["pièce", "bouteille", "canette", "casier", "carton", "sac", "sachet", "paquet", "kg", "100 g", "10 g", "litre",
           "assiette", "dose", "tas", "botte", "détail", "demi", "gros", "article", "boîte", "pot", "flacon", "tube", "bidon", "seau", "barre", "rouleau",
@@ -33,6 +33,7 @@ AIDE = {
     "Prix de vente": "Obligatoire. En francs CFA, nombre entier supérieur à 0, sans « F » (ex. 700).",
     "Prix d’achat": "Facultatif. Ce que vous payez au fournisseur, pour calculer votre marge (ex. 450).",
     "Stock": "Facultatif. La quantité que vous avez aujourd’hui, en nombre entier. Si vide : 0.",
+    "Prix de gros": "Facultatif. Le prix quand vous livrez (au gros). Au comptoir, c’est toujours le prix de vente. Si vide : le prix de vente s’applique aux livraisons.",
 }
 
 wb = Workbook()
@@ -52,14 +53,14 @@ for c, nom in enumerate(ENTETES, start=1):
     cell.border = Border(bottom=Side(style="medium", color=NUIT))
     cell.comment = Comment(AIDE[nom], "Mon Djê", width=300, height=90)
 ws.row_dimensions[1].height = 30
-for lettre, largeur in zip("ABCDE", (44, 16, 16, 16, 12)):
+for lettre, largeur in zip("ABCDEF", (44, 16, 16, 16, 12, 16)):
     ws.column_dimensions[lettre].width = largeur
 ws.freeze_panes = "A2"
 for r in range(2, LIGNES + 2):
-    for c in (3, 4, 5):
+    for c in (3, 4, 5, 6):
         ws.cell(row=r, column=c).number_format = "0"      # nombres entiers, sans séparateur de milliers
     ws.cell(row=r, column=1).font = Font(name=POLICE, size=11)
-    for c in range(1, 6):
+    for c in range(1, 7):
         ws.cell(row=r, column=c).border = Border(bottom=fin)
 
 zone = lambda col: f"{col}2:{col}{LIGNES + 1}"
@@ -77,7 +78,9 @@ v_pa = DataValidation(type="whole", operator="greaterThanOrEqual", formula1="0",
                       errorTitle="Prix d’achat", error="Écrivez un nombre entier (0 ou plus), sans « F ».", errorStyle="warning")
 v_stock = DataValidation(type="whole", operator="greaterThanOrEqual", formula1="0", allow_blank=True,
                          errorTitle="Stock", error="Écrivez un nombre entier (0 ou plus).", errorStyle="warning")
-for v, col in ((v_nom, "A"), (v_unite, "B"), (v_pv, "C"), (v_pa, "D"), (v_stock, "E")):
+v_pg = DataValidation(type="whole", operator="greaterThanOrEqual", formula1="1", allow_blank=True,
+                      errorTitle="Prix de gros", error="Écrivez un nombre entier supérieur à 0, sans « F », ou laissez la case vide.", errorStyle="warning")
+for v, col in ((v_nom, "A"), (v_unite, "B"), (v_pv, "C"), (v_pa, "D"), (v_stock, "E"), (v_pg, "F")):
     ws.add_data_validation(v)
     v.add(zone(col))
 
@@ -141,6 +144,7 @@ paire("Unité", "Facultatif. Une unité de la liste ou la vôtre. Si vide : « p
 paire("Prix de vente *", "Obligatoire. En francs CFA, nombre entier supérieur à 0, sans le signe « F ». Exemple : 700.", 34, CIEL)
 paire("Prix d’achat", "Facultatif. Le prix que vous payez au fournisseur : il sert à calculer votre marge. Exemple : 450.", 34)
 paire("Stock", "Facultatif. La quantité que vous avez aujourd’hui. Elle est enregistrée comme une entrée de stock datée d’aujourd’hui. Si vide : 0.", 34)
+paire("Prix de gros", "Facultatif. Le prix que vous appliquez quand vous livrez chez un client ou un revendeur. Au comptoir, c’est toujours le prix de vente. Case vide : le prix de vente s’applique aussi aux livraisons.", 48)
 
 titre("Si une ligne est refusée")
 paire("nom manquant ou trop court", "La colonne Nom est vide ou fait moins de 2 caractères.", 20)
@@ -163,11 +167,11 @@ for texte in (
 # ---------------------------------------------------------------- Feuille 3 : exemples
 ex = wb.create_sheet("Exemples")
 ex.column_dimensions["A"].width = 38
-for l, w in zip("BCDE", (14, 16, 16, 12)):
+for l, w in zip("BCDEF", (14, 16, 16, 12, 16)):
     ex.column_dimensions[l].width = w
 ex["A1"] = "Exemples (non importés) — copiez-les dans « Mes produits » si besoin"
 ex["A1"].font = Font(name=POLICE, bold=True, size=12, color=NUIT)
-ex.merge_cells("A1:E1")
+ex.merge_cells("A1:F1")
 BLOCS = [
     ("Maquis / restaurant", [
         ("Castel Beer 33 cl", "bouteille", 700, 450, 24), ("Coca-Cola 33 cl", "bouteille", 500, 330, 48),
@@ -183,7 +187,7 @@ r = 3
 for nom, produits in BLOCS:
     ex.cell(row=r, column=1, value=nom).font = Font(name=POLICE, bold=True, color=NUIT)
     ex.cell(row=r, column=1).fill = PatternFill("solid", fgColor=CIEL)
-    for c in range(2, 6):
+    for c in range(2, 7):
         ex.cell(row=r, column=c).fill = PatternFill("solid", fgColor=CIEL)
     r += 1
     for c, titre_col in enumerate(ENTETES, start=1):

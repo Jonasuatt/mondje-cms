@@ -214,11 +214,12 @@ async function aller(cle) {
 
 // Ce qui attend quelqu'un : demandes, produits proposés, messages non lus.
 async function rafraichirPastilles() {
-  const [d, p, m, i] = await Promise.all([
+  const [d, p, m, i, a] = await Promise.all([
     bd.from('demande_ouverture').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente'),
     bd.from('proposition_produit').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente'),
     bd.from('message').select('id', { count: 'exact', head: true }).eq('de_l_equipe', false).is('lu_le', null),
     bd.from('suggestion').select('id', { count: 'exact', head: true }).is('reponse', null),
+    bd.from('abonnement_declaration').select('id', { count: 'exact', head: true }).eq('statut', 'declaree'),
   ]);
   const poser = (cle, n) => {
     const e = $(`[data-pastille="${cle}"]`);
@@ -230,6 +231,7 @@ async function rafraichirPastilles() {
   poser('propositions', p.count ?? 0);
   poser('messages', m.count ?? 0);
   poser('idees', i.count ?? 0);
+  poser('abonnements', a.count ?? 0);
 }
 
 // --- Tableau de bord -------------------------------------------------------
@@ -767,11 +769,34 @@ async function ficheCommerce(c) {
 
 // --- Abonnements -----------------------------------------------------------
 
+// « 19/10/2026 à 14:32:05 » : la seconde sert à retrouver le paiement dans le compte Wave marchand.
+const avecSecondes = (iso) => {
+  const d = new Date(iso);
+  return `${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+};
+
 async function pageAbonnements() {
   const { data } = await bd.from('abonnement_etat').select('*').order('nom');
   const lignes = data ?? [];
+  // Les commerces qui disent avoir payé avec le QR Wave de Mon Djê : rien n'est prolongé tant que l'équipe n'a pas retrouvé le paiement dans le compte Wave.
+  const { data: dec, error: errDec } = await bd.from('abonnement_declaration')
+    .select('*, structure (nom)').eq('statut', 'declaree').order('declare_le');
+  if (errDec) throw errDec;
+  const declarations = dec ?? [];
+  const blocDeclarations = declarations.length
+    ? `<h3>Paiements déclarés à vérifier (${declarations.length})</h3>
+       <p class="info">Cherche chaque paiement dans le compte Wave de Mon Djê : le montant, le numéro Wave et l'heure. Confirmer prolonge l'abonnement.</p>`
+      + declarations.map((d) => `
+        <div class="carte">
+          <div class="rangee"><span class="nom">${esc(d.structure?.nom ?? d.nom_commerce)}</span><span class="n">${fcfa(d.montant)}</span></div>
+          <div class="info">${d.mois} mois · déclaré le ${avecSecondes(d.declare_le)}</div>
+          <div class="info">Numéro Wave : <b>${esc(d.numero_wave)}</b> · numéro du commerce : ${esc(d.numero_commerce)} · nom déclaré : ${esc(d.nom_commerce)}</div>
+          <button class="bouton ok petit" data-confirmer="${esc(d.id)}">Confirmer le paiement</button>
+          <button class="bouton danger petit" data-refuser="${esc(d.id)}">Refuser</button>
+        </div>`).join('')
+    : '';
 
-  $('#page').innerHTML = tableau(
+  $('#page').innerHTML = blocDeclarations + tableau(
     ['Commerce', 'Ville', 'Formule', 'Prix', 'Payé jusqu’au', 'Total encaissé', 'État'],
     lignes.map((l) => ({
       id: l.structure_id,
@@ -787,6 +812,33 @@ async function pageAbonnements() {
     })),
     'Aucun commerce.'
   );
+
+  $$('[data-confirmer]').forEach((b) => b.addEventListener('click', async () => {
+    const d = declarations.find((x) => x.id === b.dataset.confirmer);
+    const saisie = prompt(`Montant retrouvé dans le compte Wave pour ${d.structure?.nom ?? d.nom_commerce} (déclaré : ${fcfa(d.montant)}) :`, d.montant);
+    if (saisie === null) return;
+    const montant = parseInt(saisie, 10);
+    if (!(montant > 0)) return alert('Indique le montant reçu.');
+    const reference = prompt('Référence de la transaction Wave (facultatif) :', '') ?? '';
+    if (!confirm(`Confirmer ${fcfa(montant)} pour ${d.mois} mois ? L'abonnement est prolongé tout de suite.`)) return;
+    b.disabled = true;
+    const { data: fin, error } = await bd.rpc('admin_traiter_declaration_abonnement', {
+      p_id: d.id, p_decision: 'confirmee', p_montant: montant, p_reference: reference.trim() || null,
+    });
+    if (error) { echoue(error); b.disabled = false; return; }
+    alert(`Abonnement payé jusqu'au ${jour(fin)}.`);
+    aller('abonnements');
+  }));
+  $$('[data-refuser]').forEach((b) => b.addEventListener('click', async () => {
+    const d = declarations.find((x) => x.id === b.dataset.refuser);
+    const motif = prompt(`Pourquoi refuser le paiement déclaré par ${d.structure?.nom ?? d.nom_commerce} ? (le commerce lira ce motif)`, 'Paiement introuvable dans le compte Wave');
+    if (motif === null) return;
+    if (motif.trim().length < 3) return alert('Écris le motif du refus.');
+    b.disabled = true;
+    const { error } = await bd.rpc('admin_traiter_declaration_abonnement', { p_id: d.id, p_decision: 'refusee', p_motif: motif.trim() });
+    if (error) { echoue(error); b.disabled = false; return; }
+    aller('abonnements');
+  }));
 
   brancherLignes(async (id) => {
     const { data: c } = await bd.from('structure')
