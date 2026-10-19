@@ -25,6 +25,7 @@ l'application).
 |---|---|
 | `index.html` | la page, et le formulaire de connexion |
 | `app.js` | tout le reste : navigation, pages, écritures |
+| `xlsx.js` | écrit un classeur Excel (.xlsx) sans bibliothèque : sert au bouton « Télécharger le catalogue (Excel) », lu dans la base à chaque clic (toujours à jour) |
 | `style.css` | les couleurs de Mon Djê |
 | `villes.js` | positions des villes sur la carte, **régénéré**, ne pas modifier à la main |
 | `carte-ci.jpg` | la carte de Côte d'Ivoire, réduite à 180 Ko |

@@ -42,8 +42,12 @@ const TAILLE_BOUTIQUE = {
   petite: 'Petite surface', moyenne: 'Surface moyenne', grande: 'Grande surface',
 };
 
+// Les mêmes activités que l'application (maquis/src/activites.ts) : sans elles, corriger un produit de boulangerie ici lui retirerait son activité.
 const ACTIVITES = {
   bar_maquis: 'Bar / Maquis', restaurant: 'Restaurant', boutique: 'Boutique',
+  boulangerie: 'Boulangerie, pâtisserie', marche: 'Marché', boucherie: 'Boucherie, poissonnerie', depot_boissons: 'Dépôt de boissons',
+  quincaillerie: 'Quincaillerie, matériaux', cosmetiques: 'Cosmétiques, bijouterie', papeterie: 'Papeterie, librairie',
+  telephonie: 'Téléphones et accessoires', vetements: 'Vêtements, friperie, chaussures', pieces_auto: 'Pièces auto et moto',
 };
 
 const MODES = {
@@ -858,8 +862,10 @@ async function pageCatalogue() {
   }
 
   $('#actionsPage').innerHTML =
-    '<button class="bouton" id="nouveau">Ajouter un produit</button>';
+    '<button class="bouton" id="nouveau">Ajouter un produit</button> '
+    + '<button class="bouton" id="telechargerCatalogue">Télécharger le catalogue (Excel)</button>';
   $('#nouveau').addEventListener('click', () => ficheProduit(null));
+  $('#telechargerCatalogue').addEventListener('click', telechargerCatalogue);
 
   $('#page').innerHTML = `
     <div class="carte">
@@ -883,19 +889,23 @@ async function pageCatalogue() {
 
   const charger = async () => {
     $('#liste').innerHTML = '<p class="info">Chargement…</p>';
-    let q = bd.from('catalogue_produit')
-      .select('*, categorie_catalogue (libelle, famille)')
-      .eq('actif', true).limit(1000);
     const activite = $('#filtreActivite').value;
     const rubrique = $('#filtreRubrique').value;
     const mot = $('#recherche').value.trim();
-    if (activite) q = q.contains('activites', [activite]);
-    if (rubrique) q = q.eq('categorie', rubrique);
-    if (mot) q = q.ilike('nom', `%${mot}%`);
-    const { data, error } = await q;
-    if (error) return echoue(error);
+    let data;
+    try {
+      data = await lireTout(() => {
+        let q = bd.from('catalogue_produit')
+          .select('*, categorie_catalogue (libelle, famille)')
+          .eq('actif', true).order('id');
+        if (activite) q = q.contains('activites', [activite]);
+        if (rubrique) q = q.eq('categorie', rubrique);
+        if (mot) q = q.ilike('nom', `%${mot}%`);
+        return q;
+      });
+    } catch (error) { return echoue(error); }
 
-    const produits = (data ?? []).sort((a, b) =>
+    const produits = data.sort((a, b) =>
       (a.categorie_catalogue?.famille ?? '').localeCompare(b.categorie_catalogue?.famille ?? '')
       || (a.categorie_catalogue?.libelle ?? '').localeCompare(b.categorie_catalogue?.libelle ?? '')
       || a.nom.localeCompare(b.nom));
@@ -927,6 +937,72 @@ async function pageCatalogue() {
     minuteur = setTimeout(charger, 300);
   });
   charger();
+}
+
+// PostgREST ne rend que 1 000 lignes par appel : le catalogue en compte davantage, on le lit page par page (la requête doit être triée de façon stable).
+async function lireTout(construire) {
+  const tout = [];
+  for (let debut = 0; ; debut += 1000) {
+    const { data, error } = await construire().range(debut, debut + 999);
+    if (error) throw error;
+    tout.push(...data);
+    if (data.length < 1000) return tout;
+  }
+}
+
+// Le catalogue entier dans un classeur Excel, lu dans la base à l'instant du clic : il est donc toujours à jour, sans rien à régénérer.
+// Pour que l'équipe voie l'existant (par métier, par rubrique) et repère ce qui manque.
+async function telechargerCatalogue() {
+  const bouton = $('#telechargerCatalogue');
+  bouton.disabled = true;
+  bouton.textContent = 'Préparation…';
+  try {
+    const [produits, rub] = await Promise.all([
+      lireTout(() => bd.from('catalogue_produit').select('*').order('id')),
+      bd.from('categorie_catalogue').select('code, libelle, exemples, famille, sous_famille, rang').order('rang'),
+    ]);
+    if (rub.error) throw rub.error;
+    const parCode = new Map(rub.data.map((r) => [r.code, r]));
+    const nbParRubrique = new Map();
+    const nbParMetier = new Map();
+    produits.filter((p) => p.actif).forEach((p) => {
+      nbParRubrique.set(p.categorie, (nbParRubrique.get(p.categorie) ?? 0) + 1);
+      p.activites.forEach((a) => nbParMetier.set(a, (nbParMetier.get(a) ?? 0) + 1));
+    });
+    const trie = produits.slice().sort((a, b) =>
+      (parCode.get(a.categorie)?.rang ?? 1e9) - (parCode.get(b.categorie)?.rang ?? 1e9) || a.nom.localeCompare(b.nom) || (a.contenance ?? '').localeCompare(b.contenance ?? ''));
+    const jour = new Date().toISOString().slice(0, 10);
+    const feuilles = [
+      {
+        nom: 'Catalogue', largeurs: [42, 14, 12, 18, 14, 40, 36, 30, 8, 12],
+        lignes: [['Produit', 'Contenance', 'Unité', 'Conditionnement', 'Taille du conditionnement', 'Rubrique', 'Famille', 'Métiers', 'Actif', 'Ajouté le']].concat(trie.map((p) => {
+          const r = parCode.get(p.categorie);
+          return [p.nom, p.contenance ?? '', p.unite, p.conditionnement ?? '', p.taille_conditionnement ?? '', r?.libelle ?? p.categorie,
+            r ? `${r.famille}${r.sous_famille ? ' — ' + r.sous_famille : ''}` : '', p.activites.map((a) => ACTIVITES[a] ?? a).join(', '), p.actif ? 'oui' : 'non', (p.cree_le ?? '').slice(0, 10)];
+        })),
+      },
+      {
+        nom: 'Par métier', largeurs: [34, 22],
+        lignes: [['Métier', 'Produits au catalogue']].concat(Object.entries(ACTIVITES).map(([c, l]) => [l, nbParMetier.get(c) ?? 0])),
+      },
+      {
+        nom: 'Rubriques', largeurs: [36, 36, 44, 60, 20],
+        lignes: [['Famille', 'Sous-famille', 'Rubrique', 'Exemples', 'Produits au catalogue']].concat(rub.data.map((r) => [r.famille, r.sous_famille ?? '', r.libelle, r.exemples ?? '', nbParRubrique.get(r.code) ?? 0])),
+      },
+    ];
+    const lien = document.createElement('a');
+    lien.href = URL.createObjectURL(construireXlsx(feuilles));
+    lien.download = `Mon-Dje-catalogue-produits-${jour}.xlsx`;
+    document.body.appendChild(lien);
+    lien.click();
+    lien.remove();
+    setTimeout(() => URL.revokeObjectURL(lien.href), 10000);
+  } catch (e) {
+    alert(`Le catalogue n’a pas pu être préparé : ${e.message ?? e}`);
+  } finally {
+    bouton.disabled = false;
+    bouton.textContent = 'Télécharger le catalogue (Excel)';
+  }
 }
 
 function ficheProduit(p) {
