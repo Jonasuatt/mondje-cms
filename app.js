@@ -769,6 +769,12 @@ async function ficheCommerce(c) {
 
 // --- Abonnements -----------------------------------------------------------
 
+// Les 9 fonctions de « Mes activités » de l'application (maquis/src/screens/MesActivites.tsx) : chacune représente un commerce.
+const FONCTIONS = {
+  vente: 'Vendre des produits', tables: 'Servir à des tables', location: 'Louer', services: 'Faire des prestations', versements: 'Gérance et abonnements',
+  livraison: 'Livrer chez le client', rendezvous: 'Prendre des rendez-vous', fabrication: 'Fabriquer et vendre', depots: 'Recevoir des objets à traiter',
+};
+
 // « 19/10/2026 à 14:32:05 » : la seconde sert à retrouver le paiement dans le compte Wave marchand.
 const avecSecondes = (iso) => {
   const d = new Date(iso);
@@ -783,20 +789,33 @@ async function pageAbonnements() {
     .select('*, structure (nom)').eq('statut', 'declaree').order('declare_le');
   if (errDec) throw errDec;
   const declarations = dec ?? [];
+  const { data: plat } = await bd.from('plateforme').select('*').maybeSingle();
   const blocDeclarations = declarations.length
     ? `<h3>Paiements déclarés à vérifier (${declarations.length})</h3>
        <p class="info">Cherche chaque paiement dans le compte Wave de Mon Djê : le montant, le numéro Wave et l'heure. Confirmer prolonge l'abonnement.</p>`
       + declarations.map((d) => `
         <div class="carte">
           <div class="rangee"><span class="nom">${esc(d.structure?.nom ?? d.nom_commerce)}</span><span class="n">${fcfa(d.montant)}</span></div>
-          <div class="info">${d.mois} mois · déclaré le ${avecSecondes(d.declare_le)}</div>
+          <div class="info">${d.activite ? `<b>Fonction : ${esc(FONCTIONS[d.activite] ?? d.activite)}</b> · ` : 'Abonnement · '}${d.mois} mois · déclaré le ${avecSecondes(d.declare_le)}</div>
           <div class="info">Numéro Wave : <b>${esc(d.numero_wave)}</b> · numéro du commerce : ${esc(d.numero_commerce)} · nom déclaré : ${esc(d.nom_commerce)}</div>
           <button class="bouton ok petit" data-confirmer="${esc(d.id)}">Confirmer le paiement</button>
           <button class="bouton danger petit" data-refuser="${esc(d.id)}">Refuser</button>
         </div>`).join('')
     : '';
 
-  $('#page').innerHTML = blocDeclarations + tableau(
+  const blocPlateforme = `
+    <h3>Lancement et fonctions supplémentaires</h3>
+    <div class="carte">
+      <p class="info">Jusqu'au lancement, les 9 fonctions de « Mes activités » sont gratuites pour tous les commerces. Après, chaque fonction qui n'est pas incluse à l'ouverture du commerce
+        coûte le prix ci-dessous par mois, payé d'avance (même circuit que l'abonnement). Une fonction non payée passe en veille : rien n'est effacé.</p>
+      <div class="ligne-champs">
+        <label>Date du lancement (vide : pas encore décidé, tout est gratuit)<input id="lancement" type="date" value="${esc(plat?.lancement_le ?? '')}" /></label>
+        <label>Prix d'une fonction, par mois<input id="prixActivite" type="number" min="1" value="${plat?.prix_activite ?? 1000}" /></label>
+      </div>
+      <button class="bouton" id="regler">Enregistrer</button>
+    </div>`;
+
+  $('#page').innerHTML = blocDeclarations + blocPlateforme + tableau(
     ['Commerce', 'Ville', 'Formule', 'Prix', 'Payé jusqu’au', 'Total encaissé', 'État'],
     lignes.map((l) => ({
       id: l.structure_id,
@@ -813,6 +832,19 @@ async function pageAbonnements() {
     'Aucun commerce.'
   );
 
+  $('#regler').addEventListener('click', async (ev) => {
+    const lancement = $('#lancement').value || null;
+    const prix = parseInt($('#prixActivite').value, 10);
+    if (!(prix > 0)) return alert('Indique le prix d’une fonction.');
+    if (!confirm(lancement
+      ? `Lancement le ${jour(lancement)} : à partir de cette date, les fonctions non incluses passent en veille tant qu'elles ne sont pas payées (${fcfa(prix)} par mois). Confirmer ?`
+      : `Pas de date de lancement : toutes les fonctions restent gratuites. Prix noté : ${fcfa(prix)} par mois. Confirmer ?`)) return;
+    ev.target.disabled = true;
+    const { error } = await bd.rpc('admin_regler_plateforme', { p_lancement: lancement, p_prix: prix });
+    if (error) { echoue(error); ev.target.disabled = false; return; }
+    alert('Enregistré.');
+    aller('abonnements');
+  });
   $$('[data-confirmer]').forEach((b) => b.addEventListener('click', async () => {
     const d = declarations.find((x) => x.id === b.dataset.confirmer);
     const saisie = prompt(`Montant retrouvé dans le compte Wave pour ${d.structure?.nom ?? d.nom_commerce} (déclaré : ${fcfa(d.montant)}) :`, d.montant);
@@ -820,13 +852,13 @@ async function pageAbonnements() {
     const montant = parseInt(saisie, 10);
     if (!(montant > 0)) return alert('Indique le montant reçu.');
     const reference = prompt('Référence de la transaction Wave (facultatif) :', '') ?? '';
-    if (!confirm(`Confirmer ${fcfa(montant)} pour ${d.mois} mois ? L'abonnement est prolongé tout de suite.`)) return;
+    if (!confirm(`Confirmer ${fcfa(montant)} pour ${d.mois} mois ? ${d.activite ? `La fonction « ${FONCTIONS[d.activite] ?? d.activite} » est activée tout de suite.` : 'L\'abonnement est prolongé tout de suite.'}`)) return;
     b.disabled = true;
     const { data: fin, error } = await bd.rpc('admin_traiter_declaration_abonnement', {
       p_id: d.id, p_decision: 'confirmee', p_montant: montant, p_reference: reference.trim() || null,
     });
     if (error) { echoue(error); b.disabled = false; return; }
-    alert(`Abonnement payé jusqu'au ${jour(fin)}.`);
+    alert(`${d.activite ? 'Fonction payée' : 'Abonnement payé'} jusqu'au ${jour(fin)}.`);
     aller('abonnements');
   }));
   $$('[data-refuser]').forEach((b) => b.addEventListener('click', async () => {
