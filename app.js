@@ -1912,8 +1912,10 @@ function marge(p) {
 
 // Le catalogue, filtré par rubrique : deux cent cinquante lignes d'un coup ne
 // se lisent pas, même sur grand écran.
-async function ficheCatalogueCommerce(c) {
-  const activite = c.type_commerce === 'restauration' ? 'bar_maquis' : 'boutique';
+// `choix` : l'activité que l'équipe a choisie dans la liste (un commerce peut tenir plusieurs métiers) ; à défaut, celle de son type
+// (les mêmes règles que l'application, maquis/src/activites.ts).
+async function ficheCatalogueCommerce(c, choix) {
+  const activite = choix ?? ({ restauration: 'bar_maquis', marche: 'marche', vente_directe: 'marche' }[c.type_commerce] ?? 'boutique');
   const [articles, deja] = await Promise.all([
     bd.from('catalogue_produit')
       .select('id, nom, contenance, categorie, unite, categorie_catalogue (libelle, rang)')
@@ -1941,6 +1943,12 @@ async function ficheCatalogueCommerce(c) {
       un article à 0 F ne doit jamais partir en caisse.
     </p>
     <div class="ligne-champs">
+      <label>Métier
+        <select id="choixActivite">
+          ${Object.entries(ACTIVITES).map(([code, lib]) =>
+            `<option value="${code}"${code === activite ? ' selected' : ''}>${esc(lib)}</option>`).join('')}
+        </select>
+      </label>
       <label>Rubrique
         <select id="filtreRubrique">
           <option value="">Toutes les rubriques</option>
@@ -1989,6 +1997,7 @@ async function ficheCatalogueCommerce(c) {
   $('#filtreRubrique').addEventListener('change', () => { garderPrix(); dessiner(); });
   $('#filtreNom').addEventListener('input', () => { garderPrix(); dessiner(); });
   $('#retourCarte').addEventListener('click', () => ficheCarte(c));
+  $('#choixActivite').addEventListener('change', (e) => ficheCatalogueCommerce(c, e.target.value));
 
   function garderPrix() {
     const noter = (carte, attribut) => $$(`[data-${attribut}]`).forEach((i) => {
