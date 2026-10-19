@@ -8,7 +8,7 @@
 import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, FABRICATION, RENDEZVOUS, LIVRAISONS, VERSEMENTS, POURBOIRE, DEBUT_COMMANDE, vendeur, videosDe, VIDEOS, lienVideo } from '../../maquis/src/guide.ts';
+import { COMMUN, CAISSIER, GERANT, PROPRIETAIRE, LOCATION, DEPOTS, FABRICATION, CHEF_PRODUCTION, COMMANDES_PRODUITS, RENDEZVOUS, LIVRAISONS, VERSEMENTS, POURBOIRE, DEBUT_COMMANDE, vendeur, videosDe, VIDEOS, lienVideo } from '../../maquis/src/guide.ts';
 import { AUTEUR, HISTOIRE, STRUCTURES, SITE_WEB, SITE_WEB_URL } from '../../maquis/src/apropos.ts';
 
 const ici = dirname(fileURLToPath(import.meta.url));
@@ -27,6 +27,7 @@ const ROLES = [
   { id: 'livraisons', titre: 'Livraisons à domicile', qui: 'Porter la commande chez le client, encaisser, remettre l’argent.', sections: [LIVRAISONS] },
   { id: 'rendezvous', titre: 'Salon, garage, clinique : rendez-vous', qui: 'Prendre les rendez-vous, prévenir le client, noter qui est venu.', sections: [RENDEZVOUS] },
   { id: 'boulangerie', titre: 'Boulangerie, pâtisserie', qui: 'Fabriquer et vendre : recettes, fabrication du jour, invendus.', sections: [FABRICATION] },
+  { id: 'production', titre: 'Chef de production, boulangerie', qui: 'Fabriquer, déclarer le pain gâté, voir le stock, commander ; et, pour le gérant, valider les commandes.', sections: [CHEF_PRODUCTION, COMMANDES_PRODUITS] },
   { id: 'pourboires', titre: 'Maquis, bar : le pourboire en boisson', qui: 'Le client offre une boisson (payée) au serveur : la convertir en argent.', sections: [POURBOIRE] },
   { id: 'atelier', titre: 'Atelier, pressing, cordonnerie', qui: 'Objets confiés par les clients : déposer, suivre, prévenir, rendre.', sections: [DEPOTS] },
   { id: 'commun', titre: 'Pour tout le monde', qui: 'Se connecter, et que faire quand le réseau coupe.', sections: COMMUN },
