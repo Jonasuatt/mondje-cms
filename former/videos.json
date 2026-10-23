@@ -1,0 +1,389 @@
+{
+ "version": 1,
+ "videos": [
+  {
+   "n": 1,
+   "role": "Démarrer",
+   "titre": "Demander l’ouverture de son commerce",
+   "description": "Le formulaire : le commerce, son type, le propriétaire, les conditions.",
+   "video": "v/f01.mp4",
+   "affiche": "v/f01.webp"
+  },
+  {
+   "n": 2,
+   "role": "Démarrer",
+   "titre": "La première connexion",
+   "description": "Les accès reçus sur WhatsApp, le code secret, « Qui es-tu ? ».",
+   "video": "v/f02.mp4",
+   "affiche": "v/f02.webp"
+  },
+  {
+   "n": 3,
+   "role": "Démarrer",
+   "titre": "Le tour de l’application",
+   "description": "Les onglets de chaque métier : vendeur, caisse, gérant, propriétaire, et le bouton Urgence.",
+   "video": "v/f03.mp4",
+   "affiche": "v/f03.webp"
+  },
+  {
+   "n": 4,
+   "role": "Je vends",
+   "titre": "Le vendeur prend et encaisse une commande",
+   "description": "Ouvrir une table, choisir, valider, encaisser, déclarer l’argent.",
+   "video": "v/f04.mp4",
+   "affiche": "v/f04.webp"
+  },
+  {
+   "n": 5,
+   "role": "Je vends",
+   "titre": "Plusieurs clients à une table",
+   "description": "Chacun paie sa part, ou toute la table paie ensemble.",
+   "video": "v/f05.mp4",
+   "affiche": "v/f05.webp"
+  },
+  {
+   "n": 6,
+   "role": "Je vends",
+   "titre": "La facture proforma",
+   "description": "Montrer sa note avant de payer : non payée, elle n’entre pas en caisse.",
+   "video": "v/f06.mp4",
+   "affiche": "v/f06.webp"
+  },
+  {
+   "n": 7,
+   "role": "Je vends",
+   "titre": "Vendre à crédit",
+   "description": "Le crédit (l’ardoise) : le client, le délai, la décision de la caisse.",
+   "video": "v/f07.mp4",
+   "affiche": "v/f07.webp"
+  },
+  {
+   "n": 8,
+   "role": "Je vends",
+   "titre": "Rendre un produit",
+   "description": "Le client rend un ou plusieurs produits ; la caisse valide et le stock remonte.",
+   "video": "v/f08.mp4",
+   "affiche": "v/f08.webp"
+  },
+  {
+   "n": 9,
+   "role": "Je vends",
+   "titre": "Garder une boisson pour plus tard",
+   "description": "Le client paie mais laisse sa boisson au frais ; la caisse accepte, il revient la chercher.",
+   "video": "v/f09.mp4",
+   "affiche": "v/f09.webp"
+  },
+  {
+   "n": 10,
+   "role": "Je tiens la caisse",
+   "titre": "Ouvrir la caisse",
+   "description": "Compter le tiroir et ouvrir la journée.",
+   "video": "v/f10.mp4",
+   "affiche": "v/f10.webp"
+  },
+  {
+   "n": 11,
+   "role": "Je tiens la caisse",
+   "titre": "La caisse valide et édite la facture",
+   "description": "Vérifier l’argent, valider le paiement, envoyer la facture sur WhatsApp.",
+   "video": "v/f11.mp4",
+   "affiche": "v/f11.webp"
+  },
+  {
+   "n": 12,
+   "role": "Je tiens la caisse",
+   "titre": "Valider les sorties du bar",
+   "description": "Chaque sortie de stock est validée par la caisse.",
+   "video": "v/f12.mp4",
+   "affiche": "v/f12.webp"
+  },
+  {
+   "n": 13,
+   "role": "Je tiens la caisse",
+   "titre": "Retours et boissons gardées à accepter",
+   "description": "La caisse décide, un autre membre valide : jamais celui qui a demandé.",
+   "video": "v/f13.mp4",
+   "affiche": "v/f13.webp"
+  },
+  {
+   "n": 14,
+   "role": "Je tiens la caisse",
+   "titre": "Fermer la caisse",
+   "description": "Compter le tiroir chaque soir : l’attendu, l’écart et son motif.",
+   "video": "v/f14.mp4",
+   "affiche": "v/f14.webp"
+  },
+  {
+   "n": 32,
+   "role": "Atelier, pressing, cordonnerie",
+   "titre": "L’atelier : déposer un objet",
+   "description": "Un bon de dépôt par objet confié : le client, l’objet, le prix, la date, l’acompte.",
+   "video": "v/f32.mp4",
+   "affiche": "v/f32.webp"
+  },
+  {
+   "n": 33,
+   "role": "Atelier, pressing, cordonnerie",
+   "titre": "L’atelier : suivre et rendre l’objet",
+   "description": "En cours, prêt, prévenir le client, rendre l’objet seulement s’il est payé.",
+   "video": "v/f33.mp4",
+   "affiche": "v/f33.webp"
+  },
+  {
+   "n": 36,
+   "role": "Pour tout le monde",
+   "titre": "Dire le produit à voix haute",
+   "description": "Dire « deux Flag » plutôt que l’écrire, et faire lire les notifications à voix haute.",
+   "video": "v/f36.mp4",
+   "affiche": "v/f36.webp"
+  },
+  {
+   "n": 37,
+   "role": "Boulangerie",
+   "titre": "La boulangerie : écrire une recette",
+   "description": "Ce qu’une fournée donne et consomme : le produit, les pièces, la farine, le sel, la levure.",
+   "video": "v/f37.mp4",
+   "affiche": "v/f37.webp"
+  },
+  {
+   "n": 38,
+   "role": "Boulangerie",
+   "titre": "La boulangerie : fabriquer la fournée du jour",
+   "description": "Deux fournées : les baguettes entrent en stock, la farine et le sel en sortent.",
+   "video": "v/f38.mp4",
+   "affiche": "v/f38.webp"
+  },
+  {
+   "n": 39,
+   "role": "Boulangerie",
+   "titre": "La boulangerie : les invendus du soir",
+   "description": "Le pain qui reste sort du stock comme invendu, avec le nom de la personne.",
+   "video": "v/f39.mp4",
+   "affiche": "v/f39.webp"
+  },
+  {
+   "n": 101,
+   "role": "Boulangerie",
+   "titre": "Combien vous coûte vraiment une baguette ?",
+   "description": "Le coût des ingrédients d’une fournée, le coût d’une pièce, et ce qu’il vous reste après la vente.",
+   "video": "v/f101.mp4",
+   "affiche": "v/f101.webp"
+  },
+  {
+   "n": 102,
+   "role": "Boulangerie",
+   "titre": "Les invendus coûtent de l’argent",
+   "description": "Les invendus du soir, et ce qu’ils ont coûté en ingrédients.",
+   "video": "v/f102.mp4",
+   "affiche": "v/f102.webp"
+  },
+  {
+   "n": 103,
+   "role": "Boulangerie",
+   "titre": "À partir de combien de baguettes je gagne ?",
+   "description": "Le seuil de rentabilité : ce qu’il faut vendre dans le mois pour couvrir ses charges.",
+   "video": "v/f103.mp4",
+   "affiche": "v/f103.webp"
+  },
+  {
+   "n": 104,
+   "role": "Boulangerie",
+   "titre": "Ce qui se vend, ce qui dort",
+   "description": "Les meilleures ventes, et le rapport de la semaine : ce qui reste en rayon.",
+   "video": "v/f104.mp4",
+   "affiche": "v/f104.webp"
+  },
+  {
+   "n": 105,
+   "role": "Boulangerie",
+   "titre": "La farine achetée à crédit",
+   "description": "La livraison, le fournisseur, ce que vous lui devez, et « Tout régler ».",
+   "video": "v/f105.mp4",
+   "affiche": "v/f105.webp"
+  },
+  {
+   "n": 106,
+   "role": "Boulangerie",
+   "titre": "Fixer le bon prix du pain",
+   "description": "Le prix d’achat, la marge voulue, et le prix de vente conseillé.",
+   "video": "v/f106.mp4",
+   "affiche": "v/f106.webp"
+  },
+  {
+   "n": 107,
+   "role": "Boulangerie",
+   "titre": "Compter la farine en fin de mois",
+   "description": "L’inventaire : compter chaque produit, voir les écarts, imputer une perte.",
+   "video": "v/f107.mp4",
+   "affiche": "v/f107.webp"
+  },
+  {
+   "n": 108,
+   "role": "Boulangerie",
+   "titre": "Les boulangers de nuit",
+   "description": "Un code par personne, les avances sur salaire et la fiche de paie.",
+   "video": "v/f108.mp4",
+   "affiche": "v/f108.webp"
+  },
+  {
+   "n": 109,
+   "role": "Boulangerie",
+   "titre": "Les commandes de gâteaux et de cérémonies",
+   "description": "La page à partager, la commande qui arrive sur WhatsApp, la livraison suivie.",
+   "video": "v/f109.mp4",
+   "affiche": "v/f109.webp"
+  },
+  {
+   "n": 110,
+   "role": "Boulangerie",
+   "titre": "Les clients qui paient plus tard",
+   "description": "L’ardoise, la relance par WhatsApp, et le paiement qui la fait baisser.",
+   "video": "v/f110.mp4",
+   "affiche": "v/f110.webp"
+  },
+  {
+   "n": 111,
+   "role": "Boulangerie",
+   "titre": "Un four neuf : prouver ce que vous gagnez",
+   "description": "Le relevé d’activité pour une banque ou une microfinance.",
+   "video": "v/f111.mp4",
+   "affiche": "v/f111.webp"
+  },
+  {
+   "n": 112,
+   "role": "Boulangerie",
+   "titre": "Quand le courant ou le réseau coupe",
+   "description": "Mon Djê marche sans internet : la caisse continue, tout repart quand le réseau revient.",
+   "video": "v/f112.mp4",
+   "affiche": "v/f112.webp"
+  },
+  {
+   "n": 113,
+   "role": "Boulangerie",
+   "titre": "Une boutique et un dépôt",
+   "description": "Plusieurs points de vente dans un seul compte, pour voir où le pain part le mieux.",
+   "video": "v/f113.mp4",
+   "affiche": "v/f113.webp"
+  },
+  {
+   "n": 40,
+   "role": "Rendez-vous",
+   "titre": "Les rendez-vous : l’agenda et le rappel au client",
+   "description": "Salon, garage, clinique : prendre un rendez-vous, prévenir le client sur WhatsApp, noter s’il est venu.",
+   "video": "v/f40.mp4",
+   "affiche": "v/f40.webp"
+  },
+  {
+   "n": 41,
+   "role": "Dates limites",
+   "titre": "Les dates limites : ce qu’il faut écouler",
+   "description": "La date limite à chaque livraison, l’écran À écouler, retirer un produit périmé.",
+   "video": "v/f41.mp4",
+   "affiche": "v/f41.webp"
+  },
+  {
+   "n": 42,
+   "role": "Livraisons",
+   "titre": "Les livraisons : de la commande à l’argent encaissé",
+   "description": "L’adresse, les frais, Partir, Prévenir le client, Encaisser, Impossible de livrer.",
+   "video": "v/f42.mp4",
+   "affiche": "v/f42.webp"
+  },
+  {
+   "n": 43,
+   "role": "Gérance et abonnements",
+   "titre": "La gérance : suivre ce que verse le chauffeur",
+   "description": "Un contrat, ce qui est dû, un versement noté puis validé par un autre membre.",
+   "video": "v/f43.mp4",
+   "affiche": "v/f43.webp"
+  },
+  {
+   "n": 44,
+   "role": "Vente au poids",
+   "titre": "Vendre au poids : viande, tomates, poisson",
+   "description": "L’unité cent grammes, le poids pesé, le prix qui suit, le stock en kilos.",
+   "video": "v/f44.mp4",
+   "affiche": "v/f44.webp"
+  },
+  {
+   "n": 45,
+   "role": "Mes produits dans Excel",
+   "titre": "Mes produits dans Excel : télécharger, modifier, réimporter",
+   "description": "Changer ses prix dans Excel : le fichier à jour, les changements montrés avant d’être appliqués.",
+   "video": "v/f45.mp4",
+   "affiche": "v/f45.webp"
+  },
+  {
+   "n": 46,
+   "role": "Paie du personnel",
+   "titre": "La paie : la fiche de paie de l’employé",
+   "description": "Un employé, une fiche de paie figée, envoyée par WhatsApp ou en PDF.",
+   "video": "v/f46.mp4",
+   "affiche": "v/f46.webp"
+  },
+  {
+   "n": 47,
+   "role": "Relevé d’activité",
+   "titre": "Le relevé d’activité : prouver ce que vous gagnez",
+   "description": "Un relevé de vos ventes que la banque contrôle avec un code, sans compte.",
+   "video": "v/f47.mp4",
+   "affiche": "v/f47.webp"
+  },
+  {
+   "n": 48,
+   "role": "Tontine",
+   "titre": "La tontine : le carnet du groupe",
+   "description": "Qui a cotisé, qui a reçu le pot : le carnet remplace le cahier, sans jamais garder l’argent.",
+   "video": "v/f48.mp4",
+   "affiche": "v/f48.webp"
+  },
+  {
+   "n": 49,
+   "role": "Pour tout le monde",
+   "titre": "Mon portefeuille : votre carnet personnel",
+   "description": "Vos dépenses, vos revenus, vos projets d’épargne : un carnet à vous, que personne d’autre ne peut lire.",
+   "video": "v/f49.mp4",
+   "affiche": "v/f49.webp"
+  },
+  {
+   "n": 50,
+   "role": "Maquis, bar, restaurant",
+   "titre": "Le pourboire en boisson : la convertir en argent",
+   "description": "Une boisson offerte à quelqu’un de l’équipe devient de l’argent, vérifié par la caisse.",
+   "video": "v/f50.mp4",
+   "affiche": "v/f50.webp"
+  },
+  {
+   "n": 51,
+   "role": "Boulangerie",
+   "titre": "Le chef de production : fabriquer, commander, recevoir",
+   "description": "Le chef fabrique, remet le pain et commande ses produits ; le gérant valide.",
+   "video": "v/f51.mp4",
+   "affiche": "v/f51.webp"
+  },
+  {
+   "n": 52,
+   "role": "Boulangerie",
+   "titre": "La remise du pain : du chef à la caisse",
+   "description": "La caisse compte le pain remis, note l’écart et son motif, sans jamais bloquer les ventes.",
+   "video": "v/f52.mp4",
+   "affiche": "v/f52.webp"
+  },
+  {
+   "n": 53,
+   "role": "Je tiens la caisse",
+   "titre": "L’argent en chaîne : du caissier au propriétaire",
+   "description": "À chaque étape, celui qui remet déclare et celui qui reçoit confirme.",
+   "video": "v/f53.mp4",
+   "affiche": "v/f53.webp"
+  },
+  {
+   "n": 54,
+   "role": "Je vends",
+   "titre": "Payer en Money : le vendeur déclare, la caisse confirme",
+   "description": "Wave, Orange, MTN ou Moov : le numéro du client est facultatif, la caisse confirme à la seconde près.",
+   "video": "v/f54.mp4",
+   "affiche": "v/f54.webp"
+  }
+ ]
+}
