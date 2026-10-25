@@ -68,7 +68,7 @@ const ACTIONS = {
   commerce_ouvert: 'Commerce ouvert',
   commerce_suspendu: 'Commerce suspendu',
   commerce_reactive: 'Commerce rouvert',
-  formule_changee: 'Formule changée',
+  formule_changee: 'Niveau changé',
   abonnement_encaisse: 'Abonnement encaissé',
   reinitialisation_code: 'Code secret réinitialisé',
   stock_charge: 'Stock chargé par Mon Djê',
@@ -183,7 +183,7 @@ const PAGES = {
   idees: { titre: 'Idées du site', rendre: pageIdees },
   visites: { titre: 'Visites du site', rendre: pageVisites },
   journal: { titre: 'Journal des interventions', rendre: pageJournal },
-  equipe: { titre: 'Équipe et formules', rendre: pageEquipe },
+  equipe: { titre: 'Équipe et niveaux', rendre: pageEquipe },
 };
 
 let pageCourante = 'accueil';
@@ -372,6 +372,7 @@ function ficheDemande(d) {
     ${champLecture('Type', TYPE_COMMERCE[d.type_commerce] ?? d.type_commerce)}
     ${d.taille_boutique ? champLecture('Taille', TAILLE_BOUTIQUE[d.taille_boutique] ?? d.taille_boutique) : ''}
     ${champLecture('Ville', d.commune ? `${d.ville} — ${d.commune}` : d.ville)}
+    ${d.formule_souhaitee ? champLecture('Niveau choisi', NIVEAUX[d.formule_souhaitee] ?? d.formule_souhaitee) : ''}
     ${champLecture('Propriétaire', d.nom_proprietaire)}
     ${champLecture('WhatsApp', d.telephone)}
     ${champLecture('E-mail', d.email)}
@@ -631,7 +632,7 @@ async function ficheCommerce(c) {
     <h3>Abonnement</h3>
     <div class="carte">
       <div class="rangee">
-        <span class="nom">${esc(e?.formule_libelle ?? 'Sans formule')}</span>
+        <span class="nom">${esc(NIVEAUX[c.formule] ?? e?.formule_libelle ?? 'Sans niveau')}</span>
         ${etiquette(e?.etat ?? 'jamais_paye')}
       </div>
       <div class="info">
@@ -641,7 +642,7 @@ async function ficheCommerce(c) {
       <div class="info">Total encaissé : ${fcfa(e?.total_encaisse ?? 0)}</div>
     </div>
 
-    <label>Formule
+    <label>Niveau
       <select id="formule">
         ${(formules.data ?? []).map((f) =>
           `<option value="${esc(f.code)}" ${f.code === c.formule ? 'selected' : ''}>
@@ -775,6 +776,9 @@ const FONCTIONS = {
   livraison: 'Livrer chez le client', rendezvous: 'Prendre des rendez-vous', fabrication: 'Fabriquer et vendre', depots: 'Recevoir des objets à traiter',
 };
 
+// Les trois niveaux de l'application.
+const NIVEAUX = { essentiel: 'Essentiel', intermediaire: 'Intermédiaire', complet: 'Complet' };
+
 // « 19/10/2026 à 14:32:05 » : la seconde sert à retrouver le paiement dans le compte Wave marchand.
 const avecSecondes = (iso) => {
   const d = new Date(iso);
@@ -796,33 +800,36 @@ async function pageAbonnements() {
       + declarations.map((d) => `
         <div class="carte">
           <div class="rangee"><span class="nom">${esc(d.structure?.nom ?? d.nom_commerce)}</span><span class="n">${fcfa(d.montant)}</span></div>
-          <div class="info">${d.activite ? `<b>Fonction : ${esc(FONCTIONS[d.activite] ?? d.activite)}</b> · ` : 'Abonnement · '}${d.mois} mois · déclaré le ${avecSecondes(d.declare_le)}</div>
+          <div class="info">${d.activite ? `<b>Fonction : ${esc(FONCTIONS[d.activite] ?? d.activite)}</b> · ` : `Abonnement${d.formule ? ' <b>' + esc(NIVEAUX[d.formule] ?? d.formule) + '</b>' : ''} · `}${d.mois} mois · déclaré le ${avecSecondes(d.declare_le)}</div>
           <div class="info">Numéro Wave : <b>${esc(d.numero_wave)}</b> · numéro du commerce : ${esc(d.numero_commerce)} · nom déclaré : ${esc(d.nom_commerce)}</div>
           <button class="bouton ok petit" data-confirmer="${esc(d.id)}">Confirmer le paiement</button>
           <button class="bouton danger petit" data-refuser="${esc(d.id)}">Refuser</button>
         </div>`).join('')
     : '';
 
+  const parNiveau = Object.fromEntries(Object.keys(NIVEAUX).map((k) => [k, lignes.filter((l) => l.formule === k).length]));
+  const aRisque = lignes.filter((l) => l.formule === 'complet' && (!l.jusquau || l.jusquau < (plat?.lancement_le ?? '9999'))).length;
   const blocPlateforme = `
-    <h3>Lancement et fonctions supplémentaires</h3>
+    <h3>Lancement et niveaux</h3>
     <div class="carte">
-      <p class="info">Jusqu'au lancement, les 9 fonctions de « Mes activités » sont gratuites pour tous les commerces. Après, chaque fonction qui n'est pas incluse à l'ouverture du commerce
-        coûte le prix ci-dessous par mois, payé d'avance (même circuit que l'abonnement). Une fonction non payée passe en veille : rien n'est effacé.</p>
+      <p class="info">Jusqu'au lancement, tous les commerces ont le Complet gratuitement. À partir de cette date, le Complet se paie : un commerce en Complet qui n'a pas payé garde ses boutons
+        pendant le délai ci-dessous, puis retombe en Intermédiaire (rien n'est effacé). Les fonctions supplémentaires de « Mes activités » sont gratuites aux trois niveaux.</p>
+      <p class="info"><b>${parNiveau.essentiel}</b> Essentiel · <b>${parNiveau.intermediaire}</b> Intermédiaire · <b>${parNiveau.complet}</b> Complet${plat?.lancement_le ? ` · <b>${aRisque}</b> Complet non payé${aRisque > 1 ? 's' : ''} à la date du lancement` : ''}</p>
       <div class="ligne-champs">
         <label>Date du lancement (vide : pas encore décidé, tout est gratuit)<input id="lancement" type="date" value="${esc(plat?.lancement_le ?? '')}" /></label>
-        <label>Prix d'une fonction, par mois<input id="prixActivite" type="number" min="1" value="${plat?.prix_activite ?? 1000}" /></label>
+        <label>Délai avant la redescente du Complet (jours)<input id="delai" type="number" min="0" max="365" value="${plat?.delai_redescente_jours ?? 30}" /></label>
       </div>
       <button class="bouton" id="regler">Enregistrer</button>
     </div>`;
 
   $('#page').innerHTML = blocDeclarations + blocPlateforme + tableau(
-    ['Commerce', 'Ville', 'Formule', 'Prix', 'Payé jusqu’au', 'Total encaissé', 'État'],
+    ['Commerce', 'Ville', 'Niveau', 'Prix', 'Payé jusqu’au', 'Total encaissé', 'État'],
     lignes.map((l) => ({
       id: l.structure_id,
       cellules: [
         esc(l.nom),
         esc(l.ville ?? '—'),
-        esc(l.formule_libelle ?? 'Sans formule'),
+        esc(NIVEAUX[l.formule] ?? l.formule_libelle ?? 'Sans niveau'),
         `<span class="n">${fcfa(l.prix_mensuel ?? 0)}</span>`,
         jour(l.jusquau),
         `<span class="n">${fcfa(l.total_encaisse)}</span>`,
@@ -834,13 +841,15 @@ async function pageAbonnements() {
 
   $('#regler').addEventListener('click', async (ev) => {
     const lancement = $('#lancement').value || null;
-    const prix = parseInt($('#prixActivite').value, 10);
-    if (!(prix > 0)) return alert('Indique le prix d’une fonction.');
+    const delai = parseInt($('#delai').value, 10);
+    if (!(delai >= 0)) return alert('Indique le délai en jours.');
     if (!confirm(lancement
-      ? `Lancement le ${jour(lancement)} : à partir de cette date, les fonctions non incluses passent en veille tant qu'elles ne sont pas payées (${fcfa(prix)} par mois). Confirmer ?`
-      : `Pas de date de lancement : toutes les fonctions restent gratuites. Prix noté : ${fcfa(prix)} par mois. Confirmer ?`)) return;
+      ? `Lancement le ${jour(lancement)} : à partir de cette date, le Complet se paie. ${aRisque} commerce(s) en Complet n'ont pas payé et redescendront en Intermédiaire ${delai} jours après. Confirmer ?`
+      : `Pas de date de lancement : tout reste gratuit pour tous les commerces. Confirmer ?`)) return;
     ev.target.disabled = true;
-    const { error } = await bd.rpc('admin_regler_plateforme', { p_lancement: lancement, p_prix: prix });
+    const r1 = await bd.rpc('admin_regler_plateforme', { p_lancement: lancement, p_prix: plat?.prix_activite ?? 1000 });
+    const r2 = r1.error ? r1 : await bd.rpc('admin_regler_delai_redescente', { p_jours: delai });
+    const error = r2.error;
     if (error) { echoue(error); ev.target.disabled = false; return; }
     alert('Enregistré.');
     aller('abonnements');
@@ -852,7 +861,7 @@ async function pageAbonnements() {
     const montant = parseInt(saisie, 10);
     if (!(montant > 0)) return alert('Indique le montant reçu.');
     const reference = prompt('Référence de la transaction Wave (facultatif) :', '') ?? '';
-    if (!confirm(`Confirmer ${fcfa(montant)} pour ${d.mois} mois ? ${d.activite ? `La fonction « ${FONCTIONS[d.activite] ?? d.activite} » est activée tout de suite.` : 'L\'abonnement est prolongé tout de suite.'}`)) return;
+    if (!confirm(`Confirmer ${fcfa(montant)} pour ${d.mois} mois ? ${d.activite ? `La fonction « ${FONCTIONS[d.activite] ?? d.activite} » est activée tout de suite.` : 'L\'abonnement est prolongé tout de suite' + (d.formule ? ` et le commerce passe au niveau ${NIVEAUX[d.formule] ?? d.formule}` : '') + '.'}`)) return;
     b.disabled = true;
     const { data: fin, error } = await bd.rpc('admin_traiter_declaration_abonnement', {
       p_id: d.id, p_decision: 'confirmee', p_montant: montant, p_reference: reference.trim() || null,
@@ -1530,23 +1539,25 @@ async function pageJournal() {
 async function pageEquipe() {
   const [comptes, formules] = await Promise.all([
     bd.from('admin_plateforme').select('user_id, nom, role, actif, cree_le').order('cree_le'),
-    bd.from('formule_abonnement').select('*').order('rang'),
+    bd.from('formule_abonnement').select('*').eq('actif', true).order('rang'),
   ]);
   const superAdmin = moi.role === 'super_admin';
 
   $('#page').innerHTML = `
-    <h2>Formules d'abonnement</h2>
+    <h2>Niveaux d'abonnement</h2>
     <p class="info">
       Le prix s'applique aux prochains paiements ; ceux déjà encaissés gardent
-      leur montant.
+      leur montant. Le Complet a un second prix : celui des 12 mois payés d'un coup.
     </p>
         ${(formules.data ?? []).map((f) => `
           <div class="carte">
             <div class="rangee">
               <span class="nom">${esc(f.libelle)}</span>
               <span>
-                <input type="number" min="0" value="${f.prix_mensuel}"
+                <input type="number" min="0" value="${f.prix_mensuel}" title="Prix par mois"
                   data-prix="${esc(f.code)}" style="width:120px; display:inline-block" />
+                ${f.prix_annuel != null ? `<input type="number" min="1" value="${f.prix_annuel}" title="Prix pour 12 mois"
+                  data-annuel="${esc(f.code)}" style="width:120px; display:inline-block" />` : ''}
                 <button class="bouton petit" data-enregistrer="${esc(f.code)}">Enregistrer</button>
               </span>
             </div>
@@ -1595,8 +1606,11 @@ async function pageEquipe() {
     const code = b.dataset.enregistrer;
     const prix = parseInt($(`[data-prix="${code}"]`).value, 10);
     if (!(prix >= 0)) return alert('Indique un montant en FCFA.');
+    const champAnnuel = $(`[data-annuel="${code}"]`);
+    const annuel = champAnnuel ? parseInt(champAnnuel.value, 10) : null;
+    if (champAnnuel && !(annuel > 0)) return alert('Indique le prix de l’année en FCFA.');
     const { error } = await bd.from('formule_abonnement')
-      .update({ prix_mensuel: prix }).eq('code', code);
+      .update(champAnnuel ? { prix_mensuel: prix, prix_annuel: annuel } : { prix_mensuel: prix }).eq('code', code);
     if (error) return echoue(error);
     b.textContent = 'Enregistré';
     setTimeout(() => { b.textContent = 'Enregistrer'; }, 1500);
