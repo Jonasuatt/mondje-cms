@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proposer mon activité — Mon Djê</title>
+  <meta name="description" content="Votre activité n'est pas encore dans Mon Djê ? Dites-nous ce que vous faites et ce que vous voulez suivre : nous préparons les activités les plus demandées en premier." />
+  <meta name="theme-color" content="#0e1b2e" />
+  <link rel="canonical" href="https://mondje.ci/mon-activite/" />
+  <link rel="icon" href="../favicon.png" />
+  <link rel="stylesheet" href="../site.css" />
+  <style>
+    .formulaire { display: grid; gap: 16px; margin: 24px 0 8px; max-width: 640px; }
+    .formulaire label, .formulaire fieldset { display: grid; gap: 6px; font-weight: 600; color: var(--nuit); }
+    .formulaire label small, .formulaire legend small { font-weight: 400; color: var(--faible); }
+    .formulaire fieldset { border: 0; margin: 0; padding: 0; }
+    .formulaire legend { font-weight: 600; color: var(--nuit); padding: 0; margin-bottom: 6px; }
+    .formulaire input[type=text], .formulaire textarea, .formulaire select {
+      font: inherit; padding: 12px 14px; border: 1px solid var(--trait); border-radius: 12px; background: #fff; color: var(--texte); width: 100%;
+    }
+    .formulaire textarea { min-height: 110px; resize: vertical; }
+    .formulaire input:focus, .formulaire textarea:focus, .formulaire select:focus { outline: 2px solid var(--bleu); border-color: transparent; }
+    .formulaire .choix { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; color: var(--texte); font-size: 16px; }
+    .formulaire .choix input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+    .formulaire .case { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; color: var(--faible); font-size: 15px; }
+    .formulaire .case input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+    .piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .retour { padding: 12px 16px; border-radius: 12px; margin: 6px 0; }
+    .retour.ok { background: #e7f6ee; border: 1px solid #b6e2c8; color: #14572f; }
+    .retour.erreur { background: #fdecea; border: 1px solid #f3b9b3; color: #8a1f17; }
+  </style>
+</head>
+<body>
+<header class="entete">
+  <div class="conteneur">
+    <a class="marque" href="../"><img src="../logo-mondje.png" alt="" width="38" height="38" /> Mon Djê</a>
+    <nav class="nav"><a href="../guide/">Guide</a><a href="../#faq">Questions</a><a class="bouton petit" href="../telecharger/">Télécharger</a></nav>
+  </div>
+</header>
+
+<main class="page">
+  <div class="conteneur contenu">
+    <span class="surtitre">Votre activité</span>
+    <h1>Proposer mon activité</h1>
+    <p class="chapeau">Mon Djê sert déjà les boutiques, les maquis, les boulangeries, les salons, les garages et d'autres métiers. Vous faites autre chose&nbsp;?
+      Dites-nous ce que vous faites et ce que vous voulez suivre. Les activités les plus demandées sont préparées en premier, et nous vous écrivons quand la vôtre est prête.</p>
+
+    <form id="formulaire" class="formulaire" novalidate>
+      <label>Votre activité
+        <select id="activite" required>
+          <option value="">Choisissez dans la liste</option>
+          <option value="elevage_volaille">Élevage de volailles (poulets de chair, pondeuses, pintades…)</option>
+          <option value="elevage_betail">Élevage de bovins, moutons, chèvres ou porcs</option>
+          <option value="pisciculture">Pisciculture (poissons d'élevage)</option>
+          <option value="agriculture">Agriculture, maraîchage, plantation</option>
+          <option value="collecte">Achat et collecte de produits agricoles (cacao, anacarde, hévéa…)</option>
+          <option value="mobile_money">Kiosque Mobile Money, cybercafé, transfert d'argent</option>
+          <option value="transport">Transport (moto-taxi, taxi, gbaka, location de véhicules)</option>
+          <option value="ecole">École, formation, crèche</option>
+          <option value="couture">Couture, menuiserie, travail sur commande</option>
+          <option value="btp">Bâtiment, travaux, chantiers</option>
+          <option value="autre">Une autre activité</option>
+        </select>
+      </label>
+      <label>Précisez en quelques mots <small>(par exemple : « 800 poulets de chair par bande », « 6 motos confiées à des chauffeurs »)</small>
+        <input type="text" id="detail" maxlength="200" />
+      </label>
+      <label>Votre ville ou votre village
+        <input type="text" id="ville" maxlength="80" autocomplete="address-level2" />
+      </label>
+
+      <fieldset>
+        <legend>Combien de personnes travaillent avec vous&nbsp;?</legend>
+        <label class="choix"><input type="radio" name="taille" value="seul" /> Je travaille seul(e)</label>
+        <label class="choix"><input type="radio" name="taille" value="2_a_5" /> 2 à 5 personnes</label>
+        <label class="choix"><input type="radio" name="taille" value="6_ou_plus" /> 6 personnes ou plus</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Vous vendez ou vous livrez <small>(plusieurs réponses possibles)</small></legend>
+        <label class="choix"><input type="checkbox" name="vend_par" value="sur_place" /> Sur place</label>
+        <label class="choix"><input type="checkbox" name="vend_par" value="marche" /> Au marché</label>
+        <label class="choix"><input type="checkbox" name="vend_par" value="revendeurs" /> À des revendeurs ou à des entreprises</label>
+        <label class="choix"><input type="checkbox" name="vend_par" value="en_ligne" /> Par WhatsApp ou en ligne</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Ce que vous voudriez suivre <small>(plusieurs réponses possibles)</small></legend>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="stock" /> Mon stock (aliments, marchandises, produits)</label>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="pertes" /> Les pertes, la casse et les vols</label>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="employes" /> L'argent que mes employés encaissent</label>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="credits" /> Les clients qui me doivent de l'argent</label>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="production" /> Ce que je produis (bandes, récoltes, commandes)</label>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="rdv_livraisons" /> Les rendez-vous et les livraisons</label>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="saisons" /> Les saisons et les récoltes</label>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="sante" /> La santé et les soins (vaccins, traitements)</label>
+        <label class="choix"><input type="checkbox" name="a_suivre" value="depenses" /> Mes dépenses et mon bénéfice</label>
+      </fieldset>
+
+      <label>Qu'est-ce qui vous fait perdre le plus d'argent aujourd'hui&nbsp;? <small>(facultatif)</small>
+        <textarea id="probleme" maxlength="1000" placeholder="Par exemple : « Je ne sais pas combien de poulets sont morts cette semaine. »"></textarea>
+      </label>
+
+      <label>Votre prénom ou votre nom
+        <input type="text" id="nom" maxlength="80" autocomplete="given-name" />
+      </label>
+      <label>Votre WhatsApp ou votre e-mail <small>(pour vous prévenir quand votre activité est prête ; il n'est jamais affiché ni transmis)</small>
+        <input type="text" id="contact" maxlength="120" autocomplete="off" inputmode="email" />
+      </label>
+
+      <p class="case" style="margin:0"><span>Vos réponses ne sont lues que par l'équipe Mon Djê. Elles servent à décider quelles activités préparer en premier et à vous répondre. <a href="../confidentialite/">Politique de confidentialité</a>.</span></p>
+      <div class="piege" aria-hidden="true"><label>Ne pas remplir<input type="text" id="site_web" tabindex="-1" autocomplete="off" /></label></div>
+      <div><button class="bouton" id="envoyer" type="submit">Envoyer mon activité</button></div>
+      <div id="retour" role="status" aria-live="polite"></div>
+    </form>
+    <p style="color:var(--faible);font-size:15px;max-width:640px">Une question, une idée libre&nbsp;? Écrivez-nous sur la page
+      <a href="../propositions/">Une idée, une remarque&nbsp;?</a> ou sur <a href="https://wa.me/2250565750303">WhatsApp au 05 65 75 03 03</a>.</p>
+  </div>
+</main>
+
+<footer class="pied"><div class="conteneur"><div class="bas" style="border:0;margin:0;padding:0">© 2026 Mon Djê · <a href="../">Accueil</a> · <a href="../guide/">Guide</a> · <a href="../telecharger/">Télécharger</a> · <a href="../apropos/">À propos</a> · <a href="../mentions-legales/">Mentions légales</a> · <a href="../confidentialite/">Confidentialité</a> · <a href="../propositions/">Une idée ?</a></div></div></footer>
+
+<script src="../vendor/supabase.js"></script>
+<script>
+  // Même clé publique que la page des propositions : elle ne donne que le droit d'envoyer. Tout le reste est fermé côté base.
+  const bd = supabase.createClient('https://xflrfpmsatikglixxtxs.supabase.co', 'sb_publishable__o--lkXqrhp8MvCruh5aCA_AoBSlLLB');
+  const $ = (id) => document.getElementById(id);
+  const montrer = (classe, texte) => { $('retour').innerHTML = ''; const d = document.createElement('div'); d.className = 'retour ' + classe; d.textContent = texte; $('retour').append(d); };
+  const coches = (nom) => [...document.querySelectorAll(`input[name="${nom}"]:checked`)].map((c) => c.value);
+
+  $('formulaire').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!$('activite').value) return montrer('erreur', 'Choisissez votre activité dans la liste.');
+    if ($('activite').value === 'autre' && $('detail').value.trim().length < 3) return montrer('erreur', 'Dites-nous en quelques mots quelle est votre activité.');
+    $('envoyer').disabled = true;
+    const avecContact = $('contact').value.trim() !== '';
+    const taille = document.querySelector('input[name="taille"]:checked');
+    const { error } = await bd.rpc('envoyer_demande_activite', {
+      p_nom: $('nom').value, p_contact: $('contact').value, p_activite: $('activite').value, p_detail: $('detail').value,
+      p_ville: $('ville').value, p_taille: taille ? taille.value : null, p_vend_par: coches('vend_par'), p_a_suivre: coches('a_suivre'),
+      p_probleme: $('probleme').value, p_site_web: $('site_web').value,
+    });
+    $('envoyer').disabled = false;
+    if (error) return montrer('erreur', error.message || 'Envoi impossible. Vérifiez votre connexion et réessayez.');
+    $('formulaire').reset();
+    montrer('ok', 'Merci ! Votre activité est bien arrivée. ' + (avecContact ? 'Nous vous écrirons quand elle sera prête.' : 'Si vous nous laissez un WhatsApp la prochaine fois, nous pourrons vous prévenir quand elle sera prête.'));
+  });
+</script>
+<script src="../mesure.js" defer></script>
+</body>
+</html>

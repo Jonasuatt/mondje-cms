@@ -181,6 +181,7 @@ const PAGES = {
   propositions: { titre: 'Produits proposés', rendre: pagePropositions },
   messages: { titre: 'Messages', rendre: pageMessages },
   idees: { titre: 'Idées du site', rendre: pageIdees },
+  activites: { titre: 'Activités demandées', rendre: pageActivitesDemandees },
   visites: { titre: 'Visites du site', rendre: pageVisites },
   journal: { titre: 'Journal des interventions', rendre: pageJournal },
   equipe: { titre: 'Équipe et niveaux', rendre: pageEquipe },
@@ -214,12 +215,13 @@ async function aller(cle) {
 
 // Ce qui attend quelqu'un : demandes, produits proposés, messages non lus.
 async function rafraichirPastilles() {
-  const [d, p, m, i, a] = await Promise.all([
+  const [d, p, m, i, a, ad] = await Promise.all([
     bd.from('demande_ouverture').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente'),
     bd.from('proposition_produit').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente'),
     bd.from('message').select('id', { count: 'exact', head: true }).eq('de_l_equipe', false).is('lu_le', null),
     bd.from('suggestion').select('id', { count: 'exact', head: true }).is('reponse', null),
     bd.from('abonnement_declaration').select('id', { count: 'exact', head: true }).eq('statut', 'declaree'),
+    bd.from('demande_activite').select('id', { count: 'exact', head: true }).is('lue_le', null),
   ]);
   const poser = (cle, n) => {
     const e = $(`[data-pastille="${cle}"]`);
@@ -231,6 +233,7 @@ async function rafraichirPastilles() {
   poser('propositions', p.count ?? 0);
   poser('messages', m.count ?? 0);
   poser('idees', i.count ?? 0);
+  poser('activites', ad.count ?? 0);
   poser('abonnements', a.count ?? 0);
 }
 
@@ -1414,6 +1417,98 @@ async function ficheIdee(s) {
     const { error } = await bd.from('suggestion').update({ reponse: reponse || null, publiee }).eq('id', s.id);
     if (error) { echoue(error); ev.target.disabled = false; return; }
     aller('idees');
+  });
+}
+
+// --- Activités demandées (mondje.ci/mon-activite) ------------------------------
+//
+// Le formulaire guidé du site : on COMPTE les demandes par activité pour décider de l'ordre des chantiers, puis on ouvre chaque demande pour écrire à son auteur.
+
+const ACTIVITES_DEMANDEES = {
+  elevage_volaille: 'Élevage de volailles', elevage_betail: 'Élevage de bovins, ovins, caprins, porcs', pisciculture: 'Pisciculture',
+  agriculture: 'Agriculture, maraîchage', collecte: 'Collecte de produits agricoles', mobile_money: 'Mobile Money, cybercafé',
+  transport: 'Transport', ecole: 'École, formation', couture: 'Couture, menuiserie, sur commande', btp: 'Bâtiment, travaux', autre: 'Autre activité',
+};
+const A_SUIVRE_LIBELLES = {
+  stock: 'Stock', pertes: 'Pertes et vols', employes: 'Argent des employés', credits: 'Clients à crédit', production: 'Production',
+  rdv_livraisons: 'Rendez-vous et livraisons', saisons: 'Saisons et récoltes', sante: 'Santé et soins', depenses: 'Dépenses et bénéfice',
+};
+const TAILLES_DEMANDEES = { seul: 'Seul(e)', '2_a_5': '2 à 5 personnes', '6_ou_plus': '6 personnes ou plus' };
+const VEND_PAR_LIBELLES = { sur_place: 'sur place', marche: 'au marché', revendeurs: 'à des revendeurs', en_ligne: 'par WhatsApp ou en ligne' };
+
+async function pageActivitesDemandees() {
+  const { data } = await bd.from('demande_activite').select('*').order('cree_le', { ascending: false }).limit(1000);
+  const liste = data ?? [];
+
+  // Le décompte : une ligne par activité, la plus demandée en haut, avec ce que ses auteurs veulent suivre.
+  const parActivite = new Map();
+  for (const d of liste) {
+    const e = parActivite.get(d.activite) ?? { n: 0, nouvelles: 0, suivre: new Map() };
+    e.n += 1;
+    if (!d.lue_le) e.nouvelles += 1;
+    for (const c of d.a_suivre ?? []) e.suivre.set(c, (e.suivre.get(c) ?? 0) + 1);
+    parActivite.set(d.activite, e);
+  }
+  const decompte = [...parActivite.entries()].sort((a, b) => b[1].n - a[1].n).map(([cle, e]) => {
+    const top = [...e.suivre.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
+      .map(([c, n]) => `${esc(A_SUIVRE_LIBELLES[c] ?? c)} (${n})`).join(' · ');
+    return `<div class="rangee"><span class="nom">${esc(ACTIVITES_DEMANDEES[cle] ?? cle)}</span>
+      <span><b>${e.n}</b> demande${e.n > 1 ? 's' : ''}${e.nouvelles ? ` · <span class="etiquette accent">${e.nouvelles} nouvelle${e.nouvelles > 1 ? 's' : ''}</span>` : ''}</span></div>
+      ${top ? `<div class="info">Ils veulent suivre : ${top}</div>` : ''}`;
+  }).join('<hr style="border:0;border-top:1px solid var(--trait);margin:10px 0">');
+
+  const cartes = liste.map((d) => `
+    <div class="carte ${d.lue_le ? '' : 'accent'}" data-activite="${d.id}" style="cursor:pointer">
+      <div class="rangee"><span class="nom">${esc(d.nom)}</span>${d.lue_le ? '' : '<span class="etiquette accent">Nouvelle</span>'}</div>
+      <div class="info">${quand(d.cree_le)} · ${esc(ACTIVITES_DEMANDEES[d.activite] ?? d.activite)}${d.ville ? ` · ${esc(d.ville)}` : ''}</div>
+      ${d.detail ? `<div>${esc(d.detail)}</div>` : ''}
+    </div>`).join('');
+
+  $('#page').innerHTML = liste.length
+    ? `<div class="carte"><div class="nom" style="margin-bottom:8px">Combien de demandes par activité</div>${decompte}</div>${cartes}`
+    : '<p class="info">Aucune demande pour l’instant. Elles arrivent depuis mondje.ci/mon-activite.</p>';
+
+  $$('[data-activite]').forEach((c) => c.addEventListener('click', () =>
+    ficheActiviteDemandee(liste.find((d) => d.id === c.dataset.activite))));
+}
+
+async function ficheActiviteDemandee(d) {
+  // Lue en l'ouvrant, comme les idées du site.
+  if (!d.lue_le) {
+    await bd.from('demande_activite').update({ lue_le: new Date().toISOString() }).eq('id', d.id);
+    rafraichirPastilles();
+  }
+  const mail = /^\S+@\S+\.\S+$/.test(d.contact ?? '') ? d.contact : '';
+  const tel = !mail ? numeroWhatsApp(d.contact) : '';
+  const lien = mail ? `<a class="bouton sombre" href="mailto:${esc(mail)}">Écrire par e-mail</a>`
+    : tel ? `<a class="bouton sombre" href="https://wa.me/${tel}" target="_blank" rel="noopener">Écrire sur WhatsApp</a>` : '';
+  const suivre = (d.a_suivre ?? []).map((c) => A_SUIVRE_LIBELLES[c] ?? c).join(', ');
+  const vend = (d.vend_par ?? []).map((c) => VEND_PAR_LIBELLES[c] ?? c).join(', ');
+
+  ouvrirPanneau(d.nom, `
+    <div class="carte">
+      <div class="info">${quand(d.cree_le)}</div>
+      ${champLecture('Activité', ACTIVITES_DEMANDEES[d.activite] ?? d.activite)}
+      ${champLecture('Précision', d.detail)}
+      ${champLecture('Ville', d.ville)}
+      ${champLecture('Taille', TAILLES_DEMANDEES[d.taille])}
+      ${champLecture('Vend ou livre', vend)}
+      ${champLecture('Veut suivre', suivre)}
+      ${champLecture('Ce qui lui fait perdre de l’argent', d.probleme)}
+      ${champLecture('Contact (jamais affiché)', d.contact)}
+      ${lien}
+    </div>
+    <label style="margin-top:16px">Note de l’équipe
+      <textarea id="noteActivite" maxlength="1000" placeholder="Suite donnée, démonstration proposée…">${esc(d.note ?? '')}</textarea>
+    </label>
+    <button class="bouton ok" id="enregistrerActivite">Enregistrer la note</button>
+  `);
+
+  $('#enregistrerActivite').addEventListener('click', async (ev) => {
+    ev.target.disabled = true;
+    const { error } = await bd.from('demande_activite').update({ note: $('#noteActivite').value.trim() || null }).eq('id', d.id);
+    if (error) { echoue(error); ev.target.disabled = false; return; }
+    aller('activites');
   });
 }
 
