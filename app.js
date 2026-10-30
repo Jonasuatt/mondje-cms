@@ -776,7 +776,7 @@ async function ficheCommerce(c) {
 // Les 9 fonctions de « Mes activités » de l'application (maquis/src/screens/MesActivites.tsx) : chacune représente un commerce.
 const FONCTIONS = {
   vente: 'Vendre des produits', tables: 'Servir à des tables', location: 'Louer', services: 'Faire des prestations', versements: 'Gérance et abonnements',
-  livraison: 'Livrer chez le client', rendezvous: 'Prendre des rendez-vous', fabrication: 'Fabriquer et vendre', elevage: 'Élevage', mobilemoney: 'Mobile Money', couture: 'Couture sur mesure', depots: 'Recevoir des objets à traiter',
+  livraison: 'Livrer chez le client', rendezvous: 'Prendre des rendez-vous', fabrication: 'Fabriquer et vendre', elevage: 'Élevage', mobilemoney: 'Mobile Money', couture: 'Couture sur mesure', collecte: 'Acheter aux planteurs', depots: 'Recevoir des objets à traiter',
 };
 
 // Les trois niveaux de l'application.
