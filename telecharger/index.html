@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Télécharger Mon Djê pour Android</title>
-  <meta name="description" content="Installez Mon Djê sur votre téléphone Android : le fichier d'installation et les étapes, avec les écrans d'avertissement d'Android expliqués." />
+  <title>Installer Mon Djê sur Android</title>
+  <meta name="description" content="Installez Mon Djê sur votre téléphone Android depuis le Play Store, ou avec le fichier d'installation et ses étapes expliquées." />
   <meta name="theme-color" content="#0e1b2e" />
   <link rel="canonical" href="https://mondje.ci/telecharger/" />
   <link rel="icon" href="../favicon.png" />
@@ -21,11 +21,21 @@
 <main class="page">
   <div class="conteneur contenu">
     <span class="surtitre">Installation</span>
-    <h1>Télécharger Mon Djê pour Android</h1>
-    <p class="chapeau">Un fichier à télécharger, quatre gestes à faire. Comptez deux minutes. Pour l'instant l'application s'installe depuis cette page ; elle arrivera aussi sur le Play Store.</p>
+    <h1>Installer Mon Djê sur Android</h1>
+    <p class="chapeau">Le plus simple : installez Mon Djê depuis le Play Store, comme n'importe quelle application. Pas de Play Store sur votre téléphone ? Utilisez le fichier d'installation plus bas.</p>
 
     <p style="margin:26px 0 6px">
-      <a class="bouton" id="lien-apk" href="https://github.com/Jonasuatt/mondje-cms/releases/latest/download/Mon-Dje.apk" download>
+      <a class="bouton" id="lien-play" href="https://play.google.com/store/apps/details?id=ci.mondje.app" rel="noopener">
+        Installer depuis le Play Store
+      </a>
+    </p>
+    <p class="version">Android 7 ou plus récent. La version du Play Store peut avoir quelques jours de retard sur le fichier ci-dessous.</p>
+
+    <h2 id="fichier">Sans le Play Store : le fichier d'installation</h2>
+    <p>Un fichier à télécharger, quatre gestes à faire. Comptez deux minutes.</p>
+
+    <p style="margin:26px 0 6px">
+      <a class="bouton clair" id="lien-apk" href="https://github.com/Jonasuatt/mondje-cms/releases/latest/download/Mon-Dje.apk" download>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13m0 0-5-5m5 5 5-5M4 20h16"/></svg>
         Télécharger Mon-Dje.apk
       </a>
@@ -33,8 +43,9 @@
     <p class="version" id="infos">Pour Android 7 ou plus récent · environ 45 Mo</p>
 
     <div class="alerte">
-      <b>Télécharger depuis un autre endroit que cette page ?</b> Ne le faites pas. Un fichier d'installation reçu par un inconnu peut être
-      une fausse copie. Le bon fichier vient de <b>mondje.ci</b>, et nulle part ailleurs.
+      <b>Télécharger depuis un autre endroit ?</b> Ne le faites pas. Un fichier d'installation reçu par un inconnu peut être
+      une fausse copie. Le bon fichier vient de <b>mondje.ci</b>, et l'application du Play Store, de la fiche officielle ci-dessus.
+      <b>Choisissez une seule source</b> : n'installez pas le fichier par-dessus l'application du Play Store, ni l'inverse.
     </div>
 
     <h2>Les quatre étapes</h2>
@@ -60,7 +71,7 @@
     <div class="pas">
       <div>
         <h3>3. Google Play Protect affiche un avertissement</h3>
-        <p>Il écrit <b>« Appli bloquée pour protéger votre appareil »</b> et « Play Protect n'a jamais vu d'appli de ce développeur auparavant ». C'est normal : l'application n'est pas encore sur le Play Store.
+        <p>Il écrit <b>« Appli bloquée pour protéger votre appareil »</b> et « Play Protect n'a jamais vu d'appli de ce développeur auparavant ». C'est normal : ce fichier n'est pas installé depuis le Play Store.
           Touchez <b>Plus de détails</b>, puis <b>Installer quand même</b>. Ne touchez pas « OK » : cela annule l'installation.</p>
       </div>
       <div class="telephone petit"><img src="../img/installer-3.webp" alt="Google Play Protect : Installer quand même" loading="lazy" width="540" height="1200" /></div>
