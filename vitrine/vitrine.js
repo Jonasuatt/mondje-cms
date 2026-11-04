@@ -56,7 +56,23 @@ function compterVisite() {
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-const fcfa = (n) => String(n ?? 0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' F';
+// La monnaie du commerce (la page l'apprend en chargeant le commerce) : « F » et aucune décimale tant qu'on ne sait rien d'autre. Un montant est compté dans la plus petite unité (12,50 = 1250 avec 2 décimales).
+const MONNAIES = { XOF: ['F', 0], XAF: ['F', 0], GNF: ['FG', 0], RWF: ['FRw', 0], BIF: ['FBu', 0], DJF: ['Fdj', 0], KMF: ['FC', 0],
+  GHS: ['GH₵', 2], NGN: ['₦', 2], KES: ['KSh', 2], MAD: ['DH', 2], EUR: ['€', 2], USD: ['$', 2] };
+let MON = { sym: 'F', dec: 0 };
+const definirMonnaie = (code) => { const m = MONNAIES[code]; MON = m ? { sym: m[0], dec: m[1] } : { sym: 'F', dec: 0 }; };
+const fcfa = (n) => {
+  const v = Math.round(Math.abs(Number(n ?? 0))), e = 10 ** MON.dec;
+  const entier = String(Math.floor(v / e)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return (Number(n) < 0 ? '-' : '') + entier + (MON.dec ? ',' + String(v % e).padStart(MON.dec, '0') : '') + ' ' + MON.sym;
+};
+// Ce que le client a tapé (« 12,5 » ou « 12.50 ») → plus petite unité ; plus de décimales que la monnaie n'en a : null
+const lireMontantClient = (texte) => {
+  const n = Number(String(texte ?? '').trim().replace(',', '.'));
+  if (!Number.isFinite(n) || n <= 0) return null;
+  const v = n * 10 ** MON.dec;
+  return Math.abs(v - Math.round(v)) > 1e-6 ? null : Math.round(v);
+};
 
 // Les commerces saisissent « 0505522776 » ; WhatsApp veut l'international.
 function numeroWhatsApp(tel) {
@@ -158,7 +174,7 @@ function ouvrirReservation() {
       ${ac.pct} % du montant de la réservation${ac.min ? `, au minimum ${fcfa(ac.min)}` : ''}. Il sera déduit de votre note à la fin.
       <br />${ac.consigne ? esc(ac.consigne) : page.telephone ? `Payez-le au ${esc(page.telephone)} (Mobile Money).` : 'Le commerce vous dit comment le payer.'}
     </div>
-    <label>Montant de l’acompte versé, en F<input type="number" id="fAcompte" min="1" inputmode="numeric" /></label>
+    <label>Montant de l’acompte versé, en ${MON.sym}<input type="number" id="fAcompte" min="${MON.dec ? '0.01' : '1'}" step="${MON.dec ? '0.01' : '1'}" inputmode="${MON.dec ? 'decimal' : 'numeric'}" /></label>
     <label>Capture de votre paiement<input type="file" id="fCapture" accept="image/*" /></label>
     <img class="vignette cache" id="fVignette" alt="Votre capture" />` : ''}
     ${CHAMPS.note()}
@@ -204,8 +220,8 @@ async function envoyerReservation() {
   if (mail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) return erreur('Cette adresse mail ne semble pas juste.');
   let montant = null, capture = null;
   if (ac.pct > 0) {
-    montant = Number(lire('fAcompte'));
-    if (!Number.isInteger(montant) || montant < 1) return erreur('Indiquez le montant de l’acompte que vous avez versé.');
+    montant = lireMontantClient(lire('fAcompte'));
+    if (montant === null) return erreur('Indiquez le montant de l’acompte que vous avez versé.');
     if (ac.min && montant < ac.min) return erreur(`L’acompte minimum est de ${fcfa(ac.min)}.`);
     const fichier = document.getElementById('fCapture')?.files?.[0];
     if (!fichier) return erreur('Ajoutez la capture de votre paiement : sans elle, la réservation n’est pas validée.');
@@ -561,6 +577,7 @@ async function demarrer() {
 
   const c = commerce.data;
   if (!c) return introuvable();
+  definirMonnaie(c.devise);
 
   document.title = `${c.nom} — ${lieu(c) || 'Côte d’Ivoire'}`;
 
