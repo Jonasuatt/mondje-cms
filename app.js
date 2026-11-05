@@ -1963,7 +1963,7 @@ async function ficheRapport(c, jours = 7) {
       </tr>`).join('')}</tbody></table></div>`}
 
     <p class="info" style="margin-top:20px">
-      Période du ${quand(r.debut)} au ${quand(r.fin)}. Tous les chiffres sont
+      Période du ${quand(r.debut)}${window.MONDJE_LANGUE === 'en' ? ' to ' : ' au '}${quand(r.fin)}. Tous les chiffres sont
       calculés sur la base, jamais estimés.
     </p>
   `);
