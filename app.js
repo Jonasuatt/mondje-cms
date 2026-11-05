@@ -627,6 +627,7 @@ async function ficheCommerce(c) {
     <button class="bouton sombre" id="voirCarte">Carte et stock</button>
     <button class="bouton sombre" id="voirActivite">Historique de l'activité</button>
     <button class="bouton sombre" id="voirRapport">Rapport</button>
+    <button class="bouton sombre" id="voirAnalyses">Analyses IA</button>
     <p class="info">
       Nous pouvons charger ses produits et son stock à sa demande. Une entrée
       saisie ici porte le nom de Mon Djê, jamais le sien.
@@ -705,6 +706,7 @@ async function ficheCommerce(c) {
   $('#voirCarte').addEventListener('click', () => ficheCarte(c));
   $('#voirActivite').addEventListener('click', () => ficheActivite(c));
   $('#voirRapport').addEventListener('click', () => ficheRapport(c));
+  $('#voirAnalyses').addEventListener('click', () => ficheAnalyses(c));
 
   $$('[data-recoder]').forEach((b) => b.addEventListener('click', async () => {
     if (!confirm(`${b.dataset.nom} recevra un nouveau code secret, et l'ancien ne marchera plus. `
@@ -1926,6 +1928,47 @@ async function ficheRapport(c, jours = 7) {
   $('#retourFiche3').addEventListener('click', () => ficheCommerce(c));
   $$('[data-periode]').forEach((b) =>
     b.addEventListener('click', () => ficheRapport(c, Number(b.dataset.periode))));
+}
+
+// --- Les analyses par IA d'un commerce ---------------------------------------
+//
+// Ce que le propriétaire a reçu du « cerveau numérique » : celles qu'il a demandées et celles du lundi, avec son accord.
+// L'équipe lit ; elle n'écrit jamais ici. Le texte est celui que le propriétaire voit (prénoms compris).
+
+async function ficheAnalyses(c) {
+  const [{ data: analyses, error }, { data: choix }] = await Promise.all([
+    bd.from('analyse_ia')
+      .select('id, cree_le, jours, texte, automatique, modele, jetons_entree, jetons_sortie')
+      .eq('structure_id', c.id).order('cree_le', { ascending: false }).limit(20),
+    bd.from('analyse_ia_consentement').select('consenti, cree_le')
+      .eq('structure_id', c.id).order('cree_le', { ascending: false }).limit(1),
+  ]);
+  if (error) return echoue(error);
+
+  const accord = choix?.[0];
+  ouvrirPanneau(`${c.nom} — analyses IA`, `
+    <button class="bouton sombre" id="retourFiche4">Retour à la fiche</button>
+    <div class="carte ${accord?.consenti ? 'ok' : ''}" style="margin-top:12px">
+      <div class="nom">${accord?.consenti ? 'Accord du propriétaire : oui' : accord ? 'Accord retiré par le propriétaire' : 'Le propriétaire n’a jamais répondu'}</div>
+      <p class="info">${accord
+        ? `Dernier choix le ${quand(accord.cree_le)}.`
+        : 'Sans son accord, rien ne part chez le fournisseur d’IA.'}
+        ${accord?.consenti ? 'Chaque lundi, s’il a vendu, il reçoit l’analyse de sa semaine avec une notification.' : ''}</p>
+    </div>
+
+    <h3>Les analyses rendues</h3>
+    ${(analyses ?? []).length === 0 ? '<p class="info">Aucune analyse pour l’instant.</p>' : analyses.map((a) => `
+      <div class="carte">
+        <div class="nom">${quand(a.cree_le)} · ${a.jours} jours
+          ${a.automatique ? '<span class="etiquette ok">automatique</span>' : '<span class="etiquette accent">demandée</span>'}</div>
+        <p style="white-space:pre-wrap;margin:8px 0">${esc(a.texte)}</p>
+        <p class="info">${esc(a.modele)}${a.jetons_entree ? ` · ${a.jetons_entree} jetons lus, ${a.jetons_sortie ?? '?'} écrits` : ''}</p>
+      </div>`).join('')}
+    <p class="info" style="margin-top:16px">
+      Les chiffres envoyés au fournisseur sont anonymisés : ni le nom du commerce, ni ceux du personnel, ni les motifs tapés à la main.
+    </p>
+  `);
+  $('#retourFiche4').addEventListener('click', () => ficheCommerce(c));
 }
 
 // Combien de temps le stock restant tient au rythme constaté.
