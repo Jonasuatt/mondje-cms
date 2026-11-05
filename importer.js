@@ -35,10 +35,21 @@ export function decoderAnsi(octets) {
 }
 export const aDesCaracteresAbimes = (texte) => texte.includes('�');
 // Un nombre comme on l'écrit chez soi : « 1 500 », « 1.500 », « 1,5 », « 2000 F ».
-export function lireNombre(brut) {
+// `dec` est le nombre de décimales de la monnaie du commerce : 0 en franc ; 2 en cedi (« 12,50 » ou « 1,250.50 » donnent 1250 et 125050,
+// la plus petite unité). Sans décimales, un séparateur suivi de trois chiffres est un séparateur de milliers.
+export function lireNombre(brut, dec = 0) {
     const t = (brut ?? '').replace(/[^\d.,-]/g, '');
     if (!/\d/.test(t))
         return null;
+    if (dec > 0) {
+        const dernier = Math.max(t.lastIndexOf('.'), t.lastIndexOf(','));
+        const apres = dernier >= 0 ? t.slice(dernier + 1) : '';
+        // 1 à `dec` chiffres après le dernier séparateur : ce sont des décimales ; sinon, les séparateurs sont des milliers
+        const decimal = dernier >= 0 && apres.length >= 1 && apres.length <= dec;
+        const entier = (decimal ? t.slice(0, dernier) : t).replace(/[.,]/g, '');
+        const x = Number(decimal ? entier + '.' + apres : entier);
+        return Number.isFinite(x) ? Math.round(x * 10 ** dec) : null;
+    }
     // Trois chiffres après le séparateur : c'est un séparateur de milliers, pas une décimale.
     const n = /^-?\d{1,3}([.,]\d{3})+$/.test(t) ? Number(t.replace(/[.,]/g, '')) : Number(t.replace(',', '.'));
     return Number.isFinite(n) ? Math.round(n) : null;
@@ -77,7 +88,7 @@ const separateur = (ligne) => {
     const choix = [';', '\t', ','].map((c) => [c, compte(c)]).sort((a, b) => b[1] - a[1])[0];
     return choix[1] > 0 ? choix[0] : ';';
 };
-export function analyserImport(texte, existants = []) {
+export function analyserImport(texte, existants = [], dec = 0) {
     const vide = { valides: [], refus: [], entetes: false, tropLong: false, illisible: null };
     const lignes = texte.replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim().length > 0);
     if (!lignes.length)
@@ -93,7 +104,7 @@ export function analyserImport(texte, existants = []) {
     if (entetes && pos.prixVente < 0) {
         return { ...vide, entetes, illisible: 'Il manque la colonne du prix de vente (« Prix de vente »).' };
     }
-    if (!entetes && lireNombre(decouper(lignes[0], sep)[1]) === null) {
+    if (!entetes && lireNombre(decouper(lignes[0], sep)[1], dec) === null) {
         return { ...vide, illisible: 'Première ligne non reconnue : mets des en-têtes (Nom ; Prix de vente ; Stock…) ou prends le modèle.' };
     }
     const vus = new Set(existants.map(cleNom));
@@ -108,12 +119,12 @@ export function analyserImport(texte, existants = []) {
             return refuse('nom manquant ou trop court');
         if (nom.length > 80)
             return refuse('nom trop long (80 caractères au plus)');
-        const prixVente = lireNombre(c[pos.prixVente]);
+        const prixVente = lireNombre(c[pos.prixVente], dec);
         if (prixVente === null || prixVente <= 0)
             return refuse('prix de vente manquant ou invalide (il doit être supérieur à 0)');
         if (prixVente > 10000000)
             return refuse('prix de vente invraisemblable');
-        const prixAchat = pos.prixAchat >= 0 ? lireNombre(c[pos.prixAchat]) : null;
+        const prixAchat = pos.prixAchat >= 0 ? lireNombre(c[pos.prixAchat], dec) : null;
         if (prixAchat !== null && (prixAchat < 0 || prixAchat > 10000000))
             return refuse('prix d’achat invraisemblable');
         const stock = pos.stock >= 0 ? (lireNombre(c[pos.stock]) ?? 0) : 0;

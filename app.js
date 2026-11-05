@@ -24,6 +24,35 @@ const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const fcfa = (n) => String(n ?? 0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' F';
+
+// L'argent d'UN COMMERCE (ventes, prix, marges) s'écrit dans SA monnaie : en franc, tel quel ; au Ghana, en cedis avec deux décimales
+// (la base garde les pesewas : 12345 -> « 123,45 GH₵ »). Les montants de la plateforme (abonnements) restent en francs : fcfa().
+const MONNAIES_CMS = { GHS: { symbole: 'GH₵', dec: 2 } };
+const FRANC_CMS = { symbole: 'F', dec: 0 };
+let monnaieCommerce = FRANC_CMS;
+const monnaieDe = (code) => MONNAIES_CMS[code] ?? FRANC_CMS;
+const reglerMonnaie = (code) => { monnaieCommerce = monnaieDe(code); };
+const argent = (n, m = monnaieCommerce) => {
+  if (n == null) return '—';
+  const v = Number(n);
+  const f = 10 ** m.dec, a = Math.abs(v);
+  const entier = Math.floor(a / f);
+  const en = window.MONDJE_LANGUE === 'en';
+  const milliers = String(entier).replace(/\B(?=(\d{3})+(?!\d))/g, en && m.dec ? ',' : ' ');
+  const decimales = m.dec ? (en ? '.' : ',') + String(Math.round(a - entier * f)).padStart(m.dec, '0') : '';
+  return (v < 0 ? '-' : '') + milliers + decimales + ' ' + m.symbole;
+};
+// Ce que quelqu'un tape (« 12,50 ») devient la plus petite unité (1250) ; vide ou illisible -> NaN.
+const montantSaisi = (txt, m = monnaieCommerce) => {
+  const s = String(txt ?? '').replace(/[^\d.,-]/g, '');
+  if (!/\d/.test(s)) return NaN;
+  if (!m.dec) return parseInt(s, 10);
+  const dernier = Math.max(s.lastIndexOf('.'), s.lastIndexOf(','));
+  const apres = dernier >= 0 ? s.slice(dernier + 1) : '';
+  const decimal = dernier >= 0 && apres.length >= 1 && apres.length <= m.dec;
+  const entier = (decimal ? s.slice(0, dernier) : s).replace(/[.,]/g, '');
+  return Math.round(Number(decimal ? entier + '.' + apres : entier) * 10 ** m.dec);
+};
 const jour = (iso) => (iso ? new Date(iso).toLocaleDateString((window.MONDJE_LOCALE || 'fr-FR')) : '—');
 const quand = (iso) => new Date(iso).toLocaleString((window.MONDJE_LOCALE || 'fr-FR'),
   { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -200,6 +229,7 @@ function construireMenu() {
 
 async function aller(cle) {
   pageCourante = cle;
+  reglerMonnaie(null);
   $$('#nav .onglet').forEach((b) => b.classList.toggle('actif', b.dataset.page === cle));
   $('#titrePage').textContent = PAGES[cle].titre;
   $('#actionsPage').innerHTML = '';
@@ -478,7 +508,7 @@ function ficheDemande(d, doublon = false) {
 // qui échoue doit le dire.
 async function pageCommerces() {
   const { data, error } = await bd.from('structure')
-    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, actif, est_test, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, fonction, actif)')
+    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, devise, actif, est_test, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, fonction, actif)')
     .order('nom');
   if (error) throw error;
   // Les vrais clients d'abord (en vert), les comptes de test ensuite (en violet) : on ne confond plus un essai avec un client.
@@ -574,6 +604,7 @@ function ficheRejetee(d) {
 }
 
 async function ficheCommerce(c) {
+  reglerMonnaie(c.devise);
   const il_y_a_30 = new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10);
   const [etat, formules, paiements, interventions, visites] = await Promise.all([
     bd.from('abonnement_etat').select('*').eq('structure_id', c.id).maybeSingle(),
@@ -897,7 +928,7 @@ async function pageAbonnements() {
 
   brancherLignes(async (id) => {
     const { data: c } = await bd.from('structure')
-      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
+      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, devise, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
       .eq('id', id).single();
     ficheCommerce(c);
   });
@@ -928,6 +959,8 @@ function etatUsage(l) {
 
 async function pageUsage() {
   const { data } = await bd.from('usage_commerce').select('*');
+  const { data: monnaies } = await bd.from('structure').select('id, devise');
+  const deviseDe = new Map((monnaies ?? []).map((s) => [s.id, s.devise]));
   const lignes = (data ?? []).map((l) => ({ ...l, etat: etatUsage(l) }))
     .sort((a, b) => a.etat.rang - b.etat.rang || (b.ventes_30j - a.ventes_30j));
 
@@ -939,8 +972,8 @@ async function pageUsage() {
         esc(l.nom),
         esc(l.ville ?? '—'),
         l.derniere_vente ? jour(l.derniere_vente) : '—',
-        `<span class="n">${fcfa(l.ventes_7j)}</span>`,
-        `<span class="n">${fcfa(l.ventes_30j)}</span>`,
+        `<span class="n">${argent(l.ventes_7j, monnaieDe(deviseDe.get(l.structure_id)))}</span>`,
+        `<span class="n">${argent(l.ventes_30j, monnaieDe(deviseDe.get(l.structure_id)))}</span>`,
         `<span class="n">${l.factures_30j}</span>`,
         `${l.membres} pers.`,
         l.etat.html,
@@ -951,7 +984,7 @@ async function pageUsage() {
 
   brancherLignes(async (id) => {
     const { data: c } = await bd.from('structure')
-      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
+      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, devise, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
       .eq('id', id).single();
     ficheCommerce(c);
   });
@@ -1826,6 +1859,7 @@ const GRAVITE = { urgent: 'danger', attention: 'accent', info: '' };
 const CGU_COURANTE = '2026-10-b';
 
 async function ficheRapport(c, jours = 7) {
+  reglerMonnaie(c.devise);
   const { data: r, error } = await bd.rpc('rapport_commerce',
     { p_structure: c.id, p_jours: jours });
   if (error) return echoue(error);
@@ -1844,22 +1878,22 @@ async function ficheRapport(c, jours = 7) {
     <div class="grille">
       <div class="carte">
         <div class="info">Encaissé sur ${JOURS[jours] ?? jours + ' jours'}</div>
-        <div class="gros">${fcfa(r.ventes.total)}</div>
-        <div class="info">${r.ventes.factures} facture(s) · panier moyen ${fcfa(r.ventes.panier_moyen)}</div>
+        <div class="gros">${argent(r.ventes.total)}</div>
+        <div class="info">${r.ventes.factures} facture(s) · panier moyen ${argent(r.ventes.panier_moyen)}</div>
       </div>
       <div class="carte ${dortTotal > 0 ? 'accent' : ''}">
         <div class="info">Argent immobilisé en rayon</div>
-        <div class="gros">${fcfa(dortTotal)}</div>
+        <div class="gros">${argent(dortTotal)}</div>
         <div class="info">${r.dormants.length} produit(s) sans une seule vente</div>
       </div>
       <div class="carte ${(r.non_remis.montant ?? 0) > 0 ? 'danger' : ''}">
         <div class="info">Encaissé, pas encore remis à la caisse</div>
-        <div class="gros">${fcfa(r.non_remis.montant ?? 0)}</div>
+        <div class="gros">${argent(r.non_remis.montant ?? 0)}</div>
         <div class="info">${r.non_remis.vendeurs ?? 0} vendeur(s)</div>
       </div>
       ${margeTotale == null ? '' : `<div class="carte ok">
         <div class="info">Marge sur les dix meilleurs</div>
-        <div class="gros">${fcfa(margeTotale)}</div>
+        <div class="gros">${argent(margeTotale)}</div>
       </div>`}
     </div>
 
@@ -1878,8 +1912,8 @@ async function ficheRapport(c, jours = 7) {
         <tbody>${r.meilleurs.map((m) => `<tr>
           <td>${esc(m.nom)}</td>
           <td class="n">${m.quantite}</td>
-          <td class="n">${fcfa(m.montant)}</td>
-          <td class="n">${m.marge == null ? '<span class="info">—</span>' : fcfa(m.marge)}</td>
+          <td class="n">${argent(m.montant)}</td>
+          <td class="n">${m.marge == null ? '<span class="info">—</span>' : argent(m.marge)}</td>
           <td style="width:30%">${barre(m.montant / r.meilleurs[0].montant)}</td>
         </tr>`).join('')}</tbody>
       </table></div>`}
@@ -1892,7 +1926,7 @@ async function ficheRapport(c, jours = 7) {
           <td>${esc(d.nom)}</td>
           <td class="n">${d.quantite}</td>
           <td class="n">${d.jours_sans_vente} jour(s)</td>
-          <td class="n">${fcfa(d.valeur)}${d.au_prix_achat ? '' : ' <span class="info">à la vente</span>'}</td>
+          <td class="n">${argent(d.valeur)}${d.au_prix_achat ? '' : ' <span class="info">à la vente</span>'}</td>
         </tr>`).join('')}</tbody>
       </table></div>`}
 
@@ -1913,7 +1947,7 @@ async function ficheRapport(c, jours = 7) {
     ${r.heures.length === 0 ? '<p class="info">Aucune vente sur la période.</p>' : `
       <div class="tableau"><table><tbody>${r.heures.map((h) => `<tr>
         <td style="width:70px">${String(h.heure).padStart(2, '0')} h</td>
-        <td style="width:120px" class="n">${fcfa(h.montant)}</td>
+        <td style="width:120px" class="n">${argent(h.montant)}</td>
         <td>${barre(h.montant / Math.max(...r.heures.map((y) => y.montant)))}</td>
       </tr>`).join('')}</tbody></table></div>`}
 
@@ -1925,7 +1959,7 @@ async function ficheRapport(c, jours = 7) {
     ${r.ecarts.length === 0 ? '' : `<h3>Les écarts de caisse</h3>
       <div class="tableau"><table><tbody>${r.ecarts.map((e) => `<tr>
         <td>${quand(e.quand)}</td><td>${esc(e.qui)}</td>
-        <td class="n">${fcfa(e.ecart)}</td><td>${esc(e.motif ?? '')}</td>
+        <td class="n">${argent(e.ecart)}</td><td>${esc(e.motif ?? '')}</td>
       </tr>`).join('')}</tbody></table></div>`}
 
     <p class="info" style="margin-top:20px">
@@ -1996,6 +2030,7 @@ function tenue(x, jours) {
 // gagne une soirée, et nous gagnons un client qui démarre vraiment.
 
 async function ficheCarte(c) {
+  reglerMonnaie(c.devise);
   const [produits, stock, rubriques] = await Promise.all([
     bd.from('produit').select('id, nom, prix_vente, prix_achat, unite, actif, categorie')
       .eq('structure_id', c.id).order('nom'),
@@ -2037,8 +2072,8 @@ async function ficheCarte(c) {
              return entete + `<tr>
                <td>${esc(p.nom)}${p.actif ? '' : ' <span class="info">· retiré de la carte</span>'}
                    <div class="info">${esc(p.unite)}</div></td>
-               <td class="n">${p.prix_achat == null ? '<span class="info">—</span>' : fcfa(p.prix_achat)}</td>
-               <td class="n">${p.prix_vente ? fcfa(p.prix_vente) : '<span class="etiquette accent">prix à saisir</span>'}</td>
+               <td class="n">${p.prix_achat == null ? '<span class="info">—</span>' : argent(p.prix_achat)}</td>
+               <td class="n">${p.prix_vente ? argent(p.prix_vente) : '<span class="etiquette accent">prix à saisir</span>'}</td>
                <td class="n">${marge(p)}</td>
                <td class="n">${quantites.get(p.id) ?? 0}</td>
                <td class="n"><input data-entree="${esc(p.id)}" type="number" min="1"
@@ -2079,6 +2114,7 @@ async function ficheCarte(c) {
 // dans l'application (cms/importer.js est compilé depuis maquis/src/importer.ts) : on lit, on montre ce qui passe et ce qui est refusé,
 // puis seulement on écrit. Le fichier ne quitte pas ce navigateur : seules les lignes valides partent vers le serveur.
 async function ficheImportFichier(c) {
+  reglerMonnaie(c.devise);
   const importeur = await import('./importer.js');
   const { data: existants } = await bd.from('produit').select('nom').eq('structure_id', c.id);
   let analyse = null;
@@ -2107,7 +2143,7 @@ async function ficheImportFichier(c) {
     const octets = new Uint8Array(await fichier.arrayBuffer());
     let texte = new TextDecoder('utf-8').decode(octets);
     if (importeur.aDesCaracteresAbimes(texte)) texte = importeur.decoderAnsi(octets);   // Excel français : Windows-1252
-    analyse = importeur.analyserImport(texte, (existants ?? []).map((p) => p.nom));
+    analyse = importeur.analyserImport(texte, (existants ?? []).map((p) => p.nom), monnaieCommerce.dec);
     const a = analyse;
     if (a.illisible) { $('#apercuImport').innerHTML = `<p class="erreur">${esc(a.illisible)}</p>`; return; }
     $('#apercuImport').innerHTML = `
@@ -2118,7 +2154,7 @@ async function ficheImportFichier(c) {
       ${a.valides.length ? `<div class="tableau"><table>
         <thead><tr><th>Produit</th><th>Unité</th><th class="n">Vente</th><th class="n">Achat</th><th class="n">Stock</th></tr></thead>
         <tbody>${a.valides.slice(0, 60).map((l) => `<tr><td>${esc(l.nom)}</td><td>${esc(l.unite)}</td>
-          <td class="n">${fcfa(l.prixVente)}</td><td class="n">${l.prixAchat == null ? '—' : fcfa(l.prixAchat)}</td><td class="n">${l.stock}</td></tr>`).join('')}</tbody>
+          <td class="n">${argent(l.prixVente)}</td><td class="n">${l.prixAchat == null ? '—' : argent(l.prixAchat)}</td><td class="n">${l.stock}</td></tr>`).join('')}</tbody>
       </table></div>${a.valides.length > 60 ? `<p class="info">… et ${a.valides.length - 60} autre(s).</p>` : ''}` : ''}
       ${a.refus.length ? `<h3>Refusées</h3><div class="tableau"><table><tbody>${a.refus.slice(0, 60).map((r) =>
         `<tr><td>ligne ${r.ligne}</td><td>${esc(r.nom)}</td><td class="info">${esc(r.raison)}</td></tr>`).join('')}</tbody></table></div>` : ''}
@@ -2152,7 +2188,7 @@ function marge(p) {
   if (p.prix_achat == null || !p.prix_vente) return '<span class="info">—</span>';
   const gain = p.prix_vente - p.prix_achat;
   const part = Math.round((gain / p.prix_vente) * 100);
-  return `${fcfa(gain)} <span class="info">${part} %</span>`;
+  return `${argent(gain)} <span class="info">${part} %</span>`;
 }
 
 // Le catalogue, filtré par rubrique : deux cent cinquante lignes d'un coup ne
@@ -2160,6 +2196,7 @@ function marge(p) {
 // `choix` : l'activité que l'équipe a choisie dans la liste (un commerce peut tenir plusieurs métiers) ; à défaut, celle de son type
 // (les mêmes règles que l'application, maquis/src/activites.ts).
 async function ficheCatalogueCommerce(c, choix) {
+  reglerMonnaie(c.devise);
   const activite = choix ?? ({ restauration: 'bar_maquis', marche: 'marche', vente_directe: 'marche' }[c.type_commerce] ?? 'boutique');
   const [articles, deja] = await Promise.all([
     bd.from('catalogue_produit')
@@ -2227,10 +2264,10 @@ async function ficheCatalogueCommerce(c, choix) {
           courante = lib;
           return entete + `<tr>
             <td>${esc(nomComplet(a))}<div class="info">${esc(a.unite)}</div></td>
-            <td class="n"><input data-achat="${esc(a.id)}" type="number" min="0"
+            <td class="n"><input data-achat="${esc(a.id)}" type="number" min="0" step="any"
                   placeholder="Achat" value="${esc(achats.get(a.id) ?? '')}"
                   style="width:100px;text-align:right" /></td>
-            <td class="n"><input data-prix="${esc(a.id)}" type="number" min="0"
+            <td class="n"><input data-prix="${esc(a.id)}" type="number" min="0" step="any"
                   placeholder="Vente" value="${esc(prix.get(a.id) ?? '')}"
                   style="width:100px;text-align:right" /></td>
           </tr>`;
@@ -2257,10 +2294,10 @@ async function ficheCatalogueCommerce(c, choix) {
     garderPrix();
     const produits = [...prix.entries()]
       .map(([catalogue_id, v]) => {
-        const achat = parseInt(achats.get(catalogue_id), 10);
+        const achat = montantSaisi(achats.get(catalogue_id));
         return {
           catalogue_id,
-          prix: parseInt(v, 10),
+          prix: montantSaisi(v),
           ...(Number.isInteger(achat) ? { prix_achat: achat } : {}),
         };
       })
@@ -2293,6 +2330,7 @@ const GENRES = {
 };
 
 async function ficheActivite(c) {
+  reglerMonnaie(c.devise);
   const { data, error } = await bd.from('activite_commerce')
     .select('*').eq('structure_id', c.id).order('quand', { ascending: false }).limit(300);
   if (error) return echoue(error);
@@ -2321,7 +2359,7 @@ async function ficheActivite(c) {
              <td>${esc(GENRES[l.genre] ?? l.genre)}</td>
              <td>${esc(l.qui)}</td>
              <td>${esc(ACTIONS[l.resume] ?? l.resume)}</td>
-             <td class="n">${l.montant == null ? '' : fcfa(l.montant)}</td>
+             <td class="n">${l.montant == null ? '' : argent(l.montant)}</td>
            </tr>`).join('')}</tbody>
          </table></div>
          <p class="info">${vus.length} évènement(s), du plus récent au plus ancien.</p>`;
