@@ -24,8 +24,8 @@ const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const fcfa = (n) => String(n ?? 0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' F';
-const jour = (iso) => (iso ? new Date(iso).toLocaleDateString('fr-FR') : '—');
-const quand = (iso) => new Date(iso).toLocaleString('fr-FR',
+const jour = (iso) => (iso ? new Date(iso).toLocaleDateString((window.MONDJE_LOCALE || 'fr-FR')) : '—');
+const quand = (iso) => new Date(iso).toLocaleString((window.MONDJE_LOCALE || 'fr-FR'),
   { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 const TYPE_COMMERCE = {
@@ -478,7 +478,7 @@ function ficheDemande(d, doublon = false) {
 // qui échoue doit le dire.
 async function pageCommerces() {
   const { data, error } = await bd.from('structure')
-    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, est_test, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, fonction, actif)')
+    .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, actif, est_test, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, fonction, actif)')
     .order('nom');
   if (error) throw error;
   // Les vrais clients d'abord (en vert), les comptes de test ensuite (en violet) : on ne confond plus un essai avec un client.
@@ -796,7 +796,7 @@ const NIVEAUX = { essentiel: 'Essentiel', intermediaire: 'Intermédiaire', compl
 // « 19/10/2026 à 14:32:05 » : la seconde sert à retrouver le paiement dans le compte Wave marchand.
 const avecSecondes = (iso) => {
   const d = new Date(iso);
-  return `${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+  return `${d.toLocaleDateString((window.MONDJE_LOCALE || 'fr-FR'))} à ${d.toLocaleTimeString((window.MONDJE_LOCALE || 'fr-FR'), { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
 };
 
 async function pageAbonnements() {
@@ -897,7 +897,7 @@ async function pageAbonnements() {
 
   brancherLignes(async (id) => {
     const { data: c } = await bd.from('structure')
-      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
+      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
       .eq('id', id).single();
     ficheCommerce(c);
   });
@@ -951,7 +951,7 @@ async function pageUsage() {
 
   brancherLignes(async (id) => {
     const { data: c } = await bd.from('structure')
-      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
+      .select('id, nom, code, type_commerce, taille_boutique, ville, commune, telephone, telephone_fixe, pays, actif, formule, abonnement_actif_jusquau, cree_le, membre!membre_structure_id_fkey(id, nom, code_employe, roles, actif)')
       .eq('id', id).single();
     ficheCommerce(c);
   });
@@ -2336,6 +2336,33 @@ async function ficheActivite(c) {
 // Le montant de l'abonnement n'est pas écrit ici : il s'affiche dans l'application avant tout paiement.
 function messageBienvenue(d) {
   const prenom = String(d.nom_proprietaire ?? '').trim().split(/\s+/)[0];
+  if (d.pays === 'GH') {
+    return `Hello${prenom ? ` ${prenom}` : ''}, welcome to Mon Djê! 🎉
+Your request for “${d.nom_commerce}” has been accepted.
+
+🎁 Your first month is free. If you then use Mon Djê regularly, you keep a launch rate at half price. The amount is always shown before any payment.
+
+To get started (5 minutes):
+
+1️⃣ Install the app on your Android phone (version 7 or newer), from the Play Store:
+https://play.google.com/store/apps/details?id=ci.mondje.app
+No Play Store on your phone? Use the page https://mondje.ci/telecharger/?lang=en (Chrome may show “Potentially dangerous file”: tap “Download anyway”, then “Install anyway”, not “OK”).
+⚠️ Only install the app from the Play Store or from mondje.ci: a file received from elsewhere can be a fake copy that steals your codes.
+
+2️⃣ Open the app. I will send you your business code, your employee no. and your temporary secret code in another message.
+
+3️⃣ Change your secret code (Profile → Change my code), then read and accept the terms of use.
+
+4️⃣ Add your products: choose them from the Mon Djê catalogue, enter them one by one, or import your Excel list with our template (https://mondje.ci/modeles/). Then create one account for each person on your team (the “Staff” button on your home screen): your business code is also given to your staff so they can sign in.
+
+📖 The step-by-step guide, by role: https://mondje.ci/guide/?lang=en
+
+A question? Reply here or write to us on WhatsApp: +225 05 65 75 03 03.
+An idea to improve Mon Djê? https://mondje.ci/propositions/?lang=en
+
+Good luck and good sales!
+The Mon Djê team`;
+  }
   return `Bonjour${prenom ? ` ${prenom}` : ''}, bienvenue sur Mon Djê ! 🎉
 Ta demande pour « ${d.nom_commerce} » est acceptée.
 
@@ -2365,6 +2392,15 @@ L'équipe Mon Djê`;
 
 function messageIdentifiants(d, codeCommerce, codeEmploye, codeSecret) {
   const prenom = String(d.nom_proprietaire ?? '').trim().split(/\s+/)[0];
+  if (d.pays === 'GH') {
+    return `${prenom ? `${prenom}, here are` : 'Here are'} your Mon Djê sign-in details for “${d.nom_commerce}”:
+
+• Business code: ${codeCommerce}
+• Employee no.: ${codeEmploye}
+• Temporary secret code: ${codeSecret}
+
+Change this secret code as soon as you first sign in (Profile → Change my code). Do not give it to anyone, not even to us: Mon Djê will never ask you for it.`;
+  }
   return `${prenom ? `${prenom}, voici` : 'Voici'} tes identifiants Mon Djê pour « ${d.nom_commerce} » :
 
 • Code commerce : ${codeCommerce}
@@ -2378,7 +2414,12 @@ Change ce code secret dès ta première connexion (Profil → Changer mon code s
 // nous ni dans la base. Cette page est le seul endroit où on le voit, d'où le
 // message tout prêt à envoyer au commerçant avant de quitter l'écran.
 function montrerCode(commerce, r) {
-  const message =
+  const message = commerce.pays === 'GH'
+    ? `${r.membre}, your Mon Djê secret code for “${r.structure}” has been reset.\n\n`
+      + `• Business code: ${r.code_commerce}\n• Employee no.: ${r.code_employe}\n• New secret code: ${r.code_secret}\n\n`
+      + `Your old code no longer works. Change this one as soon as you sign in (Profile → Change my code).\n`
+      + `If you did not ask for this, let us know right away.`
+    :
     `${r.membre}, ton code secret Mon Djê pour « ${r.structure} » a été réinitialisé.
 
 `

@@ -7,9 +7,9 @@
   var champ = document.getElementById('code');
   var sortie = document.getElementById('resultat');
 
-  var nombre = new Intl.NumberFormat('fr-FR');
+  var nombre = new Intl.NumberFormat((window.MONDJE_LOCALE || 'fr-FR'));
   function fcfa(n) { return nombre.format(n || 0).replace(/ | /g, ' ') + ' F'; }
-  function jour(iso) { var d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Abidjan' }); }
+  function jour(iso) { var d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString((window.MONDJE_LOCALE || 'fr-FR'), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Abidjan' }); }
   var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
   function libelleMois(m) { var p = String(m).split('-'); return (MOIS[Number(p[1]) - 1] || m) + ' ' + p[0]; }
 

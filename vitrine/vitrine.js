@@ -123,9 +123,37 @@ const uneLigne = (t, max = 160) => {
 const aujourdhui = () => new Date().toLocaleDateString('sv-SE'); // AAAA-MM-JJ, à l'heure du téléphone
 const jourLisible = (jour) => {
   const [y, m, d] = jour.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(y, m - 1, d).toLocaleDateString((window.MONDJE_LOCALE || 'fr-FR'), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 };
-const heureLisible = (heure) => { const [hh, mm] = heure.split(':'); return `${Number(hh)} h ${mm}`; };
+const heureLisible = (heure) => { const [hh, mm] = heure.split(':'); return window.MONDJE_LANGUE === 'en' ? `${hh}:${mm}` : `${Number(hh)} h ${mm}`; };
+
+// Le message part au commerçant dans la langue du client : anglais si la page est en anglais, français sinon.
+const MESSAGES_EN = [
+  [', je souhaite faire une réservation :', ', I would like to make a booking:'],
+  [', je souhaite prendre rendez-vous :', ', I would like to make an appointment:'],
+  [', je souhaite commander :', ', I would like to order:'],
+  [' ! Je souhaite participer à l’événement ', ' ! I would like to take part in the event '],
+  ['à l’affiche', 'featured'],
+  ['Vous confirmez votre présence ? Oui', 'Do you confirm your attendance? Yes'],
+  ['Merci de me confirmer.', 'Please confirm.'],
+  ['Prix à confirmer.', 'Price to be confirmed.'],
+  ['• Nombre de personnes :', '• Number of people:'],
+  ['• Acompte versé :', '• Deposit paid:'],
+  ['(capture envoyée)', '(screenshot sent)'],
+  ['• Spécialité :', '• Speciality:'],
+  ['• Téléphone :', '• Phone:'],
+  ['• Commande :', '• Order:'],
+  ['• Produit :', '• Product:'],
+  ['• Nombre :', '• Number:'],
+  ['• Motif :', '• Reason:'],
+  ['• Heure :', '• Time:'],
+  ['• Jour :', '• Day:'],
+  ['• Nom :', '• Name:'],
+  ['• Avec :', '• With:'],
+  ['Total :', 'Total:'],
+  ['Bonjour ', 'Hello '],
+];
+const msgLangue = (m) => (window.MONDJE_LANGUE === 'en' ? MESSAGES_EN.reduce((s, [fr, en]) => s.split(fr).join(en), m) : m);
 
 // Les champs, les mêmes partout : un questionnaire n'est qu'une liste de champs.
 const CHAMPS = {
@@ -228,8 +256,9 @@ async function envoyerReservation() {
     try { capture = await lireCapture(fichier); } catch { return erreur('Cette image ne peut pas être lue. Essayez une autre capture.'); }
   }
 
-  const message = `Bonjour ${page.nom}, je souhaite faire une réservation :\n\n• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}\n• Nombre de personnes : ${nombre}\n• Nom : ${nom}`
+  let message = `Bonjour ${page.nom}, je souhaite faire une réservation :\n\n• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}\n• Nombre de personnes : ${nombre}\n• Nom : ${nom}`
     + `${montant ? `\n• Acompte versé : ${fcfa(montant)} (capture envoyée)` : ''}\n\nMerci de me confirmer.`;
+  message = msgLangue(message);
   envoiEnCours = true;
   const bouton = document.querySelector('[data-envoyer]');
   if (bouton) bouton.disabled = true;
@@ -366,9 +395,10 @@ function envoyerCommande() {
   });
   const nom = uneLigne(lire('fNom'), 80);
   const tel = lire('fTel').trim();
-  const message = `Bonjour ${page.nom}, je souhaite commander :\n\n${lignes.join('\n')}\n\n`
+  let message = `Bonjour ${page.nom}, je souhaite commander :\n\n${lignes.join('\n')}\n\n`
     + `${prixConnus ? `Total : ${fcfa(total)}` : 'Prix à confirmer.'}\n`
     + `• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}${nom ? `\n• Nom : ${nom}` : ''}\n\nMerci de me confirmer.`;
+  message = msgLangue(message);
   enregistrerDemande({ type: 'commande', nom, tel, texte: message, jour, heure });
   ouvrirWhatsApp(message);
   fermerModale();
@@ -424,9 +454,10 @@ function envoyerRendezVous() {
   if (nom.length < 2) return erreur('Indiquez votre nom.');
   if (tel.replace(/\D/g, '').length < 8) return erreur('Indiquez votre numéro de téléphone.');
 
-  const message = `Bonjour ${page.nom}, je souhaite prendre rendez-vous :\n\n`
+  let message = `Bonjour ${page.nom}, je souhaite prendre rendez-vous :\n\n`
     + `${specialite ? `• Spécialité : ${specialite}\n` : ''}${praticien ? `• Avec : ${praticien}\n` : ''}`
     + `• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}\n• Nom : ${nom}\n• Téléphone : ${tel}${motif ? `\n• Motif : ${motif}` : ''}\n\nMerci de me confirmer.`;
+  message = msgLangue(message);
   enregistrerDemande({ type: 'rendez_vous', nom, tel, texte: message, jour, heure, specialite, praticien });
   ouvrirWhatsApp(message);
   fermerModale();
@@ -468,6 +499,7 @@ function envoyerDemande() {
     message = `Bonjour ${page.nom}, je souhaite commander : ${nom}.\n\n• Produit : ${nom}\n• Jour : ${jourLisible(jour)}\n• Heure : ${heureLisible(heure)}\n• Commande : ${commande}\n• Nombre : ${nombre}\n\nMerci de me confirmer.`;
   }
   if (nomClient) message = message.replace('\n\nMerci de me confirmer.', `\n• Nom : ${nomClient}\n\nMerci de me confirmer.`);
+  message = msgLangue(message);
   enregistrerDemande({ type: demande.type, nom: nomClient, tel: telClient, texte: message, jour: jour || null, heure: heure || null });
   ouvrirWhatsApp(message);
   fermerModale();
@@ -600,7 +632,7 @@ async function demarrer() {
     ${numero ? `<a class="appel" href="https://wa.me/${numero}" target="_blank" rel="noopener">
       Écrire sur WhatsApp</a>` : ''}
     ${c.telephone ? `<a class="appel tel" href="tel:${esc(c.telephone)}">
-      Appeler ${esc(c.telephone)}</a>` : ''}
+      ${window.MONDJE_LANGUE === 'en' ? 'Call' : 'Appeler'} ${esc(c.telephone)}</a>` : ''}
 
     ${numero && page.equipe.length ? '<button type="button" class="appel reserver" data-rdv>Prendre rendez-vous</button>' : ''}
     ${numero && !page.equipe.length ? '<button type="button" class="appel reserver" data-reserver>Réserver</button>' : ''}
