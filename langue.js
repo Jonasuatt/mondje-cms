@@ -16,6 +16,12 @@
   var CLE = 'mondje_langue';
   var racine = document.documentElement;
 
+  // Le site gère lui-même ses deux langues : le navigateur ne doit pas retraduire la page (Chrome en français retraduirait l'anglais en français).
+  racine.setAttribute('translate', 'no');
+  var nt = document.createElement('meta');
+  nt.name = 'google'; nt.content = 'notranslate';
+  document.head.appendChild(nt);
+
   // 1. La langue --------------------------------------------------------------------------------------------------------
   var demandee = null;
   try {
