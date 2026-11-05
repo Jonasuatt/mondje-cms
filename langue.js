@@ -148,7 +148,7 @@
   var faits = typeof WeakMap === 'function' ? new WeakMap() : null;
 
   function exclu(el) {
-    for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+    for (var e = el; e && e.nodeType === 1 && e !== racine; e = e.parentNode) {   // la page entière est marquée translate=no (pour le navigateur) : on s'arrête avant
       if (SANS[e.nodeName]) return true;
       if (e.getAttribute && (e.getAttribute('translate') === 'no' || e.hasAttribute('data-no-trad'))) return true;
       if (e.isContentEditable) return true;
