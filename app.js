@@ -348,6 +348,12 @@ async function pageDossiers() {
     .order('cree_le', { ascending: false }).limit(200);
   const demandes = data ?? [];
 
+  // Deux demandes en attente pour le même commerce (même nom, même ville, même numéro) : sans doute une demande envoyée deux fois.
+  const cle = (d) => [d.nom_commerce, d.ville].map((x) => String(x ?? '').trim().toLowerCase()).join('|') + '|' + String(d.telephone ?? '').replace(/\D/g, '');
+  const comptes = {};
+  demandes.forEach((d) => { comptes[cle(d)] = (comptes[cle(d)] ?? 0) + 1; });
+  const doublon = (d) => comptes[cle(d)] > 1;
+
   $('#page').innerHTML = tableau(
     ['Commerce', 'Type', 'Ville', 'Propriétaire', 'Reçue le', 'État'],
     demandes.map((d) => ({
@@ -358,20 +364,23 @@ async function pageDossiers() {
         esc(d.commune ? `${d.ville} — ${d.commune}` : d.ville),
         `${esc(d.nom_proprietaire)}<div class="info">${esc(d.telephone)}</div>`,
         jour(d.cree_le),
-        d.statut === 'en_attente' ? '<span class="etiquette accent">En attente</span>'
+        (d.statut === 'en_attente' ? '<span class="etiquette accent">En attente</span>'
           : d.statut === 'acceptee' ? '<span class="etiquette ok">Acceptée</span>'
-          : '<span class="etiquette danger">Refusée</span>',
+          : '<span class="etiquette danger">Refusée</span>')
+          + (doublon(d) ? ' <span class="etiquette danger">Doublon possible</span>' : ''),
       ],
     })),
     'Aucune demande en attente.'
   );
 
-  brancherLignes((id) => ficheDemande(demandes.find((d) => d.id === id)));
+  brancherLignes((id) => ficheDemande(demandes.find((d) => d.id === id), doublon(demandes.find((d) => d.id === id))));
 }
 
-function ficheDemande(d) {
+function ficheDemande(d, doublon = false) {
   const enAttente = d.statut === 'en_attente';
   ouvrirPanneau(d.nom_commerce, `
+    ${doublon ? `<div class="carte danger"><div class="nom">Doublon possible</div>
+      <p class="info">Une autre demande en attente porte le même nom de commerce, la même ville et le même numéro. Accepte-en une seule, et refuse l'autre avec le motif « envoyée deux fois ».</p></div>` : ''}
     ${champLecture('Type', TYPE_COMMERCE[d.type_commerce] ?? d.type_commerce)}
     ${d.taille_boutique ? champLecture('Taille', TAILLE_BOUTIQUE[d.taille_boutique] ?? d.taille_boutique) : ''}
     ${champLecture('Ville', d.commune ? `${d.ville} — ${d.commune}` : d.ville)}
