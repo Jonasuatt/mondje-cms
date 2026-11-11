@@ -19,6 +19,14 @@ const bd = supabase.createClient(URL_SUPABASE, CLE_PUBLIQUE);
 // l'application porte « apercu »), et les robots — un aperçu de lien WhatsApp ne
 // lance pas de JavaScript, mais un moteur de recherche, si.
 const parametres = new URLSearchParams(location.search);
+
+// L'unité de vente est écrite en français par le commerce : en anglais, les plus courantes s'affichent traduites (le reste est laissé tel quel).
+const UNITES_EN = { bouteille: 'bottle', canette: 'can', assiette: 'plate', 'pièce': 'piece', portion: 'portion', sachet: 'sachet', paquet: 'packet', carton: 'carton', sac: 'bag', tas: 'pile', 'boîte': 'box', brochette: 'skewer', tranche: 'slice', botte: 'bunch', verre: 'glass', 'fût': 'keg', casier: 'crate', litre: 'litre', article: 'item', 'unité': 'unit', dose: 'dose', tasse: 'cup', bol: 'bowl' };
+function uniteAff(u) {
+  if (window.MONDJE_LANGUE !== 'en' || !u) return u;
+  return UNITES_EN[String(u).trim().toLowerCase()] ?? u;
+}
+
 const apercu = parametres.has('apercu');
 const robot = navigator.webdriver
   || /bot|crawl|spider|preview|headless|lighthouse/i.test(navigator.userAgent);
@@ -355,7 +363,7 @@ function rafraichirListe() {
     const n = panier.get(i) ?? 0;
     return `
       <div class="ligne-produit${n ? ' choisi' : ''}">
-        <div class="np"><span>${esc(a.nom)}</span><small>${esc(a.unite ?? '')}</small></div>
+        <div class="np"><span>${esc(a.nom)}</span><small>${esc(uniteAff(a.unite ?? ''))}</small></div>
         ${a.prix != null ? `<div class="pp">${fcfa(a.prix)}</div>` : ''}
         <div class="qte">
           <button type="button" data-moins="${i}" aria-label="Retirer un ${esc(a.nom)}" ${n ? '' : 'disabled'}>−</button>
@@ -654,7 +662,7 @@ async function demarrer() {
             <div class="article">
               <div>
                 <div>${esc(a.nom)}</div>
-                <div class="unite">${esc(a.unite)}</div>
+                <div class="unite">${esc(uniteAff(a.unite))}</div>
               </div>
               ${a.prix == null ? '' : `<div class="prix">${fcfa(a.prix)}</div>`}
             </div>`;
