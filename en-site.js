@@ -1710,5 +1710,16 @@ window.MONDJE_EN = {
 "… et": "… and",
 "… préparation": "… preparing",
 "↗ Partager": "↗ Share",
-"▶ Vidéo :": "▶ Video:"
+"▶ Vidéo :": "▶ Video:",
+"Présentation": "Presentation",
+"Présentation de Mon Djê": "Mon Djê presentation",
+"Mon Djê en vidéo": "Mon Djê on video",
+"Une seule vidéo pour comprendre, en quelques minutes, ce que fait Mon Djê : l’argent et le stock ne se perdent plus entre le vendeur, la caisse et le propriétaire. Pensée pour les propriétaires de commerce, et pour toute personne ou organisation qui veut comprendre le projet.": "One video to understand, in a few minutes, what Mon Djê does: money and stock are no longer lost between the seller, the till and the owner. Made for business owners, and for anyone or any organisation who wants to understand the project.",
+"Version complète": "Full version",
+"Version courte": "Short version",
+"Toutes les étapes : une journée de travail, les rapports, les secteurs, les fonctions pour ceux qui lisent peu, le portefeuille personnel et la page publique du commerce.": "All the steps: a working day, the reports, the sectors, the features for people who read little, the personal wallet and the business’s public page.",
+"L’essentiel en moins de trois minutes, à partager.": "The essentials in under three minutes, easy to share.",
+"Version verticale (9:16), pour le téléphone et les réseaux sociaux": "Vertical version (9:16), for phones and social media",
+"Pour apprendre chaque geste, rôle par rôle :": "To learn each step, role by role:",
+"Voir la vidéo de présentation de Mon Djê, en français et en anglais, avec sous-titres.": "Watch the Mon Djê presentation video, in French and in English, with subtitles."
 };
