@@ -2,6 +2,62 @@
  "version": 1,
  "videos": [
   {
+   "n": 201,
+   "role": "Pas à pas",
+   "titre": "Remplir le formulaire d’enregistrement",
+   "description": "Huit étapes pour demander l’ouverture de son commerce, champ par champ.",
+   "video": "v/f201.mp4",
+   "affiche": "v/f201.webp"
+  },
+  {
+   "n": 202,
+   "role": "Pas à pas",
+   "titre": "Créer le compte d’un employé",
+   "description": "Le nom, le rôle, le code provisoire à lui envoyer avant de quitter l’écran.",
+   "video": "v/f202.mp4",
+   "affiche": "v/f202.webp"
+  },
+  {
+   "n": 203,
+   "role": "Pas à pas",
+   "titre": "Ouvrir la caisse le matin",
+   "description": "Compter l’argent du tiroir, l’écrire, ouvrir la journée.",
+   "video": "v/f203.mp4",
+   "affiche": "v/f203.webp"
+  },
+  {
+   "n": 204,
+   "role": "Pas à pas",
+   "titre": "Prendre et encaisser une commande à une table",
+   "description": "La table, les produits, la validation, l’argent déclaré à la caisse.",
+   "video": "v/f204.mp4",
+   "affiche": "v/f204.webp"
+  },
+  {
+   "n": 205,
+   "role": "Pas à pas",
+   "titre": "Valider un paiement et éditer la facture",
+   "description": "La caisse vérifie le montant reçu, valide et édite la facture.",
+   "video": "v/f205.mp4",
+   "affiche": "v/f205.webp"
+  },
+  {
+   "n": 206,
+   "role": "Pas à pas",
+   "titre": "Fermer la caisse le soir",
+   "description": "Compter les espèces, expliquer un écart, remettre l’argent.",
+   "video": "v/f206.mp4",
+   "affiche": "v/f206.webp"
+  },
+  {
+   "n": 207,
+   "role": "Pas à pas",
+   "titre": "Confirmer l’argent remis par la caisse",
+   "description": "Le propriétaire compte ce qu’il reçoit et confirme la remise.",
+   "video": "v/f207.mp4",
+   "affiche": "v/f207.webp"
+  },
+  {
    "n": 1,
    "role": "Démarrer",
    "titre": "Demander l’ouverture de son commerce",
