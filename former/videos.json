@@ -58,6 +58,206 @@
    "affiche": "v/f207.webp"
   },
   {
+   "n": 208,
+   "role": "Pas à pas · Élevage",
+   "titre": "Ouvrir une bande ou un troupeau",
+   "description": "Choisir l’élevage, le nommer, choisir le suivi, ouvrir la fiche.",
+   "video": "v/f208.mp4",
+   "affiche": "v/f208.webp"
+  },
+  {
+   "n": 209,
+   "role": "Pas à pas · Élevage",
+   "titre": "Noter le journal du jour",
+   "description": "Un mort, des sorties, des entrées : noter ce qui s’est passé le jour même.",
+   "video": "v/f209.mp4",
+   "affiche": "v/f209.webp"
+  },
+  {
+   "n": 210,
+   "role": "Pas à pas · Élevage",
+   "titre": "Noter les œufs du jour",
+   "description": "Les œufs ramassés, les œufs cassés, et le taux de ponte.",
+   "video": "v/f210.mp4",
+   "affiche": "v/f210.webp"
+  },
+  {
+   "n": 211,
+   "role": "Pas à pas · Élevage",
+   "titre": "Prévoir un soin et le noter",
+   "description": "Prévoir le soin, recevoir le rappel, noter qu’il est fait, le délai avant vente.",
+   "video": "v/f211.mp4",
+   "affiche": "v/f211.webp"
+  },
+  {
+   "n": 212,
+   "role": "Pas à pas · Élevage",
+   "titre": "Fixer une vente visée avant une fête",
+   "description": "La date de la fête, le préavis, et le rappel avec le nombre d’animaux en vie.",
+   "video": "v/f212.mp4",
+   "affiche": "v/f212.webp"
+  },
+  {
+   "n": 213,
+   "role": "Pas à pas · Élevage",
+   "titre": "Suivre une femelle, de la saillie au sevrage",
+   "description": "La saillie, la mise bas, les petits, le sevrage : tout sur une seule fiche.",
+   "video": "v/f213.mp4",
+   "affiche": "v/f213.webp"
+  },
+  {
+   "n": 214,
+   "role": "Pas à pas · Élevage",
+   "titre": "Compter la bande à l’aveugle",
+   "description": "Compter sans voir le chiffre attendu, puis voir l’écart et sa raison.",
+   "video": "v/f214.mp4",
+   "affiche": "v/f214.webp"
+  },
+  {
+   "n": 215,
+   "role": "Pas à pas · Mobile Money",
+   "titre": "Ajouter le compte d’un opérateur",
+   "description": "Choisir l’opérateur, écrire le float de départ, ajouter le compte.",
+   "video": "v/f215.mp4",
+   "affiche": "v/f215.webp"
+  },
+  {
+   "n": 216,
+   "role": "Pas à pas · Mobile Money",
+   "titre": "Noter un dépôt",
+   "description": "Le client dépose de l’argent : le montant, les frais, la référence de l’opérateur.",
+   "video": "v/f216.mp4",
+   "affiche": "v/f216.webp"
+  },
+  {
+   "n": 217,
+   "role": "Pas à pas · Mobile Money",
+   "titre": "Noter un retrait",
+   "description": "Le client retire de l’argent : le montant, la référence, ce que devient le float.",
+   "video": "v/f217.mp4",
+   "affiche": "v/f217.webp"
+  },
+  {
+   "n": 218,
+   "role": "Pas à pas · Mobile Money",
+   "titre": "Annuler une ligne",
+   "description": "Une ligne ne s’efface jamais : on l’annule avec une raison.",
+   "video": "v/f218.mp4",
+   "affiche": "v/f218.webp"
+  },
+  {
+   "n": 219,
+   "role": "Pas à pas · Mobile Money",
+   "titre": "Compter le solde de mon opérateur",
+   "description": "Comparer le solde de l’application de l’opérateur à celui de Mon Djê.",
+   "video": "v/f219.mp4",
+   "affiche": "v/f219.webp"
+  },
+  {
+   "n": 220,
+   "role": "Pas à pas · Mobile Money",
+   "titre": "Acheter du float",
+   "description": "Recharger son float : le montant, les frais, la commission reçue.",
+   "video": "v/f220.mp4",
+   "affiche": "v/f220.webp"
+  },
+  {
+   "n": 221,
+   "role": "Pas à pas · Mobile Money",
+   "titre": "Fermer ma caisse avec Mobile Money",
+   "description": "Fermer la caisse le soir quand on tient aussi un compte Mobile Money.",
+   "video": "v/f221.mp4",
+   "affiche": "v/f221.webp"
+  },
+  {
+   "n": 222,
+   "role": "Pas à pas · Couture",
+   "titre": "Prendre les mesures d’un client",
+   "description": "Écrire les mesures d’une cliente, en centimètres, et les retrouver à chaque commande.",
+   "video": "v/f222.mp4",
+   "affiche": "v/f222.webp"
+  },
+  {
+   "n": 223,
+   "role": "Pas à pas · Couture",
+   "titre": "Prendre de nouvelles mesures",
+   "description": "Une cliente revient : une nouvelle fiche, l’ancienne reste.",
+   "video": "v/f223.mp4",
+   "affiche": "v/f223.webp"
+  },
+  {
+   "n": 224,
+   "role": "Pas à pas · Couture",
+   "titre": "Noter une commande sur mesure",
+   "description": "Le client, le vêtement, les mesures, le prix, la remise et l’essayage.",
+   "video": "v/f224.mp4",
+   "affiche": "v/f224.webp"
+  },
+  {
+   "n": 225,
+   "role": "Pas à pas · Couture",
+   "titre": "Fixer ou changer l’essayage",
+   "description": "La cliente ne peut pas venir : changer la date de l’essayage.",
+   "video": "v/f225.mp4",
+   "affiche": "v/f225.webp"
+  },
+  {
+   "n": 226,
+   "role": "Pas à pas · Couture",
+   "titre": "Suivre le bon et rendre le vêtement",
+   "description": "Commencer le travail, prévenir, encaisser, rendre le vêtement.",
+   "video": "v/f226.mp4",
+   "affiche": "v/f226.webp"
+  },
+  {
+   "n": 227,
+   "role": "Pas à pas · Collecte",
+   "titre": "Écrire le prix de la campagne",
+   "description": "Fixer le prix du kilo de chaque denrée pour toute la campagne.",
+   "video": "v/f227.mp4",
+   "affiche": "v/f227.webp"
+  },
+  {
+   "n": 228,
+   "role": "Pas à pas · Collecte",
+   "titre": "Ajouter un planteur",
+   "description": "Le nom, le village, le téléphone : le planteur entre dans le carnet.",
+   "video": "v/f228.mp4",
+   "affiche": "v/f228.webp"
+  },
+  {
+   "n": 229,
+   "role": "Pas à pas · Collecte",
+   "titre": "Peser et écrire un bon d’achat",
+   "description": "Peser, calculer le poids net et le montant, payer, enregistrer le bon.",
+   "video": "v/f229.mp4",
+   "affiche": "v/f229.webp"
+  },
+  {
+   "n": 230,
+   "role": "Pas à pas · Collecte",
+   "titre": "Régler ce qui reste à payer",
+   "description": "Payer en une ou plusieurs fois ce qu’on doit encore à un planteur.",
+   "video": "v/f230.mp4",
+   "affiche": "v/f230.webp"
+  },
+  {
+   "n": 231,
+   "role": "Pas à pas · Collecte",
+   "titre": "Confirmer un bon qui sort des règles",
+   "description": "Le propriétaire contrôle un bon inhabituel avant de le confirmer.",
+   "video": "v/f231.mp4",
+   "affiche": "v/f231.webp"
+  },
+  {
+   "n": 232,
+   "role": "Pas à pas · Collecte",
+   "titre": "Fermer la caisse de l’acheteur",
+   "description": "L’acheteur compte son argent, explique l’écart, remet au propriétaire.",
+   "video": "v/f232.mp4",
+   "affiche": "v/f232.webp"
+  },
+  {
    "n": 1,
    "role": "Démarrer",
    "titre": "Demander l’ouverture de son commerce",
