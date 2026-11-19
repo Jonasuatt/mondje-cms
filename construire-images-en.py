@@ -43,17 +43,18 @@ GUIDE = {
     "proprietaire-nous-joindre": "caverne/support",
     "location-chambres-et-sejours": "caverne/rental-stay",
 }
-AUTRES = {      # (nom dans img/en/, capture)
+AUTRES = {      # nom dans img/en/ -> capture
     "proprietaire-1": "caverne/my-page-1",
     "proprietaire-2": "caverne/my-page-2",
     "proprietaire-3": "caverne/my-page-3",
 }
+PAGE_CLIENT = {f"page-publique-{i}": f"vitrine/page-publique-{i}" for i in range(1, 8)}   # page web du commerce (outils/site/capture_vitrine_en.py)
 
 if __name__ == "__main__":
     ok = manque = 0
-    for dic, sous in ((ACCUEIL, ""), (GUIDE, "guide"), (AUTRES, "")):
+    for dic, sous, barre in ((ACCUEIL, "", True), (GUIDE, "guide", True), (AUTRES, "", True), (PAGE_CLIENT, "", False)):
         for nom, src in dic.items():
-            r = base.fabriquer(src, os.path.join(ICI, "img", "en", sous, nom + ".webp"))
+            r = base.fabriquer(src, os.path.join(ICI, "img", "en", sous, nom + ".webp"), barre)
             ok, manque = ok + r, manque + (not r)
             if not r: print("manque :", src)
     print(f"{ok} images anglaises fabriquées, {manque} captures manquantes")

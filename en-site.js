@@ -1721,5 +1721,12 @@ window.MONDJE_EN = {
 "L’essentiel en moins de trois minutes, à partager.": "The essentials in under three minutes, easy to share.",
 "Version verticale (9:16), pour le téléphone et les réseaux sociaux": "Vertical version (9:16), for phones and social media",
 "Pour apprendre chaque geste, rôle par rôle :": "To learn each step, role by role:",
-"Voir la vidéo de présentation de Mon Djê, en français et en anglais, avec sous-titres.": "Watch the Mon Djê presentation video, in French and in English, with subtitles."
+"Voir la vidéo de présentation de Mon Djê, en français et en anglais, avec sous-titres.": "Watch the Mon Djê presentation video, in French and in English, with subtitles.",
+"Non": "No",
+"Oui": "Yes",
+"Jour": "Day",
+"Commande": "Order",
+"Rechercher un produit": "Search for a product",
+"Votre nom et votre numéro servent seulement à vous répondre ; seul ce commerce les voit.": "Your name and phone number are used only to reply to you; only this business sees them.",
+"Votre adresse e-mail (facultatif)": "Your e-mail address (optional)"
 };

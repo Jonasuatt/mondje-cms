@@ -50,7 +50,7 @@ GUIDE = {
 }
 
 
-def fabriquer(source, sortie):
+def fabriquer(source, sortie, barre=True):
     chemin = os.path.join(CAPTURES, source.replace("/", os.sep) + ".png")
     if not os.path.exists(chemin):
         return False
@@ -59,8 +59,9 @@ def fabriquer(source, sortie):
     # on la peint de la couleur du fond de l'application juste dessous.
     from PIL import ImageDraw
     k = im.width / 720                       # captures de 720 px (anciennes) ou de 1080 px (émulateur)
-    fond = im.getpixel((int(6 * k), int(74 * k)))
-    ImageDraw.Draw(im).rectangle([0, 0, im.width, int(66 * k)], fill=fond)
+    if barre:                                # (une page web capturée sans téléphone n'a pas de barre d'état)
+        fond = im.getpixel((int(6 * k), int(74 * k)))
+        ImageDraw.Draw(im).rectangle([0, 0, im.width, int(66 * k)], fill=fond)
     im = im.resize((LARGEUR, HAUTEUR), Image.LANCZOS)
     os.makedirs(os.path.dirname(sortie), exist_ok=True)
     im.save(sortie, "WEBP", quality=80, method=6)
