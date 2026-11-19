@@ -87,6 +87,20 @@
   racine.lang = frSeulement ? 'fr' : LANGUE;
   if (LANGUE !== 'en' || frSeulement) return;
 
+  // 2b. Les captures de l'application (img/….webp, img/guide/….webp) : en anglais, la capture faite avec l'application en anglais (img/en/…).
+  // Si elle n'existe pas encore, l'image française reste (onerror).
+  pret(function () {
+    var imgs = document.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) {
+      (function (img) {
+        var s = img.getAttribute('src') || '';
+        if (!/(^|\/)img\/(guide\/)?[^\/]+\.webp$/.test(s)) return;
+        img.onerror = function () { img.onerror = null; img.setAttribute('src', s); };
+        img.setAttribute('src', s.replace(/(^|\/)img\//, '$1img/en/'));
+      })(imgs[i]);
+    }
+  });
+
   // 3. Le dictionnaire (la page se traduit dès qu'il est arrivé) -------------------------------------------------
   var base = '';
   try { base = document.currentScript.src.replace(/[^\/]*$/, ''); } catch (e) { base = ''; }
