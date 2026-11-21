@@ -1728,5 +1728,7 @@ window.MONDJE_EN = {
 "Commande": "Order",
 "Rechercher un produit": "Search for a product",
 "Votre nom et votre numéro servent seulement à vous répondre ; seul ce commerce les voit.": "Your name and phone number are used only to reply to you; only this business sees them.",
-"Votre adresse e-mail (facultatif)": "Your e-mail address (optional)"
+"Votre adresse e-mail (facultatif)": "Your e-mail address (optional)",
+". Ne touchez pas « OK » : cela annule l'installation.": ". Do not tap “OK”: it cancels the installation.",
+". Au premier lancement, choisissez": ". The first time it opens, choose"
 };
