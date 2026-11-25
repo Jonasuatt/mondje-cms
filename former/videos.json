@@ -306,6 +306,14 @@
    "affiche": "v/f306.webp"
   },
   {
+   "n": 307,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Fixer un budget et lire le seuil de rentabilité",
+   "description": "Un plafond par catégorie de dépenses, et ce qu’il faut vendre pour couvrir ses charges.",
+   "video": "v/f307.mp4",
+   "affiche": "v/f307.webp"
+  },
+  {
    "n": 308,
    "role": "Pas à pas · L’argent du commerce",
    "titre": "Lire le bilan du mois",
@@ -416,6 +424,14 @@
    "description": "Le client paie une partie de ce qu’il doit : l’ardoise baisse.",
    "video": "v/f321.mp4",
    "affiche": "v/f321.webp"
+  },
+  {
+   "n": 322,
+   "role": "Pas à pas · L’équipe et les clients",
+   "titre": "Répondre à la demande d’un client",
+   "description": "Une demande arrive depuis la page publique : l’accepter ou la refuser.",
+   "video": "v/f322.mp4",
+   "affiche": "v/f322.webp"
   },
   {
    "n": 323,
