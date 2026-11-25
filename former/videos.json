@@ -474,6 +474,46 @@
    "affiche": "v/f327.webp"
   },
   {
+   "n": 328,
+   "role": "Pas à pas · Le stock et la carte",
+   "titre": "Ajouter un produit à la carte",
+   "description": "Le nom, le prix, l’unité et la catégorie : un nouveau produit prêt à vendre.",
+   "video": "v/f328.mp4",
+   "affiche": "v/f328.webp"
+  },
+  {
+   "n": 329,
+   "role": "Pas à pas · Le stock et la carte",
+   "titre": "Recevoir une livraison de marchandise",
+   "description": "Noter ce qui est arrivé, le prix payé, et voir le stock monter.",
+   "video": "v/f329.mp4",
+   "affiche": "v/f329.webp"
+  },
+  {
+   "n": 330,
+   "role": "Pas à pas · Le stock et la carte",
+   "titre": "Faire l’inventaire",
+   "description": "Compter chaque produit, terminer le comptage, lire les écarts.",
+   "video": "v/f330.mp4",
+   "affiche": "v/f330.webp"
+  },
+  {
+   "n": 331,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Noter une dépense",
+   "description": "Choisir à quoi elle sert, écrire le montant, la noter dans le mois.",
+   "video": "v/f331.mp4",
+   "affiche": "v/f331.webp"
+  },
+  {
+   "n": 332,
+   "role": "Pas à pas · Le stock et la carte",
+   "titre": "Créer un fournisseur",
+   "description": "Le nom et le téléphone, pour savoir ce que vous lui devez.",
+   "video": "v/f332.mp4",
+   "affiche": "v/f332.webp"
+  },
+  {
    "n": 1,
    "role": "Démarrer",
    "titre": "Demander l’ouverture de son commerce",
