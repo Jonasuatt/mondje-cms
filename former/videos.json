@@ -856,6 +856,518 @@
    "description": "Wave, Orange, MTN ou Moov : le numéro du client est facultatif, la caisse confirme à la seconde près.",
    "video": "v/f54.mp4",
    "affiche": "v/f54.webp"
+  },
+  {
+   "n": 401,
+   "role": "Le tableau de bord · Lire son commerce",
+   "titre": "Le tableau de bord : lire l'accueil d'un coup d'œil",
+   "description": "Lire l'accueil d'un coup d'œil.",
+   "video": "v/f401.mp4",
+   "affiche": "v/f401.webp"
+  },
+  {
+   "n": 402,
+   "role": "Le tableau de bord · Lire son commerce",
+   "titre": "Les messages de l'accueil : conditions rapport carte vide",
+   "description": "Conditions rapport carte vide.",
+   "video": "v/f402.mp4",
+   "affiche": "v/f402.webp"
+  },
+  {
+   "n": 403,
+   "role": "Le tableau de bord · Lire son commerce",
+   "titre": "Activité du jour : tout voir en trois onglets",
+   "description": "Tout voir en trois onglets.",
+   "video": "v/f403.mp4",
+   "affiche": "v/f403.webp"
+  },
+  {
+   "n": 404,
+   "role": "Le tableau de bord · Lire son commerce",
+   "titre": "Mon rapport : lire les chiffres de la semaine",
+   "description": "Lire les chiffres de la semaine.",
+   "video": "v/f404.mp4",
+   "affiche": "v/f404.webp"
+  },
+  {
+   "n": 405,
+   "role": "Le tableau de bord · Lire son commerce",
+   "titre": "Mon rapport : ce qui se vend ce qui dort et l'analyse approfondie",
+   "description": "Ce qui se vend ce qui dort et l'analyse approfondie.",
+   "video": "v/f405.mp4",
+   "affiche": "v/f405.webp"
+  },
+  {
+   "n": 406,
+   "role": "Le tableau de bord · Lire son commerce",
+   "titre": "Meilleures ventes : les produits qui rapportent",
+   "description": "Les produits qui rapportent.",
+   "video": "v/f406.mp4",
+   "affiche": "v/f406.webp"
+  },
+  {
+   "n": 407,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "La trésorerie : l'argent que vous avez vraiment",
+   "description": "L'argent que vous avez vraiment.",
+   "video": "v/f407.mp4",
+   "affiche": "v/f407.webp"
+  },
+  {
+   "n": 408,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "La trésorerie : compter un compte et déplacer de l'argent",
+   "description": "Compter un compte et déplacer de l'argent.",
+   "video": "v/f408.mp4",
+   "affiche": "v/f408.webp"
+  },
+  {
+   "n": 409,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "Les dépenses : noter ce qui sort du commerce",
+   "description": "Noter ce qui sort du commerce.",
+   "video": "v/f409.mp4",
+   "affiche": "v/f409.webp"
+  },
+  {
+   "n": 410,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "Les dépenses : annuler budget et seuil de rentabilité",
+   "description": "Annuler budget et seuil de rentabilité.",
+   "video": "v/f410.mp4",
+   "affiche": "v/f410.webp"
+  },
+  {
+   "n": 411,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "Le bilan : mois trimestre année",
+   "description": "Mois trimestre année.",
+   "video": "v/f411.mp4",
+   "affiche": "v/f411.webp"
+  },
+  {
+   "n": 412,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "Exporter mes données : des fichiers pour votre comptable",
+   "description": "Des fichiers pour votre comptable.",
+   "video": "v/f412.mp4",
+   "affiche": "v/f412.webp"
+  },
+  {
+   "n": 413,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "Les fournisseurs : ce que vous devez et régler",
+   "description": "Ce que vous devez et régler.",
+   "video": "v/f413.mp4",
+   "affiche": "v/f413.webp"
+  },
+  {
+   "n": 414,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "Les avances au personnel : donner suivre solder",
+   "description": "Donner suivre solder.",
+   "video": "v/f414.mp4",
+   "affiche": "v/f414.webp"
+  },
+  {
+   "n": 415,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "La paie : enregistrer un employé et établir une fiche",
+   "description": "Enregistrer un employé et établir une fiche.",
+   "video": "v/f415.mp4",
+   "affiche": "v/f415.webp"
+  },
+  {
+   "n": 416,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "La paie : envoyer la fiche corriger cnps et its",
+   "description": "Envoyer la fiche corriger cnps et its.",
+   "video": "v/f416.mp4",
+   "affiche": "v/f416.webp"
+  },
+  {
+   "n": 417,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "Les tontines : ouvrir le carnet d'un groupe",
+   "description": "Ouvrir le carnet d'un groupe.",
+   "video": "v/f417.mp4",
+   "affiche": "v/f417.webp"
+  },
+  {
+   "n": 418,
+   "role": "Le tableau de bord · L’argent du commerce",
+   "titre": "Les tontines : cotisations retards et remise du pot",
+   "description": "Cotisations retards et remise du pot.",
+   "video": "v/f418.mp4",
+   "affiche": "v/f418.webp"
+  },
+  {
+   "n": 419,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "Mes activités : choisir ce que fait votre commerce",
+   "description": "Choisir ce que fait votre commerce.",
+   "video": "v/f419.mp4",
+   "affiche": "v/f419.webp"
+  },
+  {
+   "n": 420,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "Le stock : la liste et le stock bas",
+   "description": "La liste et le stock bas.",
+   "video": "v/f420.mp4",
+   "affiche": "v/f420.webp"
+  },
+  {
+   "n": 421,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "Le stock : recevoir une livraison",
+   "description": "Recevoir une livraison.",
+   "video": "v/f421.mp4",
+   "affiche": "v/f421.webp"
+  },
+  {
+   "n": 422,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "Carte et stock : créer un produit qui n'existe pas",
+   "description": "Créer un produit qui n'existe pas.",
+   "video": "v/f422.mp4",
+   "affiche": "v/f422.webp"
+  },
+  {
+   "n": 423,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "Carte et stock : importer et modifier avec excel",
+   "description": "Importer et modifier avec excel.",
+   "video": "v/f423.mp4",
+   "affiche": "v/f423.webp"
+  },
+  {
+   "n": 424,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "Carte et stock : le prix la marge et le seuil d'un produit",
+   "description": "Le prix la marge et le seuil d'un produit.",
+   "video": "v/f424.mp4",
+   "affiche": "v/f424.webp"
+  },
+  {
+   "n": 425,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "L'inventaire : compter son stock",
+   "description": "Compter son stock.",
+   "video": "v/f425.mp4",
+   "affiche": "v/f425.webp"
+  },
+  {
+   "n": 426,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "À écouler : vendre d'abord ce qui périme",
+   "description": "Vendre d'abord ce qui périme.",
+   "video": "v/f426.mp4",
+   "affiche": "v/f426.webp"
+  },
+  {
+   "n": 427,
+   "role": "Le tableau de bord · Le stock et la carte",
+   "titre": "Le bon d'achat : plusieurs produits d'une même facture",
+   "description": "Plusieurs produits d'une même facture.",
+   "video": "v/f427.mp4",
+   "affiche": "v/f427.webp"
+  },
+  {
+   "n": 428,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Mes chambres et leurs tarifs : ce que vous louez",
+   "description": "Ce que vous louez.",
+   "video": "v/f428.mp4",
+   "affiche": "v/f428.webp"
+  },
+  {
+   "n": 429,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Mes chambres : les taxes l'électricité et la tva",
+   "description": "Les taxes l'électricité et la tva.",
+   "video": "v/f429.mp4",
+   "affiche": "v/f429.webp"
+  },
+  {
+   "n": 430,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "La salle : nommer et créer vos tables ou vos places",
+   "description": "Nommer et créer vos tables ou vos places.",
+   "video": "v/f430.mp4",
+   "affiche": "v/f430.webp"
+  },
+  {
+   "n": 431,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Occupation et revenus : lire les chiffres de la location",
+   "description": "Lire les chiffres de la location.",
+   "video": "v/f431.mp4",
+   "affiche": "v/f431.webp"
+  },
+  {
+   "n": 432,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Les versements : la gérance et les abonnements",
+   "description": "La gérance et les abonnements.",
+   "video": "v/f432.mp4",
+   "affiche": "v/f432.webp"
+  },
+  {
+   "n": 433,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Les dépôts à rendre : suivre les objets des clients",
+   "description": "Suivre les objets des clients.",
+   "video": "v/f433.mp4",
+   "affiche": "v/f433.webp"
+  },
+  {
+   "n": 434,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Les pourboires : ce qui a été remis et à qui",
+   "description": "Ce qui a été remis et à qui.",
+   "video": "v/f434.mp4",
+   "affiche": "v/f434.webp"
+  },
+  {
+   "n": 435,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Équipe et gardes : qui soigne qui est de garde",
+   "description": "Qui soigne qui est de garde.",
+   "video": "v/f435.mp4",
+   "affiche": "v/f435.webp"
+  },
+  {
+   "n": 436,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Les points de vente : comparer plusieurs endroits",
+   "description": "Comparer plusieurs endroits.",
+   "video": "v/f436.mp4",
+   "affiche": "v/f436.webp"
+  },
+  {
+   "n": 437,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Fabriquer et invendus : écrire une recette",
+   "description": "Écrire une recette.",
+   "video": "v/f437.mp4",
+   "affiche": "v/f437.webp"
+  },
+  {
+   "n": 438,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Fabriquer et invendus : fabriquer et déclarer les invendus",
+   "description": "Fabriquer et déclarer les invendus.",
+   "video": "v/f438.mp4",
+   "affiche": "v/f438.webp"
+  },
+  {
+   "n": 439,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Fabriquer et invendus : les remises du pain et leurs écarts",
+   "description": "Les remises du pain et leurs écarts.",
+   "video": "v/f439.mp4",
+   "affiche": "v/f439.webp"
+  },
+  {
+   "n": 440,
+   "role": "Le tableau de bord · Selon votre activité",
+   "titre": "Les commandes de produits : valider refuser marquer reçue",
+   "description": "Valider refuser marquer reçue.",
+   "video": "v/f440.mp4",
+   "affiche": "v/f440.webp"
+  },
+  {
+   "n": 441,
+   "role": "Le tableau de bord · L’équipe et les clients",
+   "titre": "Le personnel : créer le compte d'un membre de l'équipe",
+   "description": "Créer le compte d'un membre de l'équipe.",
+   "video": "v/f441.mp4",
+   "affiche": "v/f441.webp"
+  },
+  {
+   "n": 442,
+   "role": "Le tableau de bord · L’équipe et les clients",
+   "titre": "Le personnel : désactiver réactiver changer un code",
+   "description": "Désactiver réactiver changer un code.",
+   "video": "v/f442.mp4",
+   "affiche": "v/f442.webp"
+  },
+  {
+   "n": 443,
+   "role": "Le tableau de bord · L’équipe et les clients",
+   "titre": "Les tâches du personnel : qui fait quoi",
+   "description": "Qui fait quoi.",
+   "video": "v/f443.mp4",
+   "affiche": "v/f443.webp"
+  },
+  {
+   "n": 444,
+   "role": "Le tableau de bord · L’équipe et les clients",
+   "titre": "Objectifs et classement : motiver l'équipe",
+   "description": "Motiver l'équipe.",
+   "video": "v/f444.mp4",
+   "affiche": "v/f444.webp"
+  },
+  {
+   "n": 445,
+   "role": "Le tableau de bord · L’équipe et les clients",
+   "titre": "Les clients : la liste de ceux qui veulent la page",
+   "description": "La liste de ceux qui veulent la page.",
+   "video": "v/f445.mp4",
+   "affiche": "v/f445.webp"
+  },
+  {
+   "n": 446,
+   "role": "Le tableau de bord · L’équipe et les clients",
+   "titre": "Les ardoises : l'argent que vos clients vous doivent",
+   "description": "L'argent que vos clients vous doivent.",
+   "video": "v/f446.mp4",
+   "affiche": "v/f446.webp"
+  },
+  {
+   "n": 447,
+   "role": "Le tableau de bord · L’équipe et les clients",
+   "titre": "Les demandes des clients : les lire et répondre",
+   "description": "Les lire et répondre.",
+   "video": "v/f447.mp4",
+   "affiche": "v/f447.webp"
+  },
+  {
+   "n": 448,
+   "role": "Le tableau de bord · L’équipe et les clients",
+   "titre": "Les demandes des clients : traiter une réservation avec acompte",
+   "description": "Traiter une réservation avec acompte.",
+   "video": "v/f448.mp4",
+   "affiche": "v/f448.webp"
+  },
+  {
+   "n": 449,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Ma page publique : ouvrir la page et la partager",
+   "description": "Ouvrir la page et la partager.",
+   "video": "v/f449.mp4",
+   "affiche": "v/f449.webp"
+  },
+  {
+   "n": 450,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Ma page publique : annonce photos acompte et quartier",
+   "description": "Annonce photos acompte et quartier.",
+   "video": "v/f450.mp4",
+   "affiche": "v/f450.webp"
+  },
+  {
+   "n": 451,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Le qr de paiement : charger les qr de votre commerce",
+   "description": "Charger les qr de votre commerce.",
+   "video": "v/f451.mp4",
+   "affiche": "v/f451.webp"
+  },
+  {
+   "n": 452,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Le logo du commerce : le mettre sur vos factures",
+   "description": "Le mettre sur vos factures.",
+   "video": "v/f452.mp4",
+   "affiche": "v/f452.webp"
+  },
+  {
+   "n": 453,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Les téléphones du commerce : sur chaque facture",
+   "description": "Sur chaque facture.",
+   "video": "v/f453.mp4",
+   "affiche": "v/f453.webp"
+  },
+  {
+   "n": 454,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "L'assistance mon djê : écrire à l'équipe",
+   "description": "Écrire à l'équipe.",
+   "video": "v/f454.mp4",
+   "affiche": "v/f454.webp"
+  },
+  {
+   "n": 455,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "L'historique : retrouver une vente",
+   "description": "Retrouver une vente.",
+   "video": "v/f455.mp4",
+   "affiche": "v/f455.webp"
+  },
+  {
+   "n": 456,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "L'historique : les annulations les caisses corriger un paiement",
+   "description": "Les annulations les caisses corriger un paiement.",
+   "video": "v/f456.mp4",
+   "affiche": "v/f456.webp"
+  },
+  {
+   "n": 457,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Le profil : qui je suis et mes réglages",
+   "description": "Qui je suis et mes réglages.",
+   "video": "v/f457.mp4",
+   "affiche": "v/f457.webp"
+  },
+  {
+   "n": 458,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Le profil : le code secret l'empreinte et la déconnexion",
+   "description": "Le code secret l'empreinte et la déconnexion.",
+   "video": "v/f458.mp4",
+   "affiche": "v/f458.webp"
+  },
+  {
+   "n": 459,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Les conditions d'utilisation : lire et accepter",
+   "description": "Lire et accepter.",
+   "video": "v/f459.mp4",
+   "affiche": "v/f459.webp"
+  },
+  {
+   "n": 460,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Mon niveau : choisir les boutons de votre accueil",
+   "description": "Choisir les boutons de votre accueil.",
+   "video": "v/f460.mp4",
+   "affiche": "v/f460.webp"
+  },
+  {
+   "n": 461,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Mon niveau : régler les boutons de chaque gérant",
+   "description": "Régler les boutons de chaque gérant.",
+   "video": "v/f461.mp4",
+   "affiche": "v/f461.webp"
+  },
+  {
+   "n": 462,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Mon abonnement : choisir son niveau",
+   "description": "Choisir son niveau.",
+   "video": "v/f462.mp4",
+   "affiche": "v/f462.webp"
+  },
+  {
+   "n": 463,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Les boutons de l'accueil : ce que chaque niveau montre",
+   "description": "Ce que chaque niveau montre.",
+   "video": "v/f463.mp4",
+   "affiche": "v/f463.webp"
+  },
+  {
+   "n": 464,
+   "role": "Le tableau de bord · Page publique et réglages",
+   "titre": "Carte et stock : où la trouver et ajouter des produits du catalogue",
+   "description": "Où la trouver et ajouter des produits du catalogue.",
+   "video": "v/f464.mp4",
+   "affiche": "v/f464.webp"
   }
  ]
 }
