@@ -258,6 +258,206 @@
    "affiche": "v/f232.webp"
   },
   {
+   "n": 301,
+   "role": "Pas à pas · L’accueil",
+   "titre": "Lire l’accueil chaque matin",
+   "description": "Ce que dit l’accueil : l’argent du jour, les alertes, ce qui demande votre attention.",
+   "video": "v/f301.mp4",
+   "affiche": "v/f301.webp"
+  },
+  {
+   "n": 302,
+   "role": "Pas à pas · L’accueil",
+   "titre": "Retrouver une vente de la journée",
+   "description": "Retrouver une vente précise dans l’historique du jour.",
+   "video": "v/f302.mp4",
+   "affiche": "v/f302.webp"
+  },
+  {
+   "n": 303,
+   "role": "Pas à pas · L’accueil",
+   "titre": "Lire le rapport de la semaine",
+   "description": "Les ventes, les dépenses et ce qui a changé depuis la semaine dernière.",
+   "video": "v/f303.mp4",
+   "affiche": "v/f303.webp"
+  },
+  {
+   "n": 304,
+   "role": "Pas à pas · L’accueil",
+   "titre": "Trouver mes meilleures ventes et ce qui dort",
+   "description": "Les produits qui se vendent le mieux, et ceux qui restent en rayon.",
+   "video": "v/f304.mp4",
+   "affiche": "v/f304.webp"
+  },
+  {
+   "n": 305,
+   "role": "Pas à pas · L’accueil",
+   "titre": "Corriger un paiement validé par erreur",
+   "description": "Un paiement validé à tort : on le corrige, avec une raison, sans rien effacer.",
+   "video": "v/f305.mp4",
+   "affiche": "v/f305.webp"
+  },
+  {
+   "n": 306,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Compter un compte de trésorerie",
+   "description": "Compter l’argent d’un compte et voir l’écart avec ce que Mon Djê attend.",
+   "video": "v/f306.mp4",
+   "affiche": "v/f306.webp"
+  },
+  {
+   "n": 308,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Lire le bilan du mois",
+   "description": "Les ventes, les dépenses et ce qu’il vous reste, mois par mois.",
+   "video": "v/f308.mp4",
+   "affiche": "v/f308.webp"
+  },
+  {
+   "n": 309,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Régler ce que je dois à un fournisseur",
+   "description": "Payer un fournisseur, en une ou plusieurs fois, et voir la dette baisser.",
+   "video": "v/f309.mp4",
+   "affiche": "v/f309.webp"
+  },
+  {
+   "n": 310,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Donner une avance à un employé",
+   "description": "Une avance sur salaire : le montant, la raison, et ce qui sera retenu.",
+   "video": "v/f310.mp4",
+   "affiche": "v/f310.webp"
+  },
+  {
+   "n": 311,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Établir la fiche de paie",
+   "description": "La fiche de paie d’un employé, figée et prête à envoyer.",
+   "video": "v/f311.mp4",
+   "affiche": "v/f311.webp"
+  },
+  {
+   "n": 312,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Préparer mon relevé d’activité",
+   "description": "Un relevé de vos ventes à montrer à une banque ou une microfinance.",
+   "video": "v/f312.mp4",
+   "affiche": "v/f312.webp"
+  },
+  {
+   "n": 313,
+   "role": "Pas à pas · L’argent du commerce",
+   "titre": "Ouvrir une tontine et noter une cotisation",
+   "description": "Le carnet du groupe : qui a cotisé, qui reçoit le pot.",
+   "video": "v/f313.mp4",
+   "affiche": "v/f313.webp"
+  },
+  {
+   "n": 314,
+   "role": "Pas à pas · Le stock et la carte",
+   "titre": "Changer le prix d’un produit",
+   "description": "Changer le prix de vente ou d’achat d’un produit.",
+   "video": "v/f314.mp4",
+   "affiche": "v/f314.webp"
+  },
+  {
+   "n": 315,
+   "role": "Pas à pas · Le stock et la carte",
+   "titre": "Importer mes produits depuis un fichier Excel",
+   "description": "Ajouter ou mettre à jour ses produits depuis un fichier, avec les changements montrés avant d’être appliqués.",
+   "video": "v/f315.mp4",
+   "affiche": "v/f315.webp"
+  },
+  {
+   "n": 316,
+   "role": "Pas à pas · Le stock et la carte",
+   "titre": "Écouler d’abord ce qui va périmer",
+   "description": "L’écran À écouler : vendre en premier ce qui a la date limite la plus proche.",
+   "video": "v/f316.mp4",
+   "affiche": "v/f316.webp"
+  },
+  {
+   "n": 317,
+   "role": "Pas à pas · Le stock et la carte",
+   "titre": "Faire un bon d’achat de plusieurs produits",
+   "description": "Un seul bon pour plusieurs produits achetés chez le même fournisseur.",
+   "video": "v/f317.mp4",
+   "affiche": "v/f317.webp"
+  },
+  {
+   "n": 318,
+   "role": "Pas à pas · L’équipe et les clients",
+   "titre": "Désactiver le compte d’un employé",
+   "description": "Quand quelqu’un part : son compte est fermé, son historique reste.",
+   "video": "v/f318.mp4",
+   "affiche": "v/f318.webp"
+  },
+  {
+   "n": 319,
+   "role": "Pas à pas · L’équipe et les clients",
+   "titre": "Donner une tâche à un employé",
+   "description": "Une tâche, une date, une personne : et le suivi de ce qui est fait.",
+   "video": "v/f319.mp4",
+   "affiche": "v/f319.webp"
+  },
+  {
+   "n": 320,
+   "role": "Pas à pas · L’équipe et les clients",
+   "titre": "Fixer un objectif à un employé",
+   "description": "Un objectif de ventes pour un employé, et le suivi jour après jour.",
+   "video": "v/f320.mp4",
+   "affiche": "v/f320.webp"
+  },
+  {
+   "n": 321,
+   "role": "Pas à pas · L’équipe et les clients",
+   "titre": "Encaisser l’ardoise d’un client",
+   "description": "Le client paie une partie de ce qu’il doit : l’ardoise baisse.",
+   "video": "v/f321.mp4",
+   "affiche": "v/f321.webp"
+  },
+  {
+   "n": 323,
+   "role": "Pas à pas · L’équipe et les clients",
+   "titre": "Mettre ma page publique en ligne",
+   "description": "La page de votre commerce, à partager avec vos clients.",
+   "video": "v/f323.mp4",
+   "affiche": "v/f323.webp"
+  },
+  {
+   "n": 324,
+   "role": "Pas à pas · Les réglages",
+   "titre": "Charger le QR de paiement de mon commerce",
+   "description": "Le QR de votre compte Money, que le client scanne pour payer.",
+   "video": "v/f324.mp4",
+   "affiche": "v/f324.webp"
+  },
+  {
+   "n": 325,
+   "role": "Pas à pas · Les réglages",
+   "titre": "Mettre le logo de mon commerce",
+   "description": "Le logo de votre commerce sur les factures et la page publique.",
+   "video": "v/f325.mp4",
+   "affiche": "v/f325.webp"
+  },
+  {
+   "n": 326,
+   "role": "Pas à pas · Les réglages",
+   "titre": "Changer mon code secret",
+   "description": "Changer son code secret, sans jamais le montrer à personne.",
+   "video": "v/f326.mp4",
+   "affiche": "v/f326.webp"
+  },
+  {
+   "n": 327,
+   "role": "Pas à pas · Les réglages",
+   "titre": "Choisir mon niveau et mes boutons",
+   "description": "Choisir ce que l’écran montre : un niveau simple ou complet.",
+   "video": "v/f327.mp4",
+   "affiche": "v/f327.webp"
+  },
+  {
    "n": 1,
    "role": "Démarrer",
    "titre": "Demander l’ouverture de son commerce",
