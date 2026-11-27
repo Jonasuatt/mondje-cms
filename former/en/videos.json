@@ -1,0 +1,517 @@
+{
+ "version": 1,
+ "videos": [
+  {
+   "n": 201,
+   "role": "Step by step",
+   "titre": "Fill in the registration form",
+   "description": "Eight steps to ask for your business to be opened, field by field.",
+   "video": "en/v/e201.mp4",
+   "affiche": "en/v/e201.webp"
+  },
+  {
+   "n": 202,
+   "role": "Step by step",
+   "titre": "Create an employee’s account",
+   "description": "The name, the role, the temporary code to send before leaving the screen.",
+   "video": "en/v/e202.mp4",
+   "affiche": "en/v/e202.webp"
+  },
+  {
+   "n": 203,
+   "role": "Step by step",
+   "titre": "Open the register in the morning",
+   "description": "Count the money in the drawer, write it down, open the day.",
+   "video": "en/v/e203.mp4",
+   "affiche": "en/v/e203.webp"
+  },
+  {
+   "n": 204,
+   "role": "Step by step",
+   "titre": "Take and collect an order at a table",
+   "description": "The table, the products, the validation, the money declared at the register.",
+   "video": "en/v/e204.mp4",
+   "affiche": "en/v/e204.webp"
+  },
+  {
+   "n": 205,
+   "role": "Step by step",
+   "titre": "Confirm a payment and issue the invoice",
+   "description": "The register checks the amount received, confirms and issues the invoice.",
+   "video": "en/v/e205.mp4",
+   "affiche": "en/v/e205.webp"
+  },
+  {
+   "n": 206,
+   "role": "Step by step",
+   "titre": "Close the register in the evening",
+   "description": "Count the cash, explain a difference, hand over the money.",
+   "video": "en/v/e206.mp4",
+   "affiche": "en/v/e206.webp"
+  },
+  {
+   "n": 207,
+   "role": "Step by step",
+   "titre": "Confirm the money handed over by the register",
+   "description": "The owner counts what they receive and confirms the handover.",
+   "video": "en/v/e207.mp4",
+   "affiche": "en/v/e207.webp"
+  },
+  {
+   "n": 233,
+   "role": "Step by step · Owner",
+   "titre": "Add a product to the menu",
+   "description": "Name, price and unit: the product appears for the sellers.",
+   "video": "en/v/e233.mp4",
+   "affiche": "en/v/e233.webp"
+  },
+  {
+   "n": 234,
+   "role": "Step by step · Owner",
+   "titre": "Create a supplier",
+   "description": "Write down who you buy from, so each delivery can be linked to them.",
+   "video": "en/v/e234.mp4",
+   "affiche": "en/v/e234.webp"
+  },
+  {
+   "n": 235,
+   "role": "Step by step · Owner",
+   "titre": "Receive a delivery of goods",
+   "description": "Record what arrives, at what price, and watch the purchase-price warning.",
+   "video": "en/v/e235.mp4",
+   "affiche": "en/v/e235.webp"
+  },
+  {
+   "n": 236,
+   "role": "Step by step · Owner",
+   "titre": "Record an expense",
+   "description": "Write down a payment out of the business, with its reason.",
+   "video": "en/v/e236.mp4",
+   "affiche": "en/v/e236.webp"
+  },
+  {
+   "n": 237,
+   "role": "Step by step · Owner",
+   "titre": "Do the stock count",
+   "description": "Count each product, finish the count and read the differences.",
+   "video": "en/v/e237.mp4",
+   "affiche": "en/v/e237.webp"
+  },
+  {
+   "n": 301,
+   "role": "Step by step · Reading your business",
+   "titre": "Read the home screen every morning",
+   "description": "What the home screen tells you: the day’s money, the alerts, what needs your attention.",
+   "video": "en/v/e301.mp4",
+   "affiche": "en/v/e301.webp"
+  },
+  {
+   "n": 302,
+   "role": "Step by step · Reading your business",
+   "titre": "Find a sale from today",
+   "description": "Find one precise sale in the day’s history.",
+   "video": "en/v/e302.mp4",
+   "affiche": "en/v/e302.webp"
+  },
+  {
+   "n": 303,
+   "role": "Step by step · Reading your business",
+   "titre": "Read the weekly report",
+   "description": "Sales, expenses and what changed since last week.",
+   "video": "en/v/e303.mp4",
+   "affiche": "en/v/e303.webp"
+  },
+  {
+   "n": 304,
+   "role": "Step by step · Reading your business",
+   "titre": "Find my best sellers and what sits idle",
+   "description": "The products that sell best, and those that stay on the shelf.",
+   "video": "en/v/e304.mp4",
+   "affiche": "en/v/e304.webp"
+  },
+  {
+   "n": 305,
+   "role": "Step by step · Reading your business",
+   "titre": "Correct a payment confirmed by mistake",
+   "description": "A payment confirmed by mistake is corrected, with a reason, and nothing is erased.",
+   "video": "en/v/e305.mp4",
+   "affiche": "en/v/e305.webp"
+  },
+  {
+   "n": 306,
+   "role": "Step by step · The money of the business",
+   "titre": "Count a cash account",
+   "description": "Count the money of an account and see the difference with what Mon Djê expects.",
+   "video": "en/v/e306.mp4",
+   "affiche": "en/v/e306.webp"
+  },
+  {
+   "n": 307,
+   "role": "Step by step · The money of the business",
+   "titre": "Set a budget and read the break-even point",
+   "description": "A ceiling per expense category, and how much you must sell to cover your costs.",
+   "video": "en/v/e307.mp4",
+   "affiche": "en/v/e307.webp"
+  },
+  {
+   "n": 308,
+   "role": "Step by step · The money of the business",
+   "titre": "Read the monthly summary",
+   "description": "Sales, expenses and what is left, month by month.",
+   "video": "en/v/e308.mp4",
+   "affiche": "en/v/e308.webp"
+  },
+  {
+   "n": 309,
+   "role": "Step by step · The money of the business",
+   "titre": "Pay what I owe a supplier",
+   "description": "Pay a supplier, in one or several payments, and watch the debt go down.",
+   "video": "en/v/e309.mp4",
+   "affiche": "en/v/e309.webp"
+  },
+  {
+   "n": 310,
+   "role": "Step by step · The money of the business",
+   "titre": "Give an advance to an employee",
+   "description": "An advance on pay: the amount, the reason, and what will be deducted.",
+   "video": "en/v/e310.mp4",
+   "affiche": "en/v/e310.webp"
+  },
+  {
+   "n": 311,
+   "role": "Step by step · The money of the business",
+   "titre": "Draw up a payslip",
+   "description": "An employee’s payslip, frozen and ready to send.",
+   "video": "en/v/e311.mp4",
+   "affiche": "en/v/e311.webp"
+  },
+  {
+   "n": 312,
+   "role": "Step by step · The money of the business",
+   "titre": "Prepare my activity statement",
+   "description": "A statement of your sales to show a bank or a microfinance.",
+   "video": "en/v/e312.mp4",
+   "affiche": "en/v/e312.webp"
+  },
+  {
+   "n": 313,
+   "role": "Step by step · The money of the business",
+   "titre": "Open a tontine and record a contribution",
+   "description": "The group’s notebook: who has paid in, who receives the pot.",
+   "video": "en/v/e313.mp4",
+   "affiche": "en/v/e313.webp"
+  },
+  {
+   "n": 314,
+   "role": "Step by step · Stock and menu",
+   "titre": "Change the price of a product",
+   "description": "Change the selling or buying price of a product.",
+   "video": "en/v/e314.mp4",
+   "affiche": "en/v/e314.webp"
+  },
+  {
+   "n": 315,
+   "role": "Step by step · Stock and menu",
+   "titre": "Import my products from an Excel file",
+   "description": "Add or update your products from a file, with the changes shown before they are applied.",
+   "video": "en/v/e315.mp4",
+   "affiche": "en/v/e315.webp"
+  },
+  {
+   "n": 316,
+   "role": "Step by step · Stock and menu",
+   "titre": "Sell off first what is about to expire",
+   "description": "The To sell off screen: sell first what has the nearest expiry date.",
+   "video": "en/v/e316.mp4",
+   "affiche": "en/v/e316.webp"
+  },
+  {
+   "n": 317,
+   "role": "Step by step · Stock and menu",
+   "titre": "Make a purchase slip for several products",
+   "description": "One slip for several products bought from the same supplier.",
+   "video": "en/v/e317.mp4",
+   "affiche": "en/v/e317.webp"
+  },
+  {
+   "n": 318,
+   "role": "Step by step · Team and customers",
+   "titre": "Deactivate an employee’s account",
+   "description": "When someone leaves: the account is closed, the history stays.",
+   "video": "en/v/e318.mp4",
+   "affiche": "en/v/e318.webp"
+  },
+  {
+   "n": 319,
+   "role": "Step by step · Team and customers",
+   "titre": "Give a task to an employee",
+   "description": "A task, a date, a person: and the follow-up of what is done.",
+   "video": "en/v/e319.mp4",
+   "affiche": "en/v/e319.webp"
+  },
+  {
+   "n": 320,
+   "role": "Step by step · Team and customers",
+   "titre": "Set a target for an employee",
+   "description": "A sales target for an employee, followed day by day.",
+   "video": "en/v/e320.mp4",
+   "affiche": "en/v/e320.webp"
+  },
+  {
+   "n": 321,
+   "role": "Step by step · Team and customers",
+   "titre": "Collect a customer’s credit",
+   "description": "The customer pays part of what they owe: the credit goes down.",
+   "video": "en/v/e321.mp4",
+   "affiche": "en/v/e321.webp"
+  },
+  {
+   "n": 322,
+   "role": "Step by step · Team and customers",
+   "titre": "Answer a customer’s request",
+   "description": "A request arrives from the public page: accept it or decline it.",
+   "video": "en/v/e322.mp4",
+   "affiche": "en/v/e322.webp"
+  },
+  {
+   "n": 323,
+   "role": "Step by step · Team and customers",
+   "titre": "Put my public page online",
+   "description": "Your business’s page, to share with your customers.",
+   "video": "en/v/e323.mp4",
+   "affiche": "en/v/e323.webp"
+  },
+  {
+   "n": 324,
+   "role": "Step by step · Settings",
+   "titre": "Upload my business’s payment QR",
+   "description": "The QR of your Money account, which the customer scans to pay.",
+   "video": "en/v/e324.mp4",
+   "affiche": "en/v/e324.webp"
+  },
+  {
+   "n": 325,
+   "role": "Step by step · Settings",
+   "titre": "Put my business logo",
+   "description": "Your logo on the invoices and on the public page.",
+   "video": "en/v/e325.mp4",
+   "affiche": "en/v/e325.webp"
+  },
+  {
+   "n": 326,
+   "role": "Step by step · Settings",
+   "titre": "Change my secret code",
+   "description": "Change your secret code, without ever showing it to anyone.",
+   "video": "en/v/e326.mp4",
+   "affiche": "en/v/e326.webp"
+  },
+  {
+   "n": 327,
+   "role": "Step by step · Settings",
+   "titre": "Choose my level and my buttons",
+   "description": "Choose what the screen shows: a simple or a complete level.",
+   "video": "en/v/e327.mp4",
+   "affiche": "en/v/e327.webp"
+  },
+  {
+   "n": 208,
+   "role": "Step by step · Livestock",
+   "titre": "Open a batch or a herd",
+   "description": "Choose the animals, name the batch, choose the follow-up, open the record.",
+   "video": "en/v/e208.mp4",
+   "affiche": "en/v/e208.webp"
+  },
+  {
+   "n": 209,
+   "role": "Step by step · Livestock",
+   "titre": "Record what happened today",
+   "description": "A death, exits, arrivals: note what happened the same day.",
+   "video": "en/v/e209.mp4",
+   "affiche": "en/v/e209.webp"
+  },
+  {
+   "n": 210,
+   "role": "Step by step · Livestock",
+   "titre": "Record the day’s eggs",
+   "description": "Eggs collected, eggs broken, and the laying rate.",
+   "video": "en/v/e210.mp4",
+   "affiche": "en/v/e210.webp"
+  },
+  {
+   "n": 211,
+   "role": "Step by step · Livestock",
+   "titre": "Plan a treatment and record it",
+   "description": "Plan the treatment, get the reminder, note it is done, and the waiting time before sale.",
+   "video": "en/v/e211.mp4",
+   "affiche": "en/v/e211.webp"
+  },
+  {
+   "n": 212,
+   "role": "Step by step · Livestock",
+   "titre": "Set a target sale before a festival",
+   "description": "The date of the festival, the notice, and the reminder with the number of animals alive.",
+   "video": "en/v/e212.mp4",
+   "affiche": "en/v/e212.webp"
+  },
+  {
+   "n": 213,
+   "role": "Step by step · Livestock",
+   "titre": "Follow a female: mating, birth, weaning",
+   "description": "Mating, birth, young, weaning: everything on one record.",
+   "video": "en/v/e213.mp4",
+   "affiche": "en/v/e213.webp"
+  },
+  {
+   "n": 214,
+   "role": "Step by step · Livestock",
+   "titre": "Count the batch blind",
+   "description": "Count without seeing the expected number, then see the difference and its reason.",
+   "video": "en/v/e214.mp4",
+   "affiche": "en/v/e214.webp"
+  },
+  {
+   "n": 215,
+   "role": "Step by step · Mobile Money",
+   "titre": "Add an operator account",
+   "description": "Choose the operator, write the starting float, add the account.",
+   "video": "en/v/e215.mp4",
+   "affiche": "en/v/e215.webp"
+  },
+  {
+   "n": 216,
+   "role": "Step by step · Mobile Money",
+   "titre": "Record a deposit",
+   "description": "The customer deposits money: the amount, the fees, the operator’s reference.",
+   "video": "en/v/e216.mp4",
+   "affiche": "en/v/e216.webp"
+  },
+  {
+   "n": 217,
+   "role": "Step by step · Mobile Money",
+   "titre": "Record a withdrawal",
+   "description": "The customer withdraws money: the amount, the reference, what happens to the float.",
+   "video": "en/v/e217.mp4",
+   "affiche": "en/v/e217.webp"
+  },
+  {
+   "n": 218,
+   "role": "Step by step · Mobile Money",
+   "titre": "Cancel a line",
+   "description": "A line is never erased: it is cancelled, with a reason.",
+   "video": "en/v/e218.mp4",
+   "affiche": "en/v/e218.webp"
+  },
+  {
+   "n": 219,
+   "role": "Step by step · Mobile Money",
+   "titre": "Count my operator balance",
+   "description": "Compare the balance in the operator’s app with the one in Mon Djê.",
+   "video": "en/v/e219.mp4",
+   "affiche": "en/v/e219.webp"
+  },
+  {
+   "n": 220,
+   "role": "Step by step · Mobile Money",
+   "titre": "Buy float",
+   "description": "Top up your float: the amount, the fees, the commission received.",
+   "video": "en/v/e220.mp4",
+   "affiche": "en/v/e220.webp"
+  },
+  {
+   "n": 221,
+   "role": "Step by step · Mobile Money",
+   "titre": "Close my register with Mobile Money",
+   "description": "Close the register in the evening when you also run a Mobile Money account.",
+   "video": "en/v/e221.mp4",
+   "affiche": "en/v/e221.webp"
+  },
+  {
+   "n": 222,
+   "role": "Step by step · Tailoring",
+   "titre": "Take a customer’s measurements",
+   "description": "Write a customer’s measurements, in centimetres, and find them again at each order.",
+   "video": "en/v/e222.mp4",
+   "affiche": "en/v/e222.webp"
+  },
+  {
+   "n": 223,
+   "role": "Step by step · Tailoring",
+   "titre": "Take new measurements",
+   "description": "A customer comes back: a new record, the old one stays.",
+   "video": "en/v/e223.mp4",
+   "affiche": "en/v/e223.webp"
+  },
+  {
+   "n": 224,
+   "role": "Step by step · Tailoring",
+   "titre": "Record a made-to-measure order",
+   "description": "The customer, the garment, the measurements, the price, the deposit and the fitting.",
+   "video": "en/v/e224.mp4",
+   "affiche": "en/v/e224.webp"
+  },
+  {
+   "n": 225,
+   "role": "Step by step · Tailoring",
+   "titre": "Set or change the fitting",
+   "description": "The customer cannot come: change the fitting date.",
+   "video": "en/v/e225.mp4",
+   "affiche": "en/v/e225.webp"
+  },
+  {
+   "n": 226,
+   "role": "Step by step · Tailoring",
+   "titre": "Follow the ticket and hand back the garment",
+   "description": "Start the work, notify, take payment, hand the garment back.",
+   "video": "en/v/e226.mp4",
+   "affiche": "en/v/e226.webp"
+  },
+  {
+   "n": 227,
+   "role": "Step by step · Collection",
+   "titre": "Write the season price",
+   "description": "Set the price per kilo of each crop for the whole season.",
+   "video": "en/v/e227.mp4",
+   "affiche": "en/v/e227.webp"
+  },
+  {
+   "n": 228,
+   "role": "Step by step · Collection",
+   "titre": "Add a farmer",
+   "description": "The name, the village, the phone number: the farmer enters the notebook.",
+   "video": "en/v/e228.mp4",
+   "affiche": "en/v/e228.webp"
+  },
+  {
+   "n": 229,
+   "role": "Step by step · Collection",
+   "titre": "Weigh and write a purchase slip",
+   "description": "Weigh the crop, write the slip, see the amount to pay.",
+   "video": "en/v/e229.mp4",
+   "affiche": "en/v/e229.webp"
+  },
+  {
+   "n": 230,
+   "role": "Step by step · Collection",
+   "titre": "Settle what is still to be paid",
+   "description": "Pay the farmer what remains, and see the slip settled.",
+   "video": "en/v/e230.mp4",
+   "affiche": "en/v/e230.webp"
+  },
+  {
+   "n": 231,
+   "role": "Step by step · Collection",
+   "titre": "Confirm a slip that breaks the rules",
+   "description": "A slip outside the rules waits for a second person to confirm it.",
+   "video": "en/v/e231.mp4",
+   "affiche": "en/v/e231.webp"
+  },
+  {
+   "n": 232,
+   "role": "Step by step · Collection",
+   "titre": "Close the buyer’s register",
+   "description": "Count the buyer’s drawer in the evening: expected, difference and reason.",
+   "video": "en/v/e232.mp4",
+   "affiche": "en/v/e232.webp"
+  }
+ ]
+}
