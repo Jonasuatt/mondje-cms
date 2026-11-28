@@ -27,12 +27,14 @@ a { color: var(--bleu); }
 /* --- En-tête --------------------------------------------------------------------------------------------- */
 .entete { position: sticky; top: 0; z-index: 20; background: rgba(255, 255, 255, .96); backdrop-filter: blur(6px); border-bottom: 1px solid var(--trait); }
 .entete .conteneur { display: flex; align-items: center; gap: 16px; min-height: 64px; }
-.marque { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--nuit); font-weight: 800; font-size: 20px; }
+.marque { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--nuit); font-weight: 800; font-size: 20px; white-space: nowrap; flex-shrink: 0; }
 .marque img { width: 38px; height: 38px; background: var(--ciel); border-radius: 50%; padding: 3px; }
 .nav { margin-left: auto; display: flex; align-items: center; gap: 4px; }
-.nav a { text-decoration: none; color: var(--texte); padding: 8px 10px; border-radius: 10px; font-size: 15px; }
+.nav a { text-decoration: none; color: var(--texte); padding: 8px 7px; border-radius: 10px; font-size: 15px; white-space: nowrap; }
 .nav a:hover { background: var(--ciel); }
 .nav .secondaire { color: var(--faible); }
+@media (max-width: 1180px) { .nav a { font-size: 14px; padding: 8px 5px; } }
+@media (max-width: 1040px) { .nav a[href="#pilote"], .nav a[href="presentation/"] { display: none; } }
 @media (max-width: 860px) { .nav a:not(.bouton) { display: none; } }
 
 /* --- Boutons --------------------------------------------------------------------------------------------- */
