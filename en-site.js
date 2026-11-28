@@ -1830,5 +1830,7 @@ window.MONDJE_EN = {
 "Si « Bière » apparaît « Bi?re » dans l'aperçu, enregistrez de nouveau en": "If “Bière” shows as “Bi?re” in the preview, save again as",
 "CSV UTF-8": "CSV UTF-8",
 "La feuille « Exemples » du modèle montre une liste type de maquis, de boutique et de marché ; elle n'est pas importée.": "The template's “Examples” sheet shows a sample list for a maquis, a shop and a market; it is not imported.",
+"Ouvrir dans le navigateur (PC)": "Open in the browser (PC)",
+"Se connecter dans le navigateur (PC)": "Sign in from the browser (PC)",
 "Une question ? Écrivez-nous sur": "A question? Write to us on"
 };
